@@ -5,16 +5,21 @@
 	#parse("common/select.vm")
 	#parse("common/pagination.vm")
 	#parse("common/common.vm")
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/admin-all.css" />
-	<link rel="stylesheet" type="text/css" href="$!staticServer/css/doubleDate.css" />
-    <script type="text/javascript" src="$!staticServer/js/jquery-1.7.2.js"></script>
-    <script type="text/javascript" src="$!staticServer/js/jquery-ui-1.8.22.custom.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
-    <script type="text/javascript" src="$!staticServer/js/tip.js"></script>
-	<script type="text/javascript" src="$!staticServer/js/doubleDate2.0.js"></script>
-	<script type="text/javascript" src="$!staticServer/js/jquery.cookie.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/admin-all.css" />
+	<link rel="stylesheet" type="text/css" href="/css/doubleDate.css" />
+    <script type="text/javascript" src="/js/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript" src="/js/tip.js"></script>
+	<script type="text/javascript" src="/js/doubleDate2.0.js"></script>
+	<script type="text/javascript" src="/js/jquery.cookie.js"></script>
 </head>
+##<style>
+##    .alert{
+##        position: absolute;
+##    }
+##</style>
 <body>
 	$!errorMsg
     <div></div>
@@ -49,6 +54,8 @@
                     <td>
 						#selectClassMedium($!itemList,'itemId',$!supplyOrderQuery.itemId)
                     </td>
+					<td>供货单面值</td>
+					<td>#selectClassMedium($!itemFacePriceList,'itemFaceprice',$!supplyOrderQuery.itemFaceprice)</td>
                 </tr>
                 <tr>
                 	<td>上游流水号</td>
@@ -61,20 +68,35 @@
 					</td>
                     <td>代理商</td>
                     <td>
+                        <input id="downUser" value="" />
+                        <ul id="ulSytleUser" style="list-style: none;margin-left:0px;border: 1px solid lightgrey">
+                        </ul>
 						#selectClassMedium($!downStreamUser,'userId',$!supplyOrderQuery.userId)
 					</td>
 					<td>上游供货商</td>
                     <td>
-						#selectClassMedium($!upStreamUser,'supplyTraderId',$!supplyOrderQuery.supplyTraderId) 
+                        <input id="upStreamUserSolr" value="" />
+                        <ul id="ulSytle" style="list-style: none;margin-left:0px;border: 1px solid lightgrey">
+                        </ul>
+                        <br/>
+						#selectClassMedium($!upStreamUser,'supplyTraderId',$!supplyOrderQuery.supplyTraderId)
 					</td>
                 </tr>
 				<tr>
+##					supplyOrderQuery
 					<td>供货单日期 </td>
-                	<td>
-                    	<div class="input-append">
-							<input class="input-small doubledate" readonly="readonly" size="10" type="text" name="startGmtCreate" value="$!dateTool.format("yyyy-MM-dd", $!supplyOrderQuery.startGmtCreate)" /><span class="add-on"><i class="icon-calendar"></i></span>至<input id="endtime" class="input-small doubledate" readonly="readonly" type="text" name="endGmtCreate" value="$!dateTool.format("yyyy-MM-dd", $!supplyOrderQuery.endGmtCreate)" /><span class="add-on"><i class="icon-calendar"></i></span>
-                    	</div>
-               		</td>
+##						<td style="display: inline-block;width: 500px;height: 40px;position: relative">
+
+					<td id="timeRatio" style="display: inline-block;width: 500px;height: 40px;position: relative">
+								<div class="input-append" >
+									<input class="input-small doubledate" readonly="readonly" size="10" type="text" name="startGmtCreate" value="$!dateTool.format("yyyy-MM-dd", $!supplyOrderQuery.startGmtCreate)" />
+									<span class="add-on"><i class="icon-calendar"></i></span>
+									<span style="display: inline-block;position: absolute;top: 4px;width: 98px;height: 26px;line-height: 26px; border: 1px solid lightgrey;border-left: none; "><input style="width: 25px;height: 14px;text-align: center; border: none" type="text" onkeyup="value=value.replace(/[^\d]/g,'')" name="startHour" maxlength="2" value="$!supplyOrderQuery.startHour" class="hourIF " />:<input maxlength="2" style="width: 25px;height: 18px;border: none;text-align: center;" onkeyup="value=value.replace(/[^\d]/g,'')" name="startMinute" value="$!supplyOrderQuery.startMinute" class="minuteIF "/>
+									:<input style="width: 30px;height: 18px;border:none;text-align: center;" maxlength="2" onkeyup="value=value.replace(/[^\d]/g,'')"   name="startSecond" value="$!supplyOrderQuery.startSecond" maxlength="2" class="minuteIF "/>
+										<span><span></span>~~
+									<input  id="endtime" class="input-small doubledate" readonly="readonly" type="text" name="endGmtCreate" value="$!dateTool.format("yyyy-MM-dd", $!supplyOrderQuery.endGmtCreate)" /><span class="add-on"><i class="icon-calendar"></i></span></span><span style="display: inline-block;width: 100px;height: 26px;line-height: 26px; border: 1px solid lightgrey;border-left: none;position: absolute;top: 0px;"><input name="endHour" value="$!supplyOrderQuery.endHour" style="width: 30px;height: 15px;text-align: center;border: none;" onkeyup="value=value.replace(/[^\d]/g,'')" maxlength="2" class="hourIF"  />:<input maxlength="2" name="endMinute" style="width: 30px;height: 18px;text-align: center;border: none; " onkeyup="value=value.replace(/[^\d]/g,'')" value="$!supplyOrderQuery.endMinute"  class="minuteIF "/>:<input maxlength="2"  name="endSecond" style="width: 30px; height: 18px;border: none;text-align: center;" onkeyup="value=value.replace(/[^\d]/g,'')" value="$!supplyOrderQuery.endSecond" class="minuteIF"/></span>
+								</div>
+					</td>
 					<td>省域</td>
                     <td>
 						#select($!provinceList,'provinceCode',$!supplyOrderQuery.provinceCode) 
@@ -275,6 +297,25 @@
         }
 		
 		function query(){
+			var hourIF = document.getElementsByClassName('hourIF');
+			for (var i =0 ; i<hourIF.length;i++){
+				//console.log(parseInt(hourIF[i].value);
+				if (parseInt(hourIF[i].value)>24) {
+					alert("小时设置必须小于24");
+					return ;
+				}
+			}
+			//分秒的判断
+			var   minuteIF = document.getElementsByClassName('minuteIF');
+			for (var i =0 ; i<minuteIF.length;i++){
+				if (parseInt(minuteIF[i].value)>60) {
+					alert("分钟或秒钟设置必须小于60");
+					return ;
+				}
+			}
+			// if (jQuery('#upStreamUserSolr').val()!=null) {
+			//
+            // }
 			jQuery('#supplyOrderQueryForm').attr("action", "querySupplyOrder.do");
 			jQuery('#supplyOrderQueryForm').submit();
 		}
@@ -333,6 +374,161 @@
 				jQuery('#supplyOrderQueryForm').submit();
 			}
 		}
+		//ul拼接
+        jQuery('#supplyTraderId option').each(function (index) {
+            var text = jQuery(this).text();
+            var valText = "<li>"+ text +"</li>";
+            jQuery('#ulSytle').append(valText);
+        })
+		document.getElementById('upStreamUserSolr').oninput = function () {
+            var arr = [];
+            var record =[];
+            var recordLength = 0;
+            var inputValue = this.value;
+            jQuery('#ulSytle li').each(function (index) {
+                arr[index] = jQuery(this).text() ;
+                jQuery(this).css('display','none');
+            })
+            for (var i = 0 ; i<arr.length; i++) {
+                //判断是否有这个关键字
+                if (arr[i].indexOf(inputValue) != -1) {
+                    record[i]=i;
+                    recordLength += 1;
+                }
+            }
+            jQuery('#ulSytle li').each(function (index) {
+               if (record.length != 0) {
+                   //不为空，则关键字里面有下拉框的数据
+                   if (record[index]==index) {
+                        jQuery(this).css('display','block');
+                   }
+               }
+            })
+            if (jQuery(this).val().trim()=="") {
+                //空的
+                jQuery('#supplyTraderId option').each(function () {
+                    //取消选中
+                    jQuery(this).attr("selected",false);
+                })
+            }
+            jQuery('#ulSytle').css('display','block').css('background','#fff').css('position','absolute');
+        }
+        //滑过input 》ul也显示
+        jQuery('#upStreamUserSolr').hover(function () {
+            // if (jQuery('#ulSytle').css('display')=='block') {
+                jQuery('#ulSytle').css('position','absolute')
+                jQuery('#ulSytle').css('display','block')
+        },function () {
+            jQuery('#ulSytle').hide();
+        })
+		window.onload = function(){
+			var minRatioCost = screen.availWidth;
+			var maxRatio = minRatioCost*500/1366;
+			jQuery('#timeRatio').css('width',maxRatio+'px');
+			jQuery('#upStreamUserSolr').css('width','140px');
+            jQuery('#upStreamUserSolr').val(jQuery('#supplyTraderId').find('option:selected').text());
+
+            jQuery('#downUser').css('width','140px');
+            jQuery('#downUser').val(jQuery('#userId').find('option:selected').text());
+		}
+        jQuery('#ulSytle').css('z-index','20').css('display','none').css('display','none').css('width','145px').css('height','200px').css('overflow','auto');
+        jQuery('#ulSytle').find('li').hover(function () {
+            jQuery(this).css('background','gray');
+
+        },function () {
+            jQuery(this).css('background','#fff');
+        })
+        jQuery('#ulSytle').hover(function () {
+            jQuery(this).show();
+        },function () {
+            jQuery(this).hide();
+        })
+        jQuery('#ulSytle').find('li').click(function () {
+            var text = jQuery(this).text();
+            console.log(jQuery(this).text())
+            jQuery('#upStreamUserSolr').val(text);
+            jQuery('#ulSytle').css('display','none');
+            jQuery('#supplyTraderId').find('option').each(function () {
+                if(jQuery(this).text() == text){
+                    jQuery(this).attr("selected",true);
+                }
+            })
+        })
+        //jQuery('#supplyTraderId').css('display','none');
+
+
+        ///////////////////////////////////////////////
+        //ul拼接
+        jQuery('#userId option').each(function (index) {
+            var text = jQuery(this).text();
+            var valText = "<li>"+ text +"</li>";
+            jQuery('#ulSytleUser').append(valText);
+        })
+        document.getElementById('downUser').oninput = function () {
+            var arr = [];
+            var record =[];
+            var recordLength = 0;
+            var inputValue = this.value;
+            jQuery('#ulSytleUser li').each(function (index) {
+                arr[index] = jQuery(this).text() ;
+                jQuery(this).css('display','none');
+            })
+            for (var i = 0 ; i<arr.length; i++) {
+                //判断是否有这个关键字
+                if (arr[i].indexOf(inputValue) != -1) {
+                    record[i]=i;
+                    recordLength += 1;
+                }
+            }
+            jQuery('#ulSytleUser li').each(function (index) {
+                if (record.length != 0) {
+                    //不为空，则关键字里面有下拉框的数据
+                    if (record[index]==index) {
+                        jQuery(this).css('display','block');
+                    }
+                }
+            })
+            if (jQuery(this).val().trim()=="") {
+                //空的
+                jQuery('#userId option').each(function () {
+                    //取消选中
+                    jQuery(this).attr("selected",false);
+                })
+            }
+            jQuery('#ulSytleUser').css('display','block').css('background','#fff').css('position','absolute');
+        }
+        jQuery('#ulSytleUser').css('z-index','20').css('display','none').css('display','none').css('width','145px').css('height','200px').css('overflow','auto');
+        jQuery('#ulSytleUser').find('li').hover(function () {
+            jQuery(this).css('background','gray');
+
+        },function () {
+            jQuery(this).css('background','#fff');
+        })
+        jQuery('#ulSytleUser').hover(function () {
+            jQuery(this).show();
+        },function () {
+            jQuery(this).hide();
+        })
+        jQuery('#ulSytleUser').find('li').click(function () {
+            var text = jQuery(this).text();
+            console.log(jQuery(this).text())
+            jQuery('#downUser').val(text);
+            jQuery('#ulSytleUser').css('display','none');
+            jQuery('#userId').find('option').each(function () {
+                if(jQuery(this).text() == text){
+                    jQuery(this).attr("selected",true);
+                }
+            })
+        })
+        //滑过ul显示
+        jQuery('#downUser').hover(function () {
+            jQuery('#ulSytleUser').css('position','absolute')
+            jQuery('#ulSytleUser').css('display','block')
+        },function () {
+            jQuery('#ulSytleUser').hide();
+        })
+        //jQuery('#userId').css('display','none');
+
     </script>
 </body>
 </html>

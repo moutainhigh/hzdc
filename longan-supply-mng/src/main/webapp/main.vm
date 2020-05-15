@@ -7,14 +7,6 @@
 	#end
     <meta charset="utf-8" />
     <title>后台管理系统</title>
-##    <link rel="stylesheet" type="text/css" href="$!staticServer/css/admin-all.css" />
-##    <link rel="stylesheet" type="text/css" href="$!staticServer/css/base.css" />
-##    <link rel="stylesheet" type="text/css" href="$!staticServer/css/bootstrap.min.css" />
-##    <link rel="stylesheet" type="text/css" href="$!staticServer/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
-##    <script type="text/javascript" src="$!staticServer/js/jquery-1.7.2.min.js"></script>
-##    <script type="text/javascript" src="$!staticServer/js/jquery-ui-1.8.22.custom.min.js"></script>
-##    <script type="text/javascript" src="$!staticServer/js/index.js"></script>
-##	-------------------------------------------------------------------------------
 	<link rel="stylesheet" type="text/css" href="/css/admin-all.css" />
 	<link rel="stylesheet" type="text/css" href="/css/base.css" />
 	<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
@@ -372,6 +364,12 @@
                     </ul>
                 </div>
 				#end
+				<div>
+					<a class="one">黑名单管理</a>
+					<ul class="kid" style="display:none">
+						<li><b class="tip"></b><a target="Conframe" href="biz/queryBlackList.do">黑名单查询</a></li>
+					</ul>
+				</div>
             </div>
         </div>
         <!--左边菜单结束-->

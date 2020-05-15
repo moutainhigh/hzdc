@@ -32,6 +32,15 @@ public class ItemSupplyForm {
 
     private String supplyAreaType;
     private List<String> supplyAreaList;
+    private String itemIds;//批量封装商品id
+
+    public String getItemIds() {
+        return itemIds;
+    }
+
+    public void setItemIds(String itemIds) {
+        this.itemIds = itemIds;
+    }
 
     public String getId() {
 	return id;

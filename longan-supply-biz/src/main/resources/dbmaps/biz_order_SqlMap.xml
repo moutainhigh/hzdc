@@ -615,6 +615,9 @@
 			<isNotEmpty prepend="and" property="carrierType">
 				carrier_type = #carrierType#
 			</isNotEmpty>
+			<isNotEmpty prepend="and" property="itemFaceprice">
+			item_face_price = #itemFaceprice#
+			</isNotEmpty>
 			<isNotEmpty prepend="and" property="memo">
 				memo is not null
 			</isNotEmpty>
@@ -626,6 +629,11 @@
 		FROM biz_order INNER JOIN (SELECT id FROM biz_order
 		<include refid="biz_order.whereConditions" />
 		ORDER BY gmt_create DESC LIMIT #startRow#,#pageSize#) as page using (id)
+	</select>
+	<select id="queryByPageDayThree" resultMap="abatorgenerated_BizOrderResult">
+		SELECT
+		<include refid="biz_order.bizOrderFullColumns" />
+		FROM biz_order where  gmt_create >= now()-interval 3 day
 	</select>
 	<select id="queryByPageCount" resultClass="java.lang.Integer">
 		SELECT count(*) FROM biz_order
@@ -690,6 +698,9 @@
 		lock_oper_id = #dealOperId#)
 	</update>
 	<update id="remarks" parameterClass="com.longan.biz.dataobject.BizOrder">
-		update biz_order set memo=#memo# where id =#id#
+		update biz_order set memo=#memo# where id = #id#
+	</update>
+	<update id="updateRefund" parameterClass="com.longan.biz.dataobject.BizOrder">
+		update biz_order set memo=#memo# where downstream_serialno = #downstreamSerialno#
 	</update>
 </sqlMap>

@@ -18,6 +18,8 @@ public class ItemQuery extends QueryBase {
     private String salesArea;
     private String requesytType;
     private List<String> salesAreas;
+    private String ids;
+    private List<String> idsList;
 
     public Integer getBizId() {
 	return bizId;
@@ -105,5 +107,21 @@ public class ItemQuery extends QueryBase {
 
     public void setSalesAreas(List<String> salesAreas) {
         this.salesAreas = salesAreas;
+    }
+
+    public String getIds() {
+        return ids;
+    }
+
+    public void setIds(String ids) {
+        this.ids = ids;
+    }
+
+    public List<String> getIdsList() {
+        return idsList;
+    }
+
+    public void setIdsList(List<String> idsList) {
+        this.idsList = idsList;
     }
 }

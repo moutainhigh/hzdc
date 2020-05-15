@@ -77,29 +77,6 @@ public class QueryServiceImpl extends BaseService implements QueryService {
 
 	Result<List<BizOrder>> result = new Result<List<BizOrder>>();
 	try {
-//		if (StringUtils.hasText(bizOrderQuery.getStartHour())||StringUtils.hasText(bizOrderQuery.getEndHour())||StringUtils.hasText(bizOrderQuery.getStartMinute())||StringUtils.hasText(bizOrderQuery.getEndMinute())||StringUtils.hasText(bizOrderQuery.getStartSecond())||StringUtils.hasText(bizOrderQuery.getEndSecond())) {
-//			if (!StringUtils.hasText(bizOrderQuery.getStartHour())) {
-//				bizOrderQuery.setStartHour(Constants.constTime);
-//			}
-//			if (!StringUtils.hasText(bizOrderQuery.getEndHour())) {
-//				bizOrderQuery.setEndHour(Constants.constTime);
-//			}
-//			if (!StringUtils.hasText(bizOrderQuery.getStartMinute())) {
-//				bizOrderQuery.setStartMinute(Constants.constTime);
-//			}
-//			if (!StringUtils.hasText(bizOrderQuery.getEndMinute())) {
-//				bizOrderQuery.setEndMinute(Constants.constTime);
-//			}
-//			if (!StringUtils.hasText(bizOrderQuery.getStartSecond())) {
-//				bizOrderQuery.setStartSecond(Constants.constTime);
-//			}
-//			if (!StringUtils.hasText(bizOrderQuery.getEndSecond())) {
-//				bizOrderQuery.setEndSecond(Constants.constTime);
-//			}
-//			//存新值
-//			bizOrderQuery.setStartGmtCreate(DateTool.formatStartDate(bizOrderQuery.getStartGmtCreate(),bizOrderQuery.getStartHour(),bizOrderQuery.getStartMinute(),bizOrderQuery.getStartSecond()));
-//			bizOrderQuery.setEndGmtCreate(DateTool.formatStartDate(bizOrderQuery.getEndGmtCreate(),bizOrderQuery.getEndHour(),bizOrderQuery.getEndMinute(),bizOrderQuery.getEndSecond()));
-//		}
 		bizOrderQuery = DateTool.dateFilter(bizOrderQuery);
 		//formatStartDate
 	    List<BizOrder> queryResult = queryBizOrderDAO.queryByPage(bizOrderQuery);

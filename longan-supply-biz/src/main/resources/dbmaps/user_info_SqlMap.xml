@@ -74,6 +74,9 @@
 		select id, login_id, acct_id, user_name, compay_info, email, user_info, mobile, addr, area, pwd, referer, status,
 		alert_status, last_login_time, last_login_ip, gmt_create, gmt_modify, type from user_info where id = #id:BIGINT#
 	</select>
+<!--	<select id="">-->
+<!--		-->
+<!--	</select>-->
 	<select id="abatorgenerated_selectByExample" parameterClass="com.longan.biz.dataobject.UserInfoExample"
 		resultMap="abatorgenerated_UserInfoResult">
 		select id, login_id, acct_id, user_name, compay_info, email, user_info, mobile, addr, area, pwd, referer, status,

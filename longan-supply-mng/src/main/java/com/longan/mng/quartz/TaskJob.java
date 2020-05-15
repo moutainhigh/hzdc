@@ -48,7 +48,6 @@ public class TaskJob {
 	    }
 	}
     }
-
     private void gotoPddSum() {
 	if (goto_report) {
 	    logger.warn("goto pdd sum is started");

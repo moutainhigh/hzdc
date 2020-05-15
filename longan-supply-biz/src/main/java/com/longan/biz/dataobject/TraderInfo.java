@@ -2,6 +2,7 @@ package com.longan.biz.dataobject;
 
 import com.longan.biz.utils.BigDecimalUtils;
 import com.longan.biz.utils.Constants;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 public class TraderInfo {
     private Long id;
@@ -66,7 +67,7 @@ public class TraderInfo {
     public void setIsAsyncSupply(Boolean isAsyncSupply) {
 	this.isAsyncSupply = isAsyncSupply;
     }
-
+//    @JsonIgnore
     public Boolean getNeedSmsNote() {
 	return needSmsNote;
     }
@@ -74,7 +75,7 @@ public class TraderInfo {
     public void setNeedSmsNote(Boolean needSmsNote) {
 	this.needSmsNote = needSmsNote;
     }
-
+    @JsonIgnore
     public Boolean isNeedSmsNote() {
 	if (needSmsNote == null) {
 	    return false;

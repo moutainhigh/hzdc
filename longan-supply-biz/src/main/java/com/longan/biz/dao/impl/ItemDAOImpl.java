@@ -85,7 +85,17 @@ public class ItemDAOImpl implements ItemDAO {
 	return (List<Item>) sqlMapClient.queryForList("item.queryByPage", itemQuery);
     }
 
-    @Override
+	@Override
+	public List<Item> queryByPageUp(ItemQuery itemQuery) throws SQLException {
+//		int count = (Integer) sqlMapClient.queryForObject("item.queryByPageCount", itemQuery);
+//		itemQuery.setTotalItem(count);
+		List<Item> items =(List<Item>) sqlMapClient.queryForList("item.queryByPageUp", itemQuery);
+		itemQuery.setTotalItem(items.size());
+		itemQuery.setPageSize(items.size());
+		return items;
+	}
+
+	@Override
     public int batchUpdateStatusItem(List<Integer> ids, Integer status) throws SQLException {
 	Map<String, Object> parms = new HashMap<String, Object>(2);
 	parms.put("ids", ids);

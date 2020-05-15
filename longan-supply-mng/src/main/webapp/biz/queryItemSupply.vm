@@ -6,14 +6,14 @@
 	#parse("common/select.vm")
 	#parse("common/pagination.vm")
 	
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/admin-all.css" />
-	<link rel="stylesheet" type="text/css" href="$!staticServer/css/doubleDate.css" />
-    <script type="text/javascript" src="$!staticServer/js/jquery-1.7.2.js"></script>
-    <script type="text/javascript" src="$!staticServer/js/jquery-ui-1.8.22.custom.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
-    <script type="text/javascript" src="$!staticServer/js/tip.js"></script>
-	<script type="text/javascript" src="$!staticServer/js/doubleDate2.0.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/admin-all.css" />
+	<link rel="stylesheet" type="text/css" href="/css/doubleDate.css" />
+    <script type="text/javascript" src="/js/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript" src="/js/tip.js"></script>
+	<script type="text/javascript" src="/js/doubleDate2.0.js"></script>
 	
 </head>
 <body>
@@ -46,12 +46,12 @@
                 </tr>
                 <tr>
 					<td>商品面值</td>
-					<td>
+					<td >
 						<input id="itemFacePrice" name="itemFacePrice" value="$!itemSupplyQuery.getPriceDesc($!itemSupplyQuery.itemFacePrice)" /></td>
 					</td>
                 	#if($!itemSupplyQuery.bizId != 400)
                     <td>销售区域(不支持多省域查询)</td>
-                    <td>
+                    <td id="select_itemSupplyQuery">
 						#select($!provinceList,'salesArea',$!itemSupplyQuery.salesArea)
 				    </td>
 				    #else
@@ -102,7 +102,9 @@
 			<a class="btn btn-danger" onclick="javascript:conditionUp();"  >按条件上架</a>
 			<a class="btn btn-danger" onclick="javascript:conditionDown();"  >按条件下架</a>
 			<a class="btn btn-primary add" onclick="javascript:batchEdit();"  >批量修改供货</a>
-			<a class="btn btn-primary add" onclick="javascript:conditionEdit();"  >条件修改供货</a>			
+			<a class="btn btn-primary add" onclick="javascript:conditionEdit();"  >条件修改供货</a>
+			<a class="btn btn-danger " onclick="javascript:batchSupplyEdit();" >批量修改</a>
+			<a class="btn btn-danger " onclick="javascript:batchSupplyLossType();" >批量止损修改</a>
 		</div>		
         <thead>
             <tr class="tr_detail">
@@ -118,6 +120,7 @@
 				<td>优先级</td>
 				<td>供货商</td>
 				<td>供货商编号</td>
+				<td>商品上游编号</td>
                 <td>库存数</td>
 				<td>状态</td>
                 <td>操作 </td>
@@ -157,6 +160,7 @@
 				<td>$!itemSupply.priority</td>
 				<td>$!itemSupply.supplyTraderName</td>
 				<td>$!itemSupply.supplyTraderId</td>
+				<td>$!itemSupply.supplyProductCode</td>
 				<td>
 					#if($!itemSupply.hasStock())
 						$!itemSupply.quantity
@@ -216,7 +220,38 @@
 				}
 				window.location.href = "itemSupplyDeal.do?requestType=batchUpIndex&bizId=$!itemSupplyQuery.bizId&ids=" + list;
     		}
-			
+    		//批量修改操作
+    		function batchSupplyEdit() {
+				var list = getCheckBox();
+				if(list==null || list.length==0){
+					return;
+				}
+				//销售区域不能为空
+				//select_itemSupplyQuery
+				var val_itemSupplyQuery =jQuery('#select_itemSupplyQuery').find('select').find('option:selected').val();
+				console.log(val_itemSupplyQuery);
+				if (val_itemSupplyQuery=='') {
+					alert("请选择销售区域查询后在批量修改操作");
+					return;
+				}
+				window.location.href = "itemSupplyDeal.do?requestType=itemBatchEdit&bizId=$!itemSupplyQuery.bizId&ids="+list;
+			}
+			//批量笔后止损
+			function batchSupplyLossType() {
+				var list = getCheckBox();
+				if(list==null || list.length==0){
+					return;
+				}
+				//销售区域不能为空
+				//select_itemSupplyQuery
+				//var val_itemSupplyQuery =jQuery('#select_itemSupplyQuery').find('select').find('option:selected').val();
+				// console.log(val_itemSupplyQuery);
+				// if (val_itemSupplyQuery=='') {
+				// 	alert("请选择销售区域查询后在批量修改操作");
+				// 	return;
+				// }
+				window.location.href = "itemSupplyDeal.do?requestType=losstype&bizId=$!itemSupplyQuery.bizId&ids="+list;
+			}
     		function batchDown(){
 				var list = getCheckBox();
 				if(list==null || list.length==0){

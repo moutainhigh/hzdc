@@ -26,6 +26,8 @@ public interface BizOrderService {
 
     public Result<List<BizOrder>> queryBizOrderPage(BizOrderQuery bizOrderQuery);
 
+    public Result<List<BizOrder>> queryByPageDayThree();
+
     public Result<Integer> getCountInExport(BizOrderQuery bizOrderQuery);
 
     public Result<List<BizOrder>> queryBizOrderExport(BizOrderQuery bizOrderQuery);
@@ -66,5 +68,8 @@ public interface BizOrderService {
     public Result<BizOrder> robotLockBizOrder(Long upstreamId, String posId, String pcId, Long lockOperId);
 
     public  void  updataRemaks(BizOrder bizOrder);
+
     public Result<BizOrder> selectRemaks(Long bizOderId);
+
+    public int updateRefund(BizOrder bizOrder);
 }

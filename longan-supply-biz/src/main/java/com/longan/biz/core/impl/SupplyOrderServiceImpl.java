@@ -45,7 +45,8 @@ public class SupplyOrderServiceImpl extends BaseService implements SupplyOrderSe
 	    result.setResultMsg("入参错误");
 	    return result;
 	}
-
+	//时间结果的封装
+	supplyOrderQuery = DateTool.dateFilterSupplyOrderQuery(supplyOrderQuery);
 	try {
 	    List<SupplyOrder> queryResult = supplyOrderDAO.queryByPage(supplyOrderQuery);
 	    result.setSuccess(true);

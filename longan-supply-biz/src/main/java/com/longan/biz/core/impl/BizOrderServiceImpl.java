@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Resource;
+import javax.swing.*;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -66,7 +67,7 @@ public class BizOrderServiceImpl extends BaseService implements BizOrderService 
 
     @Resource
     private UserAlertService userAlertService;
-
+    //订单判断
     public Result<BizOrder> bizOrderPreCheck(BizOrder bizOrder) {
         Result<BizOrder> result = new Result<BizOrder>();
         Result<Boolean> checkBizOrderResult = checkBizOrder(bizOrder);
@@ -761,6 +762,20 @@ public class BizOrderServiceImpl extends BaseService implements BizOrderService 
     }
 
     @Override
+    public Result<List<BizOrder>> queryByPageDayThree() {
+        Result<List<BizOrder>> result = new Result<List<BizOrder>>();
+        try {
+            List<BizOrder> queryResult = bizOrderDAO.queryByPageDayThree();
+            result.setSuccess(true);
+            result.setModule(queryResult);
+        } catch (SQLException e) {
+            result.setResultMsg("获取三天内的订单查询失败    msg: " + e.getMessage());
+            logger.error("queryByPageDayThree error ", e);
+        }
+        return result;
+    }
+
+    @Override
     public Result<Integer> getCountInExport(BizOrderQuery bizOrderQuery) {
         Result<Integer> result = new Result<Integer>();
         if (bizOrderQuery == null) {
@@ -1232,11 +1247,21 @@ public class BizOrderServiceImpl extends BaseService implements BizOrderService 
     @Override
     public void updataRemaks(BizOrder bizOrder) {
         try {
-       bizOrderDAO.remarks(bizOrder);
+            bizOrderDAO.remarks(bizOrder);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+    }
+    @Override
+    public int updateRefund(BizOrder bizOrder) {
+         Integer result = null;
+        try {
+            result = bizOrderDAO.updateRefund(bizOrder);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return  result;
     }
 
     @Override

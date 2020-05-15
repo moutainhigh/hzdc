@@ -83,6 +83,11 @@ public class BizOrderDAOImpl implements BizOrderDAO {
     }
 
     @Override
+    public List<BizOrder> queryByPageDayThree() throws SQLException {
+        return sqlMapClient.queryForList("biz_order.queryByPageDayThree",null);
+    }
+
+    @Override
     public int countByExport(BizOrderQuery bizOrderQuery) throws SQLException {
         Integer count = (Integer) sqlMapClient.queryForObject("biz_order.countByExport", bizOrderQuery);
         return count.intValue();
@@ -135,12 +140,16 @@ public class BizOrderDAOImpl implements BizOrderDAO {
         int rows = sqlMapClient.update("biz_order.remarks", bizOrder);
         return rows;
     }
-
     @Override
     public BizOrder selectRemaks(Long id) throws SQLException {
         BizOrder key = new BizOrder();
         key.setId(id);
         BizOrder bizOrder = (BizOrder) sqlMapClient.queryForObject("biz_order.abatorgenerated_selectByPrimaryKey", key);
         return bizOrder;
+    }
+    @Override
+    public int updateRefund(BizOrder bizOrder) throws SQLException {
+        int rows = sqlMapClient.update("biz_order.updateRefund", bizOrder);
+        return rows;
     }
 }

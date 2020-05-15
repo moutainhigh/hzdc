@@ -51,6 +51,7 @@ public interface ItemService {
     public Result<Boolean> checkItemStatus(Integer itemId);
 
     public Result<List<Item>> queryItemList(ItemQuery itemQuery);
+    public Result<List<Item>> queryItemUpList(ItemQuery itemQuery);
 
     public Result<List<ItemSupply>> queryItemSupplyOnSale(Integer itemId);
 

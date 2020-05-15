@@ -1,15 +1,13 @@
 package com.longan.mng.action.biz;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -31,32 +29,60 @@ public class QueryItemSupply extends BaseController {
     public String index(@ModelAttribute("itemSupplyQuery") ItemSupplyQuery itemSupplyQuery, HttpSession session, Model model) {
 	// 业务 权限判断
 	UserInfo userInfo = super.getUserInfo(session);
+	List<ItemSupply> itemSupplyList = null;
+	List<ItemSupply> resultSupplyList = new ArrayList<ItemSupply>();
 
-	if (!checkBizAuth(itemSupplyQuery.getBizId(), userInfo)) {
+		if (!checkBizAuth(itemSupplyQuery.getBizId(), userInfo)) {
 	    return "error/autherror";
 	}
 	model.addAttribute("bizName", Constants.BIZ_MAP.get(itemSupplyQuery.getBizId()));
 	model.addAttribute("userInfo", userInfo);
+	if (!StringUtils.hasText(itemSupplyQuery.getIds())) {
 
-	Result<List<ItemSupply>> result = itemService.queryItemSupplyPage(itemSupplyQuery);
-	if (!result.isSuccess()) {
-	    super.setError(model, result.getResultMsg());
-	    return "biz/queryItemSupply";
-	}
-
-	List<ItemSupply> itemSupplyList = result.getModule();
-	if (itemSupplyList != null) {
-	    for (ItemSupply itemSupply : itemSupplyList) {
-		UserInfo supplyTrader = localCachedService.getUserInfo(itemSupply.getSupplyTraderId());
-		if (supplyTrader != null) {
-		    itemSupply.setSupplyTraderName(supplyTrader.getUserName());
+		Result<List<ItemSupply>> result = itemService.queryItemSupplyPage(itemSupplyQuery);
+		if (!result.isSuccess()) {
+			super.setError(model, result.getResultMsg());
+			return "biz/queryItemSupply";
 		}
-	    }
+
+		itemSupplyList = result.getModule();
+		if (itemSupplyList != null) {
+			for (ItemSupply itemSupply : itemSupplyList) {
+				UserInfo supplyTrader = localCachedService.getUserInfo(itemSupply.getSupplyTraderId());
+				if (supplyTrader != null) {
+					itemSupply.setSupplyTraderName(supplyTrader.getUserName());
+				}
+			}
+		}
+	}else{
+		String[] split = itemSupplyQuery.getIds().split(",");
+		for (int i = 0; i < split.length; i++) {
+
+			itemSupplyQuery.setId(Long.valueOf(split[i]));
+			Result<List<ItemSupply>> result = itemService.queryItemSupplyPage(itemSupplyQuery);
+			if (!result.isSuccess()) {
+				super.setError(model, result.getResultMsg());
+				return "biz/queryItemSupply";
+			}
+
+			itemSupplyList = result.getModule();
+			if (itemSupplyList != null) {
+				for (ItemSupply itemSupply : itemSupplyList) {
+					UserInfo supplyTrader = localCachedService.getUserInfo(itemSupply.getSupplyTraderId());
+					if (supplyTrader != null) {
+						itemSupply.setSupplyTraderName(supplyTrader.getUserName());
+						resultSupplyList.add(itemSupply);
+					}
+				}
+			}
+		}
+		itemSupplyList = resultSupplyList;
 	}
 
 	model.addAttribute("itemSupplyList", itemSupplyList);
 	return "biz/queryItemSupply";
     }
+
 
     @ModelAttribute("statusList")
     public Map<Integer, String> statusList() {
@@ -112,4 +138,10 @@ public class QueryItemSupply extends BaseController {
     public Map<String, AreaInfo> provinceList() {
 	return localCachedService.getProvinceMap();
     }
+    //ITEM_Face_Price
+	@ModelAttribute("itemFacePriceList")
+	public Map<Integer,String> itemFacePriceList(){
+		Map<Integer, String> item_face_price = Constants.ITEM_Face_Price;
+		return item_face_price;
+	}
 }

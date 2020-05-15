@@ -1,15 +1,15 @@
 package com.longan.mng.action.biz;
 
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
+import com.longan.biz.core.BizOrderService;
+import com.longan.biz.core.UserRoleRelationService;
+import com.longan.biz.core.UserService;
+import com.longan.biz.dataobject.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,11 +17,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.longan.biz.core.QueryService;
-import com.longan.biz.dataobject.AreaInfo;
-import com.longan.biz.dataobject.BizOrder;
-import com.longan.biz.dataobject.BizOrderQuery;
-import com.longan.biz.dataobject.ItemSupply;
-import com.longan.biz.dataobject.UserInfo;
 import com.longan.biz.domain.Result;
 import com.longan.biz.utils.Constants;
 import com.longan.biz.utils.DateTool;
@@ -35,11 +30,13 @@ import com.longan.mng.action.common.BaseController;
 public class QueryBizOrder extends BaseController {
     @Resource
     private QueryService queryService;
-
-    @RequestMapping("biz/queryBizOrderIndex")//获取到订单跟用户信息的判断
+	@Resource
+	private UserRoleRelationService userRoleRelationService;
+	@RequestMapping("biz/queryBizOrderIndex")//获取到订单跟用户信息的判断
     public String index(@ModelAttribute("bizOrderQuery") BizOrderQuery bizOrderQuery, HttpSession session, Model model) {
 	// 业务权限判断
 	UserInfo userInfo = getUserInfo(session);//获取到用户信息
+
 	if (!checkBizAuth(bizOrderQuery.getBizId(), userInfo)) {
 	    return "error/autherror";
 	}
@@ -54,6 +51,14 @@ public class QueryBizOrder extends BaseController {
     @RequestMapping("biz/queryBizOrder")
     public String doQuery(@ModelAttribute("bizOrderQuery") BizOrderQuery bizOrderQuery, Model model, HttpSession session) {
 	UserInfo userInfo = getUserInfo(session);
+
+	UserInfoQuery userInfoQuery = new UserInfoQuery();
+	userInfoQuery.setId(userInfo.getId());
+	Result<List<UserInfo>> listResult = userRoleRelationService.queryUserRoleRelationList(userInfoQuery);
+	List<UserInfo> moduleUserInfo = listResult.getModule();
+	userInfo.setRoleId(moduleUserInfo.get(0).getRoleId());
+	//失败的集合封装
+	List<BizOrder> bizOrders = new ArrayList<BizOrder>();
 	// 业务权限判断
 	if (!checkBizAuth(bizOrderQuery.getBizId(), userInfo)) {
 	    return "error/autherror";
@@ -83,6 +88,57 @@ public class QueryBizOrder extends BaseController {
 	}
 
 	setSelectValue(userInfo, model, bizOrderQuery);
+	if (bizOrderQuery.getBizOrderIds()!=null) {
+		String[] bizOrderIds = bizOrderQuery.getBizOrderIds().split(",");
+		for (int i = 0; i<bizOrderIds.length; i++) {
+			bizOrderQuery.setId(Long.valueOf(bizOrderIds[i]));
+			bizOrderQuery.setEndGmtCreate(null);
+			bizOrderQuery.setStartGmtCreate(null);
+
+			Result<List<BizOrder>> result = queryService.queryBizOrderPage(bizOrderQuery);
+			if (result.isSuccess()) {
+				List<BizOrder> list = result.getModule();//List<BizOrder>
+				for (BizOrder bizOrder : list) {
+					UserInfo user = localCachedService.getUserInfo(bizOrder.getUserId());//本地缓存获取
+					bizOrder.setUserName(user.getUserName());
+					if (bizOrder.getLockOperId() != null) {
+						UserInfo oper = localCachedService.getUserInfo(bizOrder.getLockOperId());
+						bizOrder.setLockOperName(oper == null ? "" : oper.getUserName());
+					}
+					if (bizOrder.getDealOperId() != null) {
+						UserInfo oper = localCachedService.getUserInfo(bizOrder.getDealOperId());
+						bizOrder.setDealOperName(oper == null ? "" : oper.getUserName());
+					}
+					if (StringUtils.isNotBlank(bizOrder.getProvinceCode())) {//省域
+						AreaInfo areaInfo = localCachedService.getProvinceByCode(bizOrder.getProvinceCode());
+						if (areaInfo != null) {
+							bizOrder.setUidAreaInfo(areaInfo.getProvinceName());
+						}
+					}
+					if (StringUtils.isNumeric(bizOrder.getUpstreamId())) {//上游
+						UserInfo traderUserInfo = localCachedService.getUserInfo(Long.parseLong(bizOrder.getUpstreamId()));
+						if (traderUserInfo != null) {
+							bizOrder.setUpstreamName(traderUserInfo.getUserName());
+						}
+					}
+					if (bizOrder.getSupplyType() == null && bizOrder.getItemSupplyId() != null) {
+						ItemSupply itemSupply = localCachedService.getItemSupply(bizOrder.getItemSupplyId());
+						if (itemSupply != null) {
+							// 之后改成itemSupplyType
+							bizOrder.setSupplyType(itemSupply.getItemSupplyType());
+						}
+					}
+				}
+				for (BizOrder bizOrder:list) {
+					bizOrders.add(bizOrder);
+				}
+			} else {
+				setError(model, result.getResultMsg());
+			}
+		}
+		model.addAttribute("bizOrderList", bizOrders);//前台返回的参数
+		return "biz/queryBizOrder";
+	}
 	Result<List<BizOrder>> result = queryService.queryBizOrderPage(bizOrderQuery);
 	if (result.isSuccess()) {
 	    List<BizOrder> list = result.getModule();//List<BizOrder>
@@ -219,6 +275,11 @@ public class QueryBizOrder extends BaseController {
 	map.put(Constants.BizOrder.NOTIFY_UNKNOWN + "", Constants.BizOrder.NOTIFY_UNKNOWN_DESC);
 	return map;
     }
+	@ModelAttribute("itemFacePriceList")
+	public Map<Integer,String> itemFacePriceList() {
+		Map<Integer, String> item_face_price = Constants.ITEM_Face_Price;
+		return item_face_price;
+	}
 	@ModelAttribute("memo")
     public Map<String,String>memo(){
     	Map<String,String>map=new LinkedHashMap<String, String>();

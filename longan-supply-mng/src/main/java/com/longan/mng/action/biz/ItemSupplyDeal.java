@@ -2,17 +2,13 @@ package com.longan.mng.action.biz;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
+import com.longan.mng.form.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -45,10 +41,6 @@ import com.longan.biz.utils.BigDecimalUtils;
 import com.longan.biz.utils.Constants;
 import com.longan.biz.utils.OperLogUtils;
 import com.longan.mng.action.common.BaseController;
-import com.longan.mng.form.ItemSupplyForm;
-import com.longan.mng.form.ItemSupplyListEditForm;
-import com.longan.mng.form.ItemSupplyListForm;
-import com.longan.mng.form.UpDownForm;
 
 @Controller
 public class ItemSupplyDeal extends BaseController {
@@ -117,7 +109,7 @@ public class ItemSupplyDeal extends BaseController {
 	}
 	return "biz/queryItemSupply";
     }
-
+	//关联供货跳转
     @RequestMapping(value = "biz/itemSupplyAdd", method = RequestMethod.GET)
     public String onAddIndex(@RequestParam("bizId") Integer bizId, @RequestParam("itemId") Integer itemId, HttpSession session,
 	    Model model) {
@@ -144,7 +136,7 @@ public class ItemSupplyDeal extends BaseController {
 	model.addAttribute("item", item);
 	return "biz/itemSupplyAdd";
     }
-	//关联供货
+	//关联供货操作
     @RequestMapping(value = "biz/itemSupplyAdd", method = RequestMethod.POST)
     public String onPostAdd(@ModelAttribute("itemSupplyForm") ItemSupplyForm itemSupplyForm, BindingResult bindingResult,
 	    HttpSession session, Model model) {
@@ -233,34 +225,61 @@ public class ItemSupplyDeal extends BaseController {
 	UserInfo userInfo = super.getUserInfo(session);
 	model.addAttribute("bizName", Constants.BIZ_MAP.get(bizId));
 	model.addAttribute("bizId", bizId);
-
+	Result<List<Item>> result = null;
 	// 业务权限判断
 	if (!checkBizAuth(bizId, userInfo)) {
 	    return "error/autherror";
 	}
-
-	itemQuery.setPageSize(10000);
-	itemQuery.setCurrentPage(1);
-	Result<List<Item>> result = itemService.queryItemList(itemQuery);
-	if (!result.isSuccess()) {
-	    super.alertError(model, result.getResultMsg());
-	    return "biz/queryItem";
-	}
-
 	StringBuffer ids = new StringBuffer("");
 	StringBuffer names = new StringBuffer("");
-	List<Item> list = result.getModule();
-	if (list == null || list.isEmpty()) {
-	    super.alertError(model, "商品列表不能为空");
-	    return "biz/queryItem";
-	}
-	for (int i = 0; i < list.size(); i++) {
-	    ids.append(list.get(i).getId());
-	    names.append(list.get(i).getItemName());
-	    if (i != (list.size() - 1)) {
-		ids.append(",");
-		names.append(" ，");
-	    }
+	if (itemQuery.getSalesAreas()==null) {
+		itemQuery.setPageSize(10000);
+		itemQuery.setCurrentPage(1);
+		result = itemService.queryItemList(itemQuery);
+		if (!result.isSuccess()) {
+			super.alertError(model, result.getResultMsg());
+			return "biz/queryItem";
+		}
+		List<Item> list = result.getModule();
+		if (list == null || list.isEmpty()) {
+			super.alertError(model, "商品列表不能为空");
+			return "biz/queryItem";
+		}
+		for (int i = 0; i < list.size(); i++) {
+			ids.append(list.get(i).getId());
+			names.append(list.get(i).getItemName());
+			if (i != (list.size() - 1)) {
+				ids.append(",");
+				names.append(" ，");
+			}
+		}
+	}else{
+		for (int i = 0 ; i<itemQuery.getSalesAreas().size(); i++) {
+			itemQuery.setSalesArea(itemQuery.getSalesAreas().get(i));
+			itemQuery.setPageSize(10000);
+			itemQuery.setCurrentPage(1);
+			result = itemService.queryItemList(itemQuery);
+			if (!result.isSuccess()) {
+				super.alertError(model, result.getResultMsg());
+				return "biz/queryItem";
+			}
+			List<Item> list = result.getModule();
+			if (list == null || list.isEmpty()) {
+				alertError(model, "商品列表不能为空");
+				return "biz/queryItem";
+			}
+			for (int j = 0; j < list.size(); j++) {
+				ids.append(list.get(j).getId());
+				names.append(list.get(j).getItemName()).append(" ，");
+				if (i!=itemQuery.getSalesAreas().size()-1) {
+					ids.append(",");
+				}else{
+					if (j != (list.size() - 1)) {
+						ids.append(",");
+					}
+				}
+			}
+		}
 	}
 	ItemSupplyListForm itemSupplyListForm = new ItemSupplyListForm();
 	itemSupplyListForm.setIds(ids.toString());
@@ -465,6 +484,7 @@ public class ItemSupplyDeal extends BaseController {
 	return returnUrl;
     }
 
+	//修改的页面跳转
     @RequestMapping(value = "biz/itemSupplyEdit", method = RequestMethod.GET)
     public String onEditIndex(@RequestParam("id") long id, @RequestParam("bizId") int bizId, HttpSession session, Model model) {
 	UserInfo userInfo = super.getUserInfo(session);
@@ -501,9 +521,9 @@ public class ItemSupplyDeal extends BaseController {
 
 	return "biz/itemSupplyEdit";
     }
-
+	//修改操作
     @RequestMapping(value = "biz/itemSupplyEdit", method = RequestMethod.POST)
-    public String onPostEdit(@ModelAttribute("itemSupplyForm") ItemSupplyForm itemSupplyForm, BindingResult bindingResult,
+    public String onGetBatchEdit(@ModelAttribute("itemSupplyForm") ItemSupplyForm itemSupplyForm, BindingResult bindingResult,
 	    HttpSession session, Model model) {
 	UserInfo userInfo = super.getUserInfo(session);
 	model.addAttribute("bizName", Constants.BIZ_MAP.get(Integer.parseInt(itemSupplyForm.getBizId())));
@@ -513,62 +533,333 @@ public class ItemSupplyDeal extends BaseController {
 	    super.alertError(model, "供货商品编号不能为空");
 	    return "biz/itemSupplyEdit";
 	}
-	Result<ItemSupply> itemSupplyResult = itemService.getItemSupply(Long.parseLong(itemSupplyForm.getId()));
-	if (!itemSupplyResult.isSuccess()) {
-	    super.alertError(model, itemSupplyResult.getResultMsg());
-	    return "biz/itemSupplyEdit";
-	}
-	if (itemSupplyResult.getModule() == null) {
-	    super.alertError(model, "没有该供货商品");
-	    return "biz/itemSupplyEdit";
-	}
-	ItemSupply older = itemSupplyResult.getModule();
-	model.addAttribute("itemSupply", itemSupplyResult.getModule());
+		//供货商品的集合
+		Result<ItemSupply> itemSupplyResult = itemService.getItemSupply(Long.parseLong(itemSupplyForm.getId()));
+		if (!itemSupplyResult.isSuccess()) {
+			super.alertError(model, itemSupplyResult.getResultMsg());
+			return "biz/itemSupplyEdit";
+		}
+		if (itemSupplyResult.getModule() == null) {
+			super.alertError(model, "没有该供货商品");
+			return "biz/itemSupplyEdit";
+		}
+		ItemSupply older = itemSupplyResult.getModule();
+		model.addAttribute("itemSupply", itemSupplyResult.getModule());
+		//获取供货商品集合
+		Result<Item> itemResult = itemService.getItem(itemSupplyResult.getModule().getItemId());
+		if (!itemResult.isSuccess()) {
+			super.alertError(model, itemResult.getResultMsg());
+			return "biz/itemSupplyAdd";
+		}
+		//商品
+		Item item = itemResult.getModule();
+		if (item == null) {
+			super.alertError(model, "没有该商品");
+			return "biz/itemSupplyAdd";
+		}
+		model.addAttribute("item", item);
 
-	Result<Item> itemResult = itemService.getItem(itemSupplyResult.getModule().getItemId());
-	if (!itemResult.isSuccess()) {
-	    super.alertError(model, itemResult.getResultMsg());
-	    return "biz/itemSupplyAdd";
-	}
-	Item item = itemResult.getModule();
-	if (item == null) {
-	    super.alertError(model, "没有该商品");
-	    return "biz/itemSupplyAdd";
-	}
-	model.addAttribute("item", item);
+		validator.validate(itemSupplyForm, bindingResult);
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("errorList", bindingResult.getAllErrors());
+			return "biz/itemSupplyEdit";
+		}
+		if ((Constants.ItemSupply.LOSSTYPE_CAN + "").equals(itemSupplyForm.getLossType())) {
+			if (StringUtils.isEmpty(itemSupplyForm.getLossTime())) {
+				List<ObjectError> allErrors = new ArrayList<ObjectError>();
+				allErrors.add(new FieldError("itemSupplyForm", "lossTime", "损失笔数不能为空"));
+				model.addAttribute("errorList", allErrors);
+				return "biz/itemSupplyEdit";
+			}
+		}
+		// 业务权限判断
+		if (!checkBizAuth(Integer.parseInt(itemSupplyForm.getBizId()), userInfo)) {
+			return "error/autherror";
+		}
+		//请求域中值存取
+		ItemSupply itemSupply = formToItemSupply(itemSupplyForm);
+		Result<Boolean> result = itemService.updateItemSupply(itemSupply);
+		if (!result.isSuccess()) {
+			super.alertError(model, result.getResultMsg());
+			return "biz/itemSupplyEdit";
+		}
+		@SuppressWarnings("unchecked")
+		Map<String, String> map = (HashMap<String, String>) session.getAttribute("requestInfoMap");
+		OperationLog operationLog = OperLogUtils.operationLogDeal(older, itemSupply, userInfo, map.get("moduleName"),
+				itemSupply.getBizId(), map.get("loginIp"));
+		operationLogService.createOperationLog(operationLog);
+		super.alertSuccess(model, "queryItemSupply.do?bizId=" + itemSupplyForm.getBizId() + "&id=" + itemSupply.getId());
 
-	validator.validate(itemSupplyForm, bindingResult);
-	if (bindingResult.hasErrors()) {
-	    model.addAttribute("errorList", bindingResult.getAllErrors());
-	    return "biz/itemSupplyEdit";
-	}
-	if ((Constants.ItemSupply.LOSSTYPE_CAN + "").equals(itemSupplyForm.getLossType())) {
-	    if (StringUtils.isEmpty(itemSupplyForm.getLossTime())) {
-		List<ObjectError> allErrors = new ArrayList<ObjectError>();
-		allErrors.add(new FieldError("itemSupplyForm", "lossTime", "损失笔数不能为空"));
-		model.addAttribute("errorList", allErrors);
 		return "biz/itemSupplyEdit";
-	    }
-	}
-	// 业务权限判断
-	if (!checkBizAuth(Integer.parseInt(itemSupplyForm.getBizId()), userInfo)) {
-	    return "error/autherror";
-	}
-	//请求域中值存取
-	ItemSupply itemSupply = formToItemSupply(itemSupplyForm);
-	Result<Boolean> result = itemService.updateItemSupply(itemSupply);
-	if (!result.isSuccess()) {
-	    super.alertError(model, result.getResultMsg());
-	    return "biz/itemSupplyEdit";
-	}
-	@SuppressWarnings("unchecked")
-	Map<String, String> map = (HashMap<String, String>) session.getAttribute("requestInfoMap");
-	OperationLog operationLog = OperLogUtils.operationLogDeal(older, itemSupply, userInfo, map.get("moduleName"),
-		itemSupply.getBizId(), map.get("loginIp"));
-	operationLogService.createOperationLog(operationLog);
-	super.alertSuccess(model, "queryItemSupply.do?bizId=" + itemSupplyForm.getBizId() + "&id=" + itemSupply.getId());
-	return "biz/itemSupplyEdit";
     }
+	//批量止损跳转
+	@RequestMapping(value = "biz/itemSupplyDeal",params = "requestType=losstype",method = RequestMethod.GET)
+	public String onBatchLossType(@RequestParam("ids") String ids, @RequestParam("bizId") int bizId, HttpSession session, Model model) {
+
+		List<Item> itemList = new ArrayList<Item>();
+		Item item = null;
+		UserInfo userInfo = super.getUserInfo(session);
+//		 业务权限判断
+		if (!checkBizAuth(bizId, userInfo)) {
+			return "error/autherror";
+		}
+		model.addAttribute("bizName", Constants.BIZ_MAP.get(bizId));
+		model.addAttribute("bizId", bizId);
+		String[] split = ids.split(",");
+		for (int i = 0; i < split.length; i++) {
+			Long id = Long.valueOf(split[i]);
+
+			Result<ItemSupply> result = itemService.getItemSupply(id);
+			if (!result.isSuccess()) {
+				super.alertError(model, result.getResultMsg());
+				return "biz/itemSupplyEdit";
+			}
+			ItemSupply itemSupply = result.getModule();
+			if (itemSupply == null) {
+				super.alertError(model, "没有该供货商品"+id);
+				return "biz/itemSupplyEdit";
+			}
+			model.addAttribute("itemSupply", itemSupply);
+
+			Result<Item> itemResult = itemService.getItem(itemSupply.getItemId());
+			if (!itemResult.isSuccess()) {
+				super.alertError(model, itemResult.getResultMsg());
+				return "biz/itemSupplyAdd";
+			}
+			item = itemResult.getModule();
+			if (item == null) {
+				super.alertError(model, "没有该商品"+id);
+				return "biz/itemSupplyAdd";
+			}
+			itemList.add(item);
+		}
+		StringBuilder builder = new StringBuilder();
+		StringBuilder builder1 = new StringBuilder();
+		for (int i = 0; i<itemList.size();i++) {
+			builder.append(itemList.get(i).getItemName());
+			builder1.append(itemList.get(i).getId());
+			if (i!=(itemList.size()-1)) {
+				builder.append(",");
+				builder1.append(",");
+			}
+		}
+		item.setIds(ids);
+		item.setItemIds(builder1.toString());
+		item.setItemName(builder.toString());
+		model.addAttribute("item", item);
+		return "biz/itemSupplyLossType";
+	}
+	//批量修改跳转
+	@RequestMapping(value = "biz/itemSupplyDeal",params = "requestType=itemBatchEdit",method = RequestMethod.GET)
+	public String onBatchEditIndex(@RequestParam("ids") String ids, @RequestParam("bizId") int bizId, HttpSession session, Model model) {
+
+		List<Item> itemList = new ArrayList<Item>();
+		Item item = null;
+		UserInfo userInfo = super.getUserInfo(session);
+//		 业务权限判断
+		if (!checkBizAuth(bizId, userInfo)) {
+			return "error/autherror";
+		}
+		model.addAttribute("bizName", Constants.BIZ_MAP.get(bizId));
+		model.addAttribute("bizId", bizId);
+		String[] split = ids.split(",");
+		for (int i = 0; i < split.length; i++) {
+			Long id = Long.valueOf(split[i]);
+
+			Result<ItemSupply> result = itemService.getItemSupply(id);
+			if (!result.isSuccess()) {
+				super.alertError(model, result.getResultMsg());
+				return "biz/itemSupplyEdit";
+			}
+			ItemSupply itemSupply = result.getModule();
+			if (itemSupply == null) {
+				super.alertError(model, "没有该供货商品"+id);
+				return "biz/itemSupplyEdit";
+			}
+			model.addAttribute("itemSupply", itemSupply);
+
+			Result<Item> itemResult = itemService.getItem(itemSupply.getItemId());
+			if (!itemResult.isSuccess()) {
+				super.alertError(model, itemResult.getResultMsg());
+				return "biz/itemSupplyAdd";
+			}
+			item = itemResult.getModule();
+			if (item == null) {
+				super.alertError(model, "没有该商品"+id);
+				return "biz/itemSupplyAdd";
+			}
+			itemList.add(item);
+		}
+//		System.out.println(itemList.get(111));
+		//getAuthUrlByUserId
+		for (int i = 0; i<itemList.size()-1;i++) {
+			for (int j = i+1; j<itemList.size(); j++) {
+				if (!itemList.get(i).getSalesArea().equals(itemList.get(j).getSalesArea())) {
+					super.alertError(model, "所修改区域要相同");
+					return "biz/itemSupplyEdit";
+				}
+			}
+		}
+		StringBuilder builder = new StringBuilder();
+		StringBuilder builder1 = new StringBuilder();
+		for (int i = 0; i<itemList.size();i++) {
+			builder.append(itemList.get(i).getItemName());
+			builder1.append(itemList.get(i).getId());
+			if (i!=(itemList.size()-1)) {
+				builder.append(",");
+				builder1.append(",");
+			}
+		}
+		item.setIds(ids);
+		item.setItemIds(builder1.toString());
+		item.setItemName(builder.toString());
+		model.addAttribute("item", item);
+		return "biz/itemBatchSupplyEdit";
+	}
+    //批量修改操作
+	@RequestMapping(value = "biz/itemSupplyBatchEdit", method = RequestMethod.POST)//BindingResult bindingResult,
+	public String onPostBatchEdit(@ModelAttribute("ItemSupplyBatchForm") ItemSupplyBatchForm itemSupplyForm,BindingResult bindingResult,
+							 HttpSession session, Model model) {
+		UserInfo userInfo = super.getUserInfo(session);
+		model.addAttribute("bizName", Constants.BIZ_MAP.get(Integer.parseInt(itemSupplyForm.getBizId())));
+		model.addAttribute("bizId", itemSupplyForm.getBizId());
+
+		if (itemSupplyForm.getId() == null) {
+			super.alertError(model, "供货商品编号不能为空");
+			return "biz/itemSupplyBatchEdit";
+		}
+		String[] items = itemSupplyForm.getItemIds().split(",");//商品
+		String[] ids = itemSupplyForm.getIds().split(",");
+		for (int i = 0 ; i < items.length; i++) {
+			itemSupplyForm.setId(ids[i]);//供货商
+			itemSupplyForm.setItemId(items[i]);
+			//供货商品的集合
+			Result<ItemSupply> itemSupplyResult = itemService.getItemSupply(Long.parseLong(itemSupplyForm.getId()));
+			if (!itemSupplyResult.isSuccess()) {
+				super.alertError(model, itemSupplyResult.getResultMsg());
+				return "biz/itemSupplyBatchEdit";
+			}
+			if (itemSupplyResult.getModule() == null) {
+				super.alertError(model, "没有该供货商品");
+				return "biz/itemSupplyBatchEdit";
+			}
+			ItemSupply older = itemSupplyResult.getModule();
+			model.addAttribute("itemSupply", itemSupplyResult.getModule());
+			//获取供货商品集合
+			Result<Item> itemResult = itemService.getItem(itemSupplyResult.getModule().getItemId());
+			if (!itemResult.isSuccess()) {
+				super.alertError(model, itemResult.getResultMsg());
+				return "biz/itemSupplyAdd";
+			}
+			//商品
+			Item item = itemResult.getModule();
+			if (item == null) {
+				super.alertError(model, "没有该商品");
+				return "biz/itemSupplyAdd";
+			}
+			model.addAttribute("item", item);
+
+			validator.validate(itemSupplyForm, bindingResult);
+			if (bindingResult.hasErrors()) {
+				model.addAttribute("errorList", bindingResult.getAllErrors());
+				return "biz/itemSupplyBatchEdit";
+			}
+			// 业务权限判断
+			if (!checkBizAuth(Integer.parseInt(itemSupplyForm.getBizId()), userInfo)) {
+				return "error/autherror";
+			}
+			//请求域中值存取
+			ItemSupply itemSupply = formToItemBatchSupply(itemSupplyForm);
+			Result<Boolean> result = itemService.updateItemSupply(itemSupply);
+			if (!result.isSuccess()) {
+				super.alertError(model, result.getResultMsg());
+				return "biz/itemSupplyBatchEdit";
+			}
+			@SuppressWarnings("unchecked")
+			Map<String, String> map = (HashMap<String, String>) session.getAttribute("requestInfoMap");
+			OperationLog operationLog = OperLogUtils.operationLogDeal(older, itemSupply, userInfo, map.get("moduleName"),
+					itemSupply.getBizId(), map.get("loginIp"));
+			operationLogService.createOperationLog(operationLog);
+		}
+		//super.alertSuccess(model, "queryItemSupply.do?bizId=" + itemSupplyForm.getBizId() + "&ids=" + itemSupplyForm.getIds());
+		return "redirect:/biz/queryItemSupply.do?bizId=" + itemSupplyForm.getBizId() + "&ids=" + itemSupplyForm.getIds();
+		//return "biz/itemSupplyBatchEdit";
+	}
+	//批量止损修改操作
+	@RequestMapping(value = "biz/itemSupplyLossTypeBatch", method = RequestMethod.POST)//BindingResult bindingResult,
+	public String onPostBatcLoss(@ModelAttribute("ItemSupplyBatchForm") ItemSupplyBatchForm itemSupplyForm,BindingResult bindingResult,
+								  HttpSession session, Model model) {
+		UserInfo userInfo = super.getUserInfo(session);
+		model.addAttribute("bizName", Constants.BIZ_MAP.get(Integer.parseInt(itemSupplyForm.getBizId())));
+		model.addAttribute("bizId", itemSupplyForm.getBizId());
+
+		if (itemSupplyForm.getId() == null) {
+			super.alertError(model, "供货商品编号不能为空");
+			return "biz/itemSupplyBatchEdit";
+		}
+		String[] items = itemSupplyForm.getItemIds().split(",");//商品
+		String[] ids = itemSupplyForm.getIds().split(",");
+		for (int i = 0 ; i < items.length; i++) {
+			itemSupplyForm.setId(ids[i]);//供货商
+			itemSupplyForm.setItemId(items[i]);
+			//供货商品的集合
+			Result<ItemSupply> itemSupplyResult = itemService.getItemSupply(Long.parseLong(itemSupplyForm.getId()));
+			if (!itemSupplyResult.isSuccess()) {
+				super.alertError(model, itemSupplyResult.getResultMsg());
+				return "biz/itemSupplyBatchEdit";
+			}
+			if (itemSupplyResult.getModule() == null) {
+				super.alertError(model, "没有该供货商品");
+				return "biz/itemSupplyBatchEdit";
+			}
+			ItemSupply older = itemSupplyResult.getModule();
+			model.addAttribute("itemSupply", itemSupplyResult.getModule());
+			//获取供货商品集合
+			Result<Item> itemResult = itemService.getItem(itemSupplyResult.getModule().getItemId());
+			if (!itemResult.isSuccess()) {
+				super.alertError(model, itemResult.getResultMsg());
+				return "biz/itemSupplyAdd";
+			}
+			//商品
+			Item item = itemResult.getModule();
+			if (item == null) {
+				super.alertError(model, "没有该商品");
+				return "biz/itemSupplyAdd";
+			}
+			model.addAttribute("item", item);
+
+			validator.validate(itemSupplyForm, bindingResult);
+			if (bindingResult.hasErrors()) {
+				model.addAttribute("errorList", bindingResult.getAllErrors());
+				return "biz/itemSupplyBatchEdit";
+			}
+			// 业务权限判断
+			if (!checkBizAuth(Integer.parseInt(itemSupplyForm.getBizId()), userInfo)) {
+				return "error/autherror";
+			}
+			//请求域中值存取
+			ItemSupply itemSupply = new ItemSupply();
+			itemSupply.setBizId(Integer.valueOf(itemSupplyForm.getBizId()));
+			itemSupply.setItemId(Integer.valueOf(itemSupplyForm.getItemId()));
+			itemSupply.setId(Long.valueOf(itemSupplyForm.getId()));
+			itemSupply.setLossType(Integer.valueOf(itemSupplyForm.getLossType()));
+			itemSupply.setLossTime(Integer.valueOf(itemSupplyForm.getLossTime()));
+			Result<Boolean> result = itemService.updateItemSupply(itemSupply);
+			if (!result.isSuccess()) {
+				super.alertError(model, result.getResultMsg());
+				return "biz/itemSupplyBatchEdit";
+			}
+			@SuppressWarnings("unchecked")
+			Map<String, String> map = (HashMap<String, String>) session.getAttribute("requestInfoMap");
+			OperationLog operationLog = OperLogUtils.operationLogDeal(older, itemSupply, userInfo, map.get("moduleName"),
+					itemSupply.getBizId(), map.get("loginIp"));
+			operationLogService.createOperationLog(operationLog);
+		}
+		//super.alertSuccess(model, "queryItemSupply.do?bizId=" + itemSupplyForm.getBizId() + "&ids=" + itemSupplyForm.getIds());
+		return "redirect:/biz/queryItemSupply.do?bizId=" + itemSupplyForm.getBizId() + "&ids=" + itemSupplyForm.getIds();
+		//return "biz/itemSupplyBatchEdit";
+	}
+
 
     @RequestMapping(value = "biz/itemSupplyDeal", params = "requestType=batchDownIndex")
     public String onRequestBatchDownIndex(@RequestParam("ids") String ids, @RequestParam("bizId") Integer bizId,
@@ -909,6 +1200,49 @@ public class ItemSupplyDeal extends BaseController {
 	}
 	return result;
     }
+    //批量的封装
+	private ItemSupply formToItemBatchSupply(ItemSupplyBatchForm  itemSupplyForm) {
+		ItemSupply result = new ItemSupply();
+		if (StringUtils.isNotEmpty(itemSupplyForm.getId())) {
+			result.setId(Long.parseLong(itemSupplyForm.getId()));
+		}
+
+		result.setBizId(Integer.parseInt(itemSupplyForm.getBizId()));
+		result.setItemId(Integer.parseInt(itemSupplyForm.getItemId()));
+		result.setPriority(Integer.parseInt(itemSupplyForm.getPriority()));
+		result.setSupplyWay(itemSupplyForm.getSupplyWay());
+		result.setSupplyTraderId(Long.parseLong(itemSupplyForm.getSupplyTraderId()));
+		if (String.valueOf(Constants.Item.SALE_TYPE_AREA).equals(itemSupplyForm.getSupplyAreaType())) {
+			StringBuffer sb = new StringBuffer("");
+			for (String areaCode : itemSupplyForm.getSupplyAreaList()) {
+				sb.append(areaCode).append(Constants.Item.SALES_AREA_SPLIT);
+			}
+			result.setSupplyArea(sb.toString().substring(0, sb.toString().length() - 1));
+		} else {
+			result.setSupplyArea(""); // 空表示全国
+		}
+		if (StringUtils.isNotEmpty(itemSupplyForm.getLossType())) {
+			result.setLossType(Integer.parseInt(itemSupplyForm.getLossType()));
+		} else {
+			result.setLossType(Constants.ItemSupply.LOSSTYPE_CANNOT);
+		}
+//		if (StringUtils.isNotEmpty(itemSupplyForm.getLossTime())) {
+//			result.setLossTime(Integer.parseInt(itemSupplyForm.getLossTime()));
+//		}
+//		if (StringUtils.isNotBlank(itemSupplyForm.getItemCostPrice())) {
+//			Integer price = BigDecimalUtils.multInteger(itemSupplyForm.getItemCostPrice());
+//			if (price > 0) {
+//				result.setItemCostPrice(price);
+//			}
+//		}
+
+		if (StringUtils.isBlank(itemSupplyForm.getSupplyProductCode())) {
+			result.setSupplyProductCode("");
+		} else {
+			result.setSupplyProductCode(itemSupplyForm.getSupplyProductCode().trim());
+		}
+		return result;
+	}
 
     private ItemSupply formToItemSupply(ItemSupplyListForm itemSupplyListForm, Integer itemId) {
 	ItemSupply result = new ItemSupply();

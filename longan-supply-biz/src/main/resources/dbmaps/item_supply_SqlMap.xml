@@ -131,12 +131,15 @@
 			<isNotNull prepend="," property="itemId">
 				item_id = #itemId:INTEGER#
 			</isNotNull>
+			<!--成本价-->
 			<isNotNull prepend="," property="itemCostPrice">
 				item_cost_price = #itemCostPrice:INTEGER#
 			</isNotNull>
+			<!--供货优先级-->
 			<isNotNull prepend="," property="priority">
 				priority = #priority:INTEGER#
 			</isNotNull>
+			<!--通道类型-->
 			<isNotNull prepend="," property="supplyWay">
 				supply_way = #supplyWay:BOOLEAN#
 			</isNotNull>

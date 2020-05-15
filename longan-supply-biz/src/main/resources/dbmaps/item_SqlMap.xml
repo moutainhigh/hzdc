@@ -359,6 +359,13 @@
 			<isNotEmpty prepend="and" property="id">
 				id = #id#
 			</isNotEmpty>
+			<isNotEmpty prepend="and" property="idsList">
+				id in
+				<iterate property="idsList" conjunction="," open="(" close=")">
+					#idsList[]#
+				</iterate>
+			</isNotEmpty>
+
 			<isNotEmpty prepend="and" property="status">
 				status = #status#
 			</isNotEmpty>
@@ -379,10 +386,6 @@
 			</isNotEmpty>
 			<isNotEmpty prepend="and" property="salesArea">
 				sales_area = #salesArea#
-<!--				sales_area IN-->
-<!--				<iterate open="(" close=")" property="salesArea" conjunction=",">-->
-<!--					#salesArea[]#-->
-<!--				</iterate>-->
 			</isNotEmpty>
 		</dynamic>
 	</sql>
@@ -395,6 +398,15 @@
 		item
 		<include refid="item.whereConditions" />
 		ORDER BY item_name DESC LIMIT #startRow#,#pageSize#
+	</select>
+	<select id="queryByPageUp" resultMap="abatorgenerated_ItemPageResult">
+		SELECT
+		<include refid="itemFullColumns" />
+		, (SELECT true FROM item_supply WHERE item.id = item_supply.item_id LIMIT 1) as associated, (SELECT true FROM
+		item_supply WHERE item.id = item_supply.item_id and item_supply.status = 2 and item.status != 2 LIMIT 1) as canUp FROM
+		item
+		<include refid="item.whereConditions" />
+		ORDER BY item_name DESC
 	</select>
 
 

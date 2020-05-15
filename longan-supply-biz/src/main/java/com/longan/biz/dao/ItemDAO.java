@@ -8,7 +8,7 @@ import com.longan.biz.dataobject.ItemExample;
 import com.longan.biz.dataobject.ItemQuery;
 
 public interface ItemDAO {
-    Integer insert(Item record) throws SQLException;
+    Integer insert(Item record) throws SQLException;//queryByPageUp
 
     int updateByPrimaryKeySelective(Item record) throws SQLException;
 
@@ -26,6 +26,8 @@ public interface ItemDAO {
     int updateByExampleSelective(Item record, ItemExample example) throws SQLException;
 
     List<Item> queryByPage(ItemQuery itemQuery) throws SQLException;
+    //上架跳转
+    List<Item> queryByPageUp(ItemQuery itemQuery) throws SQLException;
 
     int batchUpdateStatusItem(List<Integer> ids, Integer status) throws SQLException;
 }

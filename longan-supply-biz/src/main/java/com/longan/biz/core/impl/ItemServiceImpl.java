@@ -545,6 +545,19 @@ public class ItemServiceImpl extends BaseService implements ItemService {
 	}
 	return result;
     }
+	@Override
+	public Result<List<Item>> queryItemUpList(ItemQuery itemQuery) {
+		Result<List<Item>> result = new Result<List<Item>>();
+		try {
+			List<Item> queryResult = itemDAO.queryByPageUp(itemQuery);
+			result.setSuccess(true);
+			result.setModule(queryResult);
+		} catch (SQLException e) {
+			result.setResultMsg("商品查询失败    msg: " + e.getMessage());
+			logger.error("queryItemList error ", e);
+		}
+		return result;
+	}
 
     @SuppressWarnings("unchecked")
     @Override
@@ -1170,20 +1183,21 @@ public class ItemServiceImpl extends BaseService implements ItemService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Result<List<Item>> queryItemList() {
-	Result<List<Item>> result = new Result<List<Item>>();
-	ItemExample itemExample = new ItemExample();
-	itemExample.createCriteria().andStatusNotEqualTo(Constants.Item.STATUS_DEL);
-	try {
-	    List<Item> list = (List<Item>) itemDAO.selectByExample(itemExample);
-	    result.setSuccess(true);
-	    result.setModule(list);
-	} catch (SQLException e) {
-	    result.setResultMsg("查询商品列表失败  msg :" + e.getMessage());
-	    logger.error("queryItemList error : " + e);
+	public Result<List<Item>> queryItemList() {
+		Result<List<Item>> result = new Result<List<Item>>();
+		ItemExample itemExample = new ItemExample();
+		itemExample.createCriteria().andStatusNotEqualTo(Constants.Item.STATUS_DEL);
+		try {
+			List<Item> list = (List<Item>) itemDAO.selectByExample(itemExample);
+			result.setSuccess(true);
+			result.setModule(list);
+		} catch (SQLException e) {
+			result.setResultMsg("查询商品列表失败  msg :" + e.getMessage());
+			logger.error("queryItemList error : " + e);
+		}
+		return result;
 	}
-	return result;
-    }
+
 
     @Override
     public Result<List<ItemSales>> queryItemPriceList(ItemSalesQuery itemSalesQuery) {

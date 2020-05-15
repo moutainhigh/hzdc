@@ -1,6 +1,8 @@
 package com.longan.biz.func.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -12,6 +14,8 @@ import java.util.concurrent.TimeoutException;
 
 import javax.annotation.Resource;
 
+import com.longan.biz.dataobject.PddAfterApi;
+import com.longan.biz.utils.FuncUtils;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +30,8 @@ import com.longan.biz.pojo.PddItemApi;
 import com.longan.biz.pojo.PddItemStatus;
 import com.longan.biz.utils.Constants;
 import com.longan.biz.utils.Utils;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
 public class PddGoodsServiceImpl extends BaseTokenService implements PddGoodsService {
     private static final Long pddUserId = Utils.getLong("pdd.id");
@@ -51,7 +57,6 @@ public class PddGoodsServiceImpl extends BaseTokenService implements PddGoodsSer
 	    result.setResultMsg("获取accessToken失败");
 	    return result;
 	}
-
 	PddItemApi pddItem = new PddItemApi();
 	pddItem.setIsOnsale(1);
 	pddItem.setAccessToken(accessToken);
@@ -353,4 +358,30 @@ public class PddGoodsServiceImpl extends BaseTokenService implements PddGoodsSer
 	}
 	return null;
     }
+	public String MycallPddApi(Integer page,Integer pageSize) {
+		PddAfterApi pddAfterApi =new PddAfterApi();
+		//获取系统当前的毫秒数
+		Long nowTime = System.currentTimeMillis()/1000;
+		//30分钟的时间
+		Long stateTiem = 30L*60L;
+		Long beforTime = nowTime - stateTiem;
+		pddAfterApi.setStartUpdatedAt(beforTime);
+		pddAfterApi.setEndUpdatedAt(nowTime);
+		//设置页码
+		pddAfterApi.setPage(page);
+		pddAfterApi.setPageSize(pageSize);
+		//pddAfterApi.setAccessToken("ef1ffd328d984998bc1a8e782f217ac5956d4517");//tocken
+		//获取tocken
+		String accessToken = getAccessToken();
+//		if (StringUtils.isBlank(accessToken)) {
+//			return null;
+//		}
+		pddAfterApi.setAccessToken(accessToken);
+		//创建签名
+		pddAfterApi.createSign();
+		//uri
+		String data = pddAfterApi.createData();
+		//
+		return sendData(pddApiUrl, data);
+	}
 }

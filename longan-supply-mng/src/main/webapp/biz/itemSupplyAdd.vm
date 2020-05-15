@@ -6,14 +6,14 @@
 	#parse("common/select.vm")
 	#parse("common/errorUtils.vm")
 	#parse("common/checkbox.vm")
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/admin-all.css" />
-	<link rel="stylesheet" type="text/css" href="$!staticServer/css/doubleDate.css" />
-    <script type="text/javascript" src="$!staticServer/js/jquery-1.7.2.js"></script>
-    <script type="text/javascript" src="$!staticServer/js/jquery-ui-1.8.22.custom.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
-    <script type="text/javascript" src="$!staticServer/js/tip.js"></script>
-	<script type="text/javascript" src="$!staticServer/js/doubleDate2.0.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/admin-all.css" />
+	<link rel="stylesheet" type="text/css" href="/css/doubleDate.css" />
+    <script type="text/javascript" src="/js/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript" src="/js/tip.js"></script>
+	<script type="text/javascript" src="/js/doubleDate2.0.js"></script>
 </head>
 <body>
 	$!errorMsg
@@ -85,7 +85,7 @@
                     </div>
                 </td>
 				<td width="100">供货区域<font color="#FF0000"> *</font></td>
-                <td width="450">
+                <td width="450" id="select_width">
 				    #select($!supplyAreaTypeList,"supplyAreaType",$!itemSupplyForm.supplyAreaType) #getErrorMessage($errorList,"supplyAreaType")	<br />
 					<div id="areaList" style="display:none">
 						#checkBoxFlat("supplyAreaList", $!areaInfoList,$!itemSupplyForm.supplyAreaList) <br />
@@ -146,6 +146,7 @@
 			    jQuery("#areaList").hide();
 			}
 		});
+
 	});
 
 	window.onload=function(){
@@ -161,6 +162,36 @@
 		 		lossTime.style.display="none";
 		 	}
 		}
+		## console.log($item.salesArea);
+		var checkedInput = jQuery('#areaList').find("input");
+		var salesArea= "$item.salesArea";
+		var salesAreas = salesArea.split(",");
+		var flags = true;
+		checkedInput.each(function () {
+			for (var i = 0 ; i<salesAreas.length; i++) {
+				if (jQuery(this).val()==salesAreas[i]) {
+						jQuery(this).attr("checked",true);
+					flags = false;
+				}
+			}
+				if (jQuery(this).prop('checked')==true) {
+				jQuery('#select_width').find('select').val(2);
+				jQuery('#areaList').css('display', 'block');
+			}
+			// }
+		})
+		if (flags) {
+			jQuery('#select_width').find('select').val(1);
+		}
+
+		// for (var i = 0 ; i < checkedInput.length; i++) {
+		// 	for (var j= 0 ; j< salesAreas.length; j++) {
+		// 			if ($(this).val()==salesAreas[j]) {
+		// 				$(this).attr("checked",true);
+		// 			}
+		// 	}
+		// }
+
 	}
 </script>
 </body>

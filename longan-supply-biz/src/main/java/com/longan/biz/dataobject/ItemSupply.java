@@ -37,7 +37,7 @@ public class ItemSupply {
 
     private String itemName;
     private Integer itemType;
-    private Integer itemFacePrice;
+    private Integer itemFacePrice;//金额
     private String supplyTraderName;
     private Integer itemSupplyType;
     private String salesArea;

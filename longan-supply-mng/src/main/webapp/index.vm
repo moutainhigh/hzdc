@@ -38,7 +38,7 @@
 			alert("用户名不能为空");
 			return;
 		}
-		
+
 		var checkCode= jQuery('#checkCode').val();
 		if(!checkCode){
 			alert("验证码不能为空");
@@ -49,19 +49,19 @@
 			alert("密码不能为空");
 			return;
 		}
-		
+
 		pwd =  CryptoJS.MD5(pwd+"longan_login");
 		jQuery('#encodePwd').val(pwd);
 		jQuery('#loginForm').submit();
 	}
-	
-	function LoginSubmit(){ 
+
+	function LoginSubmit(){
         if (event.keyCode == 13){
             event.keyCode = 9;
             event.returnValue = false;
             submitForm();
-		} 
-	} 
+		}
+	}
 </script>
 $!errorMsg
 </body>

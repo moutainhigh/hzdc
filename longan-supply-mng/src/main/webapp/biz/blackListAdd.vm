@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    #parse("common/common.vm")
+    #parse("common/select.vm")
+    #parse("common/errorUtils.vm")
+    #parse("common/checkbox.vm")
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/admin-all.css" />
+    <link rel="stylesheet" type="text/css" href="/css/doubleDate.css" />
+    <script type="text/javascript" src="/js/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript" src="/js/tip.js"></script>
+    <script type="text/javascript" src="/js/doubleDate2.0.js"></script>
+
+</head>
+<body>
+    $!errorMsg
+<div class="alert alert-info">当前位置<b class="tip"></b>黑名单管理<b class="tip"></b>黑名单添加</div>
+<form id="blackListAdd" action="blackListAdd.do" method="post" >
+
+    <table class="table-striped table-bordered table-condensed list"  style="width:100%">
+        <thead>
+        <tr>
+            <td colspan="2"><b>黑名单添加</b></td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td width="150">黑名单手机号</td>
+            <td width="">
+                <input id="itemUId" type="text" name="itemUId"  size="11" >
+            </td>
+        </tr>
+        <tr>
+            <td width="150">黑名单号码所属地区</td>
+            <td id="slectList">
+                #select($!provinceList,'cityName',$!blackListQuery.cityName)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">注： 添加黑名单操作请谨慎操作</td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="2">
+                <input class="btn btn-inverse" id="find" type="submit" value="添加" />
+                <input class="btn btn-inverse" type="button" onclick="javascript: history.go(-1)" value="取消" /></td>
+        </tr>
+        </tfoot>
+    </table>
+</form>
+<script>
+
+    document.getElementById('find').onclick = function () {
+       if ( document.getElementById('itemUId').value.trim()=="") {
+           alert("新增手机号码不能为空");
+           return false;
+       }
+        if (jQuery('#slectList').find('select').val()=="") {
+            alert("黑名单地区不能为空");
+            return  false;
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,8 +1,12 @@
 package com.longan.biz.utils;
 
+import java.awt.geom.AffineTransform;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class Constants {
     public final static Map<Integer, String> BIZ_MAP = new HashMap<Integer, String>();
@@ -792,4 +796,42 @@ public class Constants {
 	public final static long LTDK_USER_ID = Utils.getLong("ltdk.userId");
     }
     public static  final String  constTime = "00";
+	public static  final String  constSecondTime = "59";
+    public static   Map<Integer, String> ITEM_Face_Price = new LinkedHashMap<Integer, String>();
+    static {
+		ITEM_Face_Price.put(10000,"10元话费面值");
+		ITEM_Face_Price.put(20000,"20元话费面值");
+		ITEM_Face_Price.put(30000,"30元话费面值");
+		ITEM_Face_Price.put(50000,"50元话费面值");
+		ITEM_Face_Price.put(100000,"100元话费面值");
+		ITEM_Face_Price.put(200000,"200元话费面值");
+		ITEM_Face_Price.put(300000,"300元话费面值");
+	}
+	//批量上下架的线程队列
+	public static ThreadPoolExecutor threadPoolExecutor =new ThreadPoolExecutor(7,7,3, TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>());
+    //售后键REFUNDINCREMENTGETRESPONSE
+	public final static String  REFUND_INCREMENT_GET_RESPONSE = "refund_increment_get_response";
+	public final static Map<Integer, String> AFTERSALESSTATUS = new LinkedHashMap<Integer, String>();
+	static {
+		AFTERSALESSTATUS.put(2,"买家申请退款，待商家处理");
+		AFTERSALESSTATUS.put(3,"退货退款，待商家处理 ");
+		AFTERSALESSTATUS.put(4,"商家同意退款，退款中");
+		AFTERSALESSTATUS.put(5,"平台同意退款，退款中 ");
+		AFTERSALESSTATUS.put(6,"驳回退款， 待买家处理");
+		AFTERSALESSTATUS.put(7,"已同意退货退款,待用户发货");
+		AFTERSALESSTATUS.put(8,"平台处理中");
+		AFTERSALESSTATUS.put(9,"平台拒绝退款，退款关闭");
+		AFTERSALESSTATUS.put(10,"退款成功");
+		AFTERSALESSTATUS.put(11,"买家撤销");
+		AFTERSALESSTATUS.put(12,"买家逾期未处理,退款失败");
+		AFTERSALESSTATUS.put(13,"买家逾期，超过有效期 ");
+		AFTERSALESSTATUS.put(14,"换货补寄待商家处理 ");
+		AFTERSALESSTATUS.put(15,"换货补寄待用户处理 ");
+		AFTERSALESSTATUS.put(16,"换货补寄成功");
+		AFTERSALESSTATUS.put(17,"换货补寄失败 ");
+		AFTERSALESSTATUS.put(18,"换货补寄待用户确认完成");
+		AFTERSALESSTATUS.put(31,"商家同意拒收退款，待用户拒收");
+		AFTERSALESSTATUS.put(32,"待商家补寄发货");
+	}
+
 }

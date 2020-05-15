@@ -31,8 +31,10 @@
                 <tr>
                     <td>订单号</td>
                     <td class="detail"><input id="formid" name="id" value="$!bizOrderQuery.id"/></td>
-                    <td>商品</td>
-                    <td>#selectClassMedium($!itemList,'itemId',$!bizOrderQuery.itemId)</td>
+##                    <td>商品</td>
+##                    <td>#selectClassMedium($!itemList,'itemId',$!bizOrderQuery.itemId)</td>
+					<td>供货单面值</td>
+					<td>#selectClassMedium($!itemFacePriceList,'itemFaceprice',$!bizOrderQuery.itemFaceprice)</td>
                     <td>订单状态 </td>
                     <td>#select($!statusList,'status',$!bizOrderQuery.status)</td>
 					<td>支付单号</td>
@@ -40,9 +42,14 @@
                 </tr>
                 <tr>
                     <td>订单日期 </td>
-                    <td>
-                        <div class="input-append">
-							<input class="input-small doubledate" readonly="readonly" size="10" type="text" name="startGmtCreate" value="$!dateTool.format("yyyy-MM-dd", $!bizOrderQuery.startGmtCreate)" /><span class="add-on"><i class="icon-calendar"></i></span><input style="width: 30px;height: 20px;border: 2px lightgray solid" type="text" onkeyup="value=value.replace(/[^\d]/g,'')" name="startHour" maxlength="2" value="$!bizOrderQuery.startHour" class="hourIF" />时<input maxlength="2" style="width: 30px;height: 20px;border: 2px lightgray solid" onkeyup="value=value.replace(/[^\d]/g,'')" name="startMinute" value="$!bizOrderQuery.startMinute" class="minuteIF"/>分<input style="width: 30px;height: 20px;border: 2px lightgray solid" maxlength="2" onkeyup="value=value.replace(/[^\d]/g,'')"   name="startSecond" value="$!bizOrderQuery.startSecond" maxlength="2" class="minuteIF"/>秒至<input id="endtime" class="input-small doubledate" readonly="readonly" type="text" name="endGmtCreate" value="$!dateTool.format("yyyy-MM-dd", $!bizOrderQuery.endGmtCreate)" /><span class="add-on"><i class="icon-calendar"></i></span></span><input name="endHour" value="$!bizOrderQuery.endHour" style="width: 30px;height: 20px;border: 2px lightgray solid" onkeyup="value=value.replace(/[^\d]/g,'')" maxlength="2" class="hourIF"  />时<input maxlength="2" name="endMinute" style="width: 30px;height: 20px;border: 2px lightgray solid " onkeyup="value=value.replace(/[^\d]/g,'')" value="$!bizOrderQuery.endMinute"  class="minuteIF"/>分<input maxlength="2"  name="endSecond" style="width: 30px; height: 20px;border: 2px lightgray solid;" onkeyup="value=value.replace(/[^\d]/g,'')" value="$!bizOrderQuery.endSecond" class="minuteIF"/>秒
+                    <td id="timeRatio" style="display: inline-block;width: 500px;height: 40px;position: relative">
+                        <div class="input-append" >
+							<input class="input-small doubledate" readonly="readonly" size="10" type="text" name="startGmtCreate" value="$!dateTool.format("yyyy-MM-dd", $!bizOrderQuery.startGmtCreate)" />
+							<span class="add-on"><i class="icon-calendar"></i></span>
+							<span style="display: inline-block;position: absolute;top: 4px;width: 98px;height: 26px;line-height: 26px; border: 1px solid lightgrey;border-left: none; "><input style="width: 25px;height: 14px;text-align: center; border: none" type="text" onkeyup="value=value.replace(/[^\d]/g,'')" name="startHour" maxlength="2" value="$!bizOrderQuery.startHour" class="hourIF startOff" />:<input maxlength="2" style="width: 25px;height: 18px;border: none;text-align: center;" onkeyup="value=value.replace(/[^\d]/g,'')" name="startMinute" value="$!bizOrderQuery.startMinute" class="minuteIF startOff"/>
+							:<input style="width: 30px;height: 18px;border:none;text-align: center;" maxlength="2" onkeyup="value=value.replace(/[^\d]/g,'')"   name="startSecond" value="$!bizOrderQuery.startSecond" maxlength="2" class="minuteIF startOff"/>
+								<span><span></span>~~
+							<input  id="endtime" class="input-small doubledate" readonly="readonly" type="text" name="endGmtCreate" value="$!dateTool.format("yyyy-MM-dd", $!bizOrderQuery.endGmtCreate)" /><span class="add-on"><i class="icon-calendar"></i></span></span><span style="display: inline-block;width: 100px;height: 26px;line-height: 26px; border: 1px solid lightgrey;border-left: none;position: absolute;top: 0px;"><input name="endHour" value="$!bizOrderQuery.endHour" style="width: 30px;height: 15px;text-align: center;border: none;" onkeyup="value=value.replace(/[^\d]/g,'')" maxlength="2" class="hourIF"  />:<input maxlength="2" name="endMinute" style="width: 30px;height: 18px;text-align: center;border: none; " onkeyup="value=value.replace(/[^\d]/g,'')" value="$!bizOrderQuery.endMinute"  class="minuteIF "/>:<input maxlength="2"  name="endSecond" style="width: 30px; height: 18px;border: none;text-align: center;" onkeyup="value=value.replace(/[^\d]/g,'')" value="$!bizOrderQuery.endSecond" class="minuteIF"/></span>
 						</div>
                     </td>
                     #if($!bizId != 400)<td>客户手机号</td>#else<td>QQ号</td>#end
@@ -99,7 +106,7 @@
 			 <input type="checkbox" name="" value="all" onclick="selectAll()" />
 			 <a class="btn btn-danger"  onclick="javascript:refundBatch();">批量失败退款</a>
 			 <a class="btn btn-danger" onclick="javascript:repeatChargeBatch();">批量失败补充</a>
-			 <a class="btn btn-danger" onclick="javascript:makeUpBatch();">批量成功确认</a>
+##			 <a class="btn btn-danger" onclick="javascript:makeUpBatch();">批量成功确认</a>
 		 </div>
 ##		#end
 ##	#end
@@ -123,12 +130,16 @@
                 <td>交易时间 </td>
                 #if($!userInfo.isAdminOrPartner())
 			    <td>充值时长</td>
+				#if($!userInfo.roleId!=5)
 			    <td>预成功时长</td>
+				#end
 			    <td>上游流水号</td>
 			    <td>供货数</td>
 			    #end
                 <td>实际状态 </td>
+				#if($!userInfo.roleId!=5)
                 <td>快速状态 </td>
+				#end
 				<td>操作</td>
 				#if($!userInfo.isAdmin())
 				<td>处理人</td>
@@ -143,7 +154,7 @@
         <tbody>
 			#foreach($!bizOrder in $!bizOrderList)
 				<tr>
-				<td><input type="checkbox" name="" value="$!bizOrder.id"/></td>
+				<td id="td_input_deal"><input type="checkbox" name="" value="$!bizOrder.id"/></td>
 				<td>$!bizOrder.id</td>
 				<td>$!bizOrder.payOrderId</td>
 				<td>$!bizOrder.downstreamSerialno</td>
@@ -165,7 +176,9 @@
                 <td>$!dateTool.format("yyyy-MM-dd HH:mm:ss", $!bizOrder.gmtCreate)</td>
                 #if($!userInfo.isAdminOrPartner())
 				<td>$!bizOrder.costTimeDesc</td>
+				#if($!userInfo.roleId!=5)
 				<td>$!bizOrder.notifyTimeDesc</td>
+				#end
 				<td>$!bizOrder.upstreamSerialno</td>
 				<td>$!bizOrder.supplyCount</td>			
 				#end
@@ -174,11 +187,13 @@
 					$!bizOrder.statusDesc
 					</font>
 				</td>
+				#if($!userInfo.roleId!=5)
                 <td>
                 	<font #if($!bizOrder.notifyRed())color=red #end #if($!bizOrder.notifyGreen())color=green #end>
                 	$!bizOrder.notifyStatusDesc
                 	</font>
                 </td>
+				#end
 				<td>
 					#if($!userInfo.isAdmin())
 						<a href="querySupplyOrder.do?bizOrderId=$!bizOrder.id&bizId=$!bizOrderQuery.bizId" class="btn btn-mini btn-primary add" ">查看供货</a>
@@ -190,7 +205,7 @@
     					#if($!bizOrder.isManNotify())
         					#if($!bizOrder.canDeal())
 
-        						<a href="bizOrderDeal.do?type=refund&bizOrderId=$!bizOrder.id" class="btn btn-mini btn-danger" onclick="return confirm('是否确认对订单: $!bizOrderId.id 做退款操作')">失败退款</a>
+        						<a href="bizOrderDeal.do?type=refund&bizOrderId=$!bizOrder.id" class="btn btn-mini btn-danger ifOrderDeal" onclick="return confirm('是否确认对订单: $!bizOrderId.id 做退款操作')">失败退款</a>
         						<a href="bizOrderDeal.do?type=repeatCharge&bizOrderId=$!bizOrder.id" class="btn btn-mini btn-danger" onclick="return confirm('是否确认对订单： $!bizOrderId.id 做失败补充操作，操作前请务必核实是供货失败')">失败补充</a>
         						<a href="bizOrderDeal.do?type=fastestCharge&bizOrderId=$!bizOrder.id" class="btn btn-mini btn-danger" onclick="return confirm('是否确认对订单： $!bizOrderId.id 做快速补充操作，操作前请务必核实是供货失败')">快速补充</a>
         						<a href="bizOrderDeal.do?type=makeUp&bizOrderId=$!bizOrder.id" class="btn btn-mini btn-danger" onclick="return confirm('是否确认对订单： $!bizOrderId.id 做确认操作')">成功确认</a>
@@ -243,6 +258,7 @@
     </table>
 	</form>
 	<script type="text/javascript">
+		var td_input_deal = document.querySelectorAll('#td_input_deal>input');
     	$(function(){
 	    	$('.doubledate').kuiDate({
 	    		className:'doubledate',
@@ -251,14 +267,21 @@
     	});
     	//预批量退款下架
 		function refundBatch(){
+			for (var i = 0 ; i<td_input_deal.length; i++) {
+				if (td_input_deal[i].checked) {
+					// console.log(td_input_deal[i].parentNode.parentNode.children[16].children);
+					// console.log(td_input_deal[i].parentNode.parentNode.children[16].children.length);
+					if (td_input_deal[i].parentNode.parentNode.children[16].children.length==5) {
+							alert("选中的商品中有不能退款的订单");
+							return;
+					}
+				}
+			}
 			if (confirm("是否对选中的订单做 退款操作")) {
-				//alert("pdd进来了");
 				var list = getCheckBox();
 				if(list==null || list.length==0){
 					return;
 				}
-				//alert("准备跳转");
-				console.log("预批量退款下架"+list)
 				window.location.href = "bizOrderDeal.do?type=refundBatch&bizOrderIds=" + list;
 			}else{
 				return;
@@ -266,6 +289,16 @@
 		}
 		//预批量失败补充
 		function repeatChargeBatch(){
+			for (var i = 0 ; i<td_input_deal.length; i++) {
+				if (td_input_deal[i].checked) {
+					// console.log(td_input_deal[i].parentNode.parentNode.children[16].children);
+					// console.log(td_input_deal[i].parentNode.parentNode.children[16].children.length);
+					if (td_input_deal[i].parentNode.parentNode.children[16].children.length==5) {
+						alert("选中的商品中有不能补充的订单");
+						return;
+					}
+				}
+			}
 			if (confirm("是否确认对选中的订单：  做失败补充操作，操作前请务必核实是供货失败")) {
 				var list = getCheckBox();
 				if(list==null || list.length==0){
@@ -469,6 +502,11 @@
 				return null;
 			}
 			return list;
+		}
+		window.onload = function(){
+			var minRatioCost = screen.availWidth
+			var maxRatio = minRatioCost*500/1366;
+			jQuery('#timeRatio').css('width',maxRatio+'px');
 		}
 </script>
 </body>

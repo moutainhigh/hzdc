@@ -10,4 +10,6 @@ public interface PddGoodsService {
     public Result<Boolean> batchUp(Integer bizId, String provinceCode);
 
     public Result<Boolean> batchDown(Integer bizId, String provinceCode);
+    //定时售后功能
+    public String MycallPddApi(Integer page,Integer pageSize);
 }

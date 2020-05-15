@@ -12,6 +12,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -79,7 +80,38 @@ public class BaseTokenService extends BaseService {
 	}
 	return null;
     }
-
+	protected String sendData(String url ,String data) {
+		CloseableHttpResponse response = null;
+		try {
+			url = url+"?"+data;
+			HttpGet get = new HttpGet(url);
+			get.setHeader("Content-Type", "application/json");
+			CloseableHttpClient client = HttpClients.custom().setConnectionManager(http_pool).setRetryHandler(http_handler)
+					.build();
+			get.setConfig(request_config);
+			logger.warn("接口请求：" + data);
+//			post.setEntity(new UrlEncodedFormEntity(params, "utf-8"));
+			response = client.execute(get);
+			Integer status = response.getStatusLine().getStatusCode();
+			if (status != 200) {
+				logger.error("发送失败：" + status);
+			} else {
+				String result = EntityUtils.toString(response.getEntity(), "utf-8");
+				logger.warn("接收结果：" + result);
+				return result;
+			}
+		} catch (Exception ex) {
+			logger.error("发送异常：", ex);
+		} finally {
+			try {
+				if (response != null) {
+					response.close();
+				}
+			} catch (Exception ex) {
+			}
+		}
+		return null;
+	}
     protected String sendData(String url, Map<String, String> map) {
 	CloseableHttpResponse response = null;
 	try {

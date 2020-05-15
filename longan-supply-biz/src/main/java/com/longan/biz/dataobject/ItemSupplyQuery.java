@@ -22,6 +22,15 @@ public class ItemSupplyQuery extends QueryBase {
     private String salesArea;
     private Integer itemFacePrice;
     private String supplyArea;
+    private String ids;
+
+    public String getIds() {
+        return ids;
+    }
+
+    public void setIds(String ids) {
+        this.ids = ids;
+    }
 
     public Long getId() {
 	return id;

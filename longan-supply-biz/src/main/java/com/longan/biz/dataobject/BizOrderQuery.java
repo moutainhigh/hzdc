@@ -34,6 +34,8 @@ public class BizOrderQuery extends QueryBase {
     private Integer moreNotifyTime;
     private Integer supplyType;
     private Integer carrierType;
+    //
+    private Integer itemFaceprice;
     private String memo;
     //时，分，秒的封装
     private String startHour;
@@ -42,6 +44,7 @@ public class BizOrderQuery extends QueryBase {
     private String endHour;
     private String endMinute;
     private String endSecond;
+    private String bizOrderIds;
 
     public String getStartHour() {
         return startHour;
@@ -310,5 +313,21 @@ public class BizOrderQuery extends QueryBase {
 
     public void setCarrierType(Integer carrierType) {
 	this.carrierType = carrierType;
+    }
+
+    public String getBizOrderIds() {
+        return bizOrderIds;
+    }
+
+    public void setBizOrderIds(String bizOrderIds) {
+        this.bizOrderIds = bizOrderIds;
+    }
+
+    public Integer getItemFaceprice() {
+        return itemFaceprice;
+    }
+
+    public void setItemFaceprice(Integer itemFaceprice) {
+        this.itemFaceprice = itemFaceprice;
     }
 }

@@ -1,10 +1,7 @@
 package com.longan.mng.action.biz;
 
 import java.text.ParseException;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -46,7 +43,12 @@ public class QuerySupplyOrder extends BaseController {
 	if (!checkBizAuth(supplyOrderQuery.getBizId(), userInfo)) {
 	    return "error/autherror";
 	}
-
+	supplyOrderQuery.setEndHour("23");
+	supplyOrderQuery.setEndMinute("59");
+	supplyOrderQuery.setEndSecond("59");
+	supplyOrderQuery.setStartHour("00");
+	supplyOrderQuery.setStartMinute("00");
+	supplyOrderQuery.setStartSecond("00");
 	model.addAttribute("userInfo", userInfo);//用户信息
 	setSelectValue(userInfo, model, supplyOrderQuery);
 	supplyOrderQuery.setStartGmtCreate(new Date());
@@ -71,6 +73,9 @@ public class QuerySupplyOrder extends BaseController {
 	    Date date = null;
 	    try {
 		date = DateTool.strintToDate(DateTool.parseDate(new Date()));
+		if (supplyOrderQuery.getStartGmtCreate()==null) {
+			date= null;
+		}
 	    } catch (ParseException e) {
 	    }
 	    if (supplyOrderQuery.getEndGmtCreate() == null) {
@@ -79,13 +84,27 @@ public class QuerySupplyOrder extends BaseController {
 	    if (supplyOrderQuery.getStartGmtCreate() == null) {
 		supplyOrderQuery.setStartGmtCreate(date);
 	    }
-	    if (!check2Date(supplyOrderQuery.getStartGmtCreate(), supplyOrderQuery.getEndGmtCreate())) {
-		super.alertErrorNoneBack(model, "订单时间区间不能超过2个月");
-		return "biz/querySupplyOrder";
-	    }
+	    if (date!=null) {
+			if (!check2Date(supplyOrderQuery.getStartGmtCreate(), supplyOrderQuery.getEndGmtCreate())) {
+				super.alertErrorNoneBack(model, "订单时间区间不能超过2个月");
+				return "biz/querySupplyOrder";
+			}
+		}
 	}
-
 	setSelectValue(userInfo, model, supplyOrderQuery);
+//	if (supplyOrderQuery.getUpStreamUserLike()!= null && !supplyOrderQuery.getUpStreamUserLike().trim().equals(" ")) {
+//		Map<Long, String> upStreamUser = localCachedService.getUpStreamUser();
+//		for (Long key :upStreamUser.keySet()) {
+//			//获取到value
+//			String value = upStreamUser.get(key);
+//			if (value.indexOf(supplyOrderQuery.getUpStreamUserLike())!=-1) {
+//				supplyOrderQuery.getUpStreamUserIdLike().add(key);
+//			}
+//		}
+//
+//	}
+
+
 	Result<List<SupplyOrder>> result = supplyOrderService.querySupplyOrderPage(supplyOrderQuery);
 	if (result.isSuccess()) {
 	    List<SupplyOrder> list = result.getModule();
@@ -183,4 +202,9 @@ public class QuerySupplyOrder extends BaseController {
     public Map<String, AreaInfo> provinceList() {
 	return localCachedService.getProvinceMap();
     }
+    @ModelAttribute("itemFacePriceList")
+    public Map<Integer,String> itemFacePriceList() {
+		Map<Integer, String> item_face_price = Constants.ITEM_Face_Price;
+		return item_face_price;
+	}
 }

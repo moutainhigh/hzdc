@@ -197,6 +197,7 @@
 			<isNotEmpty prepend="and" property="endGmtCreate">
 				gmt_create &lt;= #endGmtCreate#
 			</isNotEmpty>
+
 			<isNotEmpty prepend="and" property="itemId">
 				item_id = #itemId#
 			</isNotEmpty>
@@ -209,9 +210,18 @@
 			<isNotEmpty prepend="and" property="bulkId">
 				bulk_id = #bulkId#
 			</isNotEmpty>
+			<isNotEmpty prepend="and" property="itemFaceprice">
+				item_face_price = #itemFaceprice#
+			</isNotEmpty>
 			<isNotEmpty prepend="and" property="supplyTraderId">
 				supply_trader_id = #supplyTraderId#
 			</isNotEmpty>
+<!--			<isNotEmpty prepend="and" property="upStreamUserIdLike">-->
+<!--				supply_trader_id in-->
+<!--				<iterate property="upStreamUserIdLike" open="(" conjunction="," close=")">-->
+<!--					#upStreamUserIdLike[]#-->
+<!--				</iterate>-->
+<!--			</isNotEmpty>-->
 			<isNotEmpty prepend="and" property="supplyTermPeriod">
 				supply_term_period &gt;= #supplyTermPeriod#
 			</isNotEmpty>

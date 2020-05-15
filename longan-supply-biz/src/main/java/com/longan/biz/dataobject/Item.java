@@ -55,8 +55,28 @@ public class Item implements Serializable {
     private Integer repeatCount;
     private Integer repeatTime;
     private Integer combineType;
-
     private Integer pddStatus;
+    private String ids;//供货商品记录id
+    private String itemIds;//商品id
+
+    public String getItemIds() {
+        return itemIds;
+    }
+
+    public void setItemIds(String itemIds) {
+        this.itemIds = itemIds;
+    }
+
+
+
+
+    public String getIds() {
+        return ids;
+    }
+
+    public void setIds(String ids) {
+        this.ids = ids;
+    }
 
     public Integer getId() {
 	return id;

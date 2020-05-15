@@ -1,5 +1,6 @@
 package com.longan.biz.dataobject;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,6 +33,27 @@ public class SupplyOrderQuery extends QueryBase {
     private List<Integer> upstatusList;
     private String provinceCode;
     private Integer saleStatus;
+    //item_face_price
+    private Integer itemFaceprice;
+    //时，分，秒的封装
+    private String startHour;
+    private String startMinute;
+    private String startSecond;
+    private String endHour;
+    private String endMinute;
+    private String endSecond;
+//    //上游编号模糊查询
+//    private String upStreamUserLike;
+//    //上游模糊存储
+//    private List<Long> upStreamUserIdLike = new ArrayList<Long>();
+
+    public Integer getItemFaceprice() {
+        return itemFaceprice;
+    }
+
+    public void setItemFaceprice(Integer itemFaceprice) {
+        this.itemFaceprice = itemFaceprice;
+    }
 
     public Date getStartGmtCreate() {
 	return startGmtCreate;
@@ -216,4 +238,68 @@ public class SupplyOrderQuery extends QueryBase {
     public void setSaleStatus(Integer saleStatus) {
 	this.saleStatus = saleStatus;
     }
+
+    public String getStartHour() {
+        return startHour;
+    }
+
+    public void setStartHour(String startHour) {
+        this.startHour = startHour;
+    }
+
+    public String getStartMinute() {
+        return startMinute;
+    }
+
+    public void setStartMinute(String startMinute) {
+        this.startMinute = startMinute;
+    }
+
+    public String getStartSecond() {
+        return startSecond;
+    }
+
+    public void setStartSecond(String startSecond) {
+        this.startSecond = startSecond;
+    }
+
+    public String getEndHour() {
+        return endHour;
+    }
+
+    public void setEndHour(String endHour) {
+        this.endHour = endHour;
+    }
+
+    public String getEndMinute() {
+        return endMinute;
+    }
+
+    public void setEndMinute(String endMinute) {
+        this.endMinute = endMinute;
+    }
+
+    public String getEndSecond() {
+        return endSecond;
+    }
+
+    public void setEndSecond(String endSecond) {
+        this.endSecond = endSecond;
+    }
+
+//    public String getUpStreamUserLike() {
+//        return upStreamUserLike;
+//    }
+//
+//    public void setUpStreamUserLike(String upStreamUserLike) {
+//        this.upStreamUserLike = upStreamUserLike;
+//    }
+//
+//    public List<Long> getUpStreamUserIdLike() {
+//        return upStreamUserIdLike;
+//    }
+//
+//    public void setUpStreamUserIdLike(List<Long> upStreamUserIdLike) {
+//        this.upStreamUserIdLike = upStreamUserIdLike;
+//    }
 }

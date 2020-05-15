@@ -126,7 +126,7 @@ public class BizOrderDeal extends BaseController {
     @RequestMapping(params = "type=refundBatch")
     public String onRequestRefundRBatch(@RequestParam("bizOrderIds") String bizOrderIds, HttpSession session, Model model,
                                   HttpServletRequest request) {
-        System.out.println("预批量失败退款"+bizOrderIds);
+//        System.out.println("预批量失败退款"+bizOrderIds);
         String successUrl = null;
         String returnUrl = "biz/queryBizOrder";
         boolean flag = request.getHeader("Referer").indexOf("queryAllBizOrder") >= 0;
@@ -154,8 +154,8 @@ public class BizOrderDeal extends BaseController {
                 alertError(model, bizOrderId+"该订单不允许做退款操作");
                 return returnUrl;
             }
-
-             successUrl = "queryBizOrder.do?bizId=" + bizOrder.getBizId() + "&id=" + bizOrderId;
+            //bizOrderIds
+             successUrl = "queryBizOrder.do?bizId=" + bizOrder.getBizId() + "&bizOrderIds=" + bizOrderIds;
             if (flag) {
                 successUrl = "../statistic/queryAllBizOrder.do?id=" + bizOrderId;
             }
@@ -168,7 +168,6 @@ public class BizOrderDeal extends BaseController {
                 alertError(model, cancelBizOrderResult.getResultMsg());
                 return returnUrl;
             }
-
             try {
                 if (FuncUtils.noneNotified(oNotifyStatus)) {
                     callBackService.callBackAsync(bizOrder);
@@ -298,7 +297,6 @@ public class BizOrderDeal extends BaseController {
             alertError(model, confirmBizOrderResult.getResultMsg());
             return returnUrl;
         }
-
         try {
             if (FuncUtils.noneNotified(oNotifyStatus)) {
                 callBackService.callBackAsync(bizOrder);
@@ -442,15 +440,15 @@ public class BizOrderDeal extends BaseController {
         try {
             Long upstreamId = Long.parseLong(bizOrder.getUpstreamId());
             Integer carrierType = bizOrder.getCarrierType();
-            if (carrierType == Constants.Item.CARRIER_TYPE_UNICOM) {
+            if (carrierType == Constants.Item.CARRIER_TYPE_UNICOM) {//联通
                 if (mcheck_unicom != 0) {
                     upstreamId = mcheck_unicom;
                 }
-            } else if (carrierType == Constants.Item.CARRIER_TYPE_MOBILE) {
+            } else if (carrierType == Constants.Item.CARRIER_TYPE_MOBILE) {//移动
                 if (mcheck_cmcc != 0) {
                     upstreamId = mcheck_cmcc;
                 }
-            } else if (carrierType == Constants.Item.CARRIER_TYPE_TELECOM) {
+            } else if (carrierType == Constants.Item.CARRIER_TYPE_TELECOM) {//电信
                 if (mcheck_telecom != 0) {
                     upstreamId = mcheck_telecom;
                 }
@@ -581,7 +579,7 @@ public class BizOrderDeal extends BaseController {
                 return returnUrl;
             }
 
-            successUrl = "queryBizOrder.do?bizId=" + bizOrder.getBizId() + "&id=" + bizOrderId;
+            successUrl = "queryBizOrder.do?bizId=" + bizOrder.getBizId() + "&bizOrderIds=" + bizOrderIds;
             if (flag) {
                 successUrl = "../statistic/queryAllBizOrder.do?id=" + bizOrderId;
             }

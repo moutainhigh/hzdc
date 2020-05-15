@@ -8,10 +8,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.longan.biz.core.BizOrderService;
+import com.longan.biz.dataobject.*;
+import com.longan.mng.quartz.TestJobTaskDemo;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -27,11 +34,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.longan.biz.core.ItemService;
-import com.longan.biz.dataobject.AreaInfo;
-import com.longan.biz.dataobject.Item;
-import com.longan.biz.dataobject.ItemQuery;
-import com.longan.biz.dataobject.OperationLog;
-import com.longan.biz.dataobject.UserInfo;
 import com.longan.biz.domain.Result;
 import com.longan.biz.func.PddGoodsService;
 import com.longan.biz.utils.BigDecimalUtils;
@@ -48,7 +50,6 @@ public class ItemDeal extends BaseController {
 
     @Resource
     private Validator validator;
-
     @Resource
     private PddGoodsService pddGoodsService;
 	//上架
@@ -259,35 +260,61 @@ public class ItemDeal extends BaseController {
 	UserInfo userInfo = getUserInfo(session);
 	model.addAttribute("bizName", Constants.BIZ_MAP.get(bizId));
 	model.addAttribute("bizId", bizId);
-
+	Result<List<Item>> result = null;
 	// 业务权限判断
 	if (!checkBizAuth(bizId, userInfo)) {
 	    return "error/autherror";
 	}
 
-	itemQuery.setPageSize(10000);
-	itemQuery.setCurrentPage(1);
-	Result<List<Item>> result = itemService.queryItemList(itemQuery);
-	if (!result.isSuccess()) {
-	    alertError(model, result.getResultMsg());
-	    return "biz/queryItem";
-	}
-
 	StringBuffer ids = new StringBuffer("");
 	StringBuffer names = new StringBuffer("");
-	List<Item> list = result.getModule();
-	if (list == null || list.isEmpty()) {
-	    alertError(model, "商品列表不能为空");
-	    return "biz/queryItem";
-	}
+	//
+	if (itemQuery.getSalesAreas()==null) {
+		itemQuery.setPageSize(10000);
+		itemQuery.setCurrentPage(1);
+		result = itemService.queryItemList(itemQuery);
+		if (!result.isSuccess()) {
+			alertError(model, result.getResultMsg());
+			return "biz/queryItem";
+		}
+		List<Item> list = result.getModule();
+		if (list == null || list.isEmpty()) {
+			alertError(model, "商品列表不能为空");
+			return "biz/queryItem";
+		}
 
-	for (int i = 0; i < list.size(); i++) {
-	    ids.append(list.get(i).getId());
-	    names.append(list.get(i).getItemName());
-	    if (i != (list.size() - 1)) {
-		ids.append(",");
-		names.append(" ，");
-	    }
+		for (int i = 0; i < list.size(); i++) {
+			ids.append(list.get(i).getId());
+			names.append(list.get(i).getItemName());
+			if (i != (list.size() - 1)) {
+				ids.append(",");
+				names.append(" ，");
+			}
+		}
+	}else{
+		for (int i = 0; i<itemQuery.getSalesAreas().size(); i++) {
+			itemQuery.setSalesArea(itemQuery.getSalesAreas().get(i));
+			itemQuery.setPageSize(10000);
+			itemQuery.setCurrentPage(1);
+			result = itemService.queryItemList(itemQuery);
+			List<Item> list = result.getModule();
+			if (list == null || list.isEmpty()) {
+				alertError(model, "商品列表不能为空");
+				return "biz/queryItem";
+			}
+			for (int j = 0; j < list.size(); j++) {
+				ids.append(list.get(j).getId());
+				names.append(list.get(j).getItemName()).append(" ，");
+				if (i!=itemQuery.getSalesAreas().size()-1) {
+					ids.append(",");
+
+				}else{
+					if (j != (list.size() - 1)) {
+						ids.append(",");
+					}
+				}
+			}
+		}
 	}
 
 	UpDownForm upDownForm = new UpDownForm();
@@ -301,69 +328,6 @@ public class ItemDeal extends BaseController {
 
 	model.addAttribute("upDownForm", upDownForm);
 	return "biz/batchUpDown";
-    }
-	//执行批量下架操作
-    @RequestMapping(value = "biz/itemDeal", params = "requestType=batchDown", method = RequestMethod.POST)
-    public String onRequestBatchDown(@ModelAttribute("upDownForm") UpDownForm upDownForm, BindingResult bindingResult,
-	    HttpSession session, Model model) {
-	UserInfo userInfo = getUserInfo(session);
-	String returnUrl = "biz/batchUpDown";
-
-	validator.validate(upDownForm, bindingResult);
-	if (bindingResult.hasErrors()) {
-	    model.addAttribute("errorList", bindingResult.getAllErrors());
-	    model.addAttribute("bizName", Constants.BIZ_MAP.get(upDownForm.getBizId()));
-	    model.addAttribute("bizId", upDownForm.getBizId());
-	    return returnUrl;
-	}
-
-	logger.warn(userInfo.getUserName() + "执行批量下架操作 商品 id : " + upDownForm.getIds());
-	model.addAttribute("bizName", Constants.BIZ_MAP.get(upDownForm.getBizId()));
-	model.addAttribute("bizId", upDownForm.getBizId());
-
-	// 业务权限判断
-	if (!checkBizAuth(Integer.parseInt(upDownForm.getBizId()), userInfo)) {
-	    return "error/autherror";
-	}
-
-	String[] strs = upDownForm.getIds().split(",");
-	if (strs == null || strs.length == 0) {
-	    alertError(model, "商品列表不能为空");
-	    return returnUrl;
-	}
-
-	List<Integer> list = new ArrayList<Integer>();
-	for (String str : strs) {
-	    if (StringUtils.isNumeric(str)) {
-		list.add(Integer.parseInt(str));
-	    }
-	}
-	if (list.isEmpty()) {
-	    alertError(model, "商品列表不能为空");
-	    return returnUrl;
-	}
-
-	String description = upDownForm.toString();
-	OperationLog operationLog = OperLogUtils.operationLogDeal(description, userInfo, getModuleNameFromSession(session), null,
-		getIpFromSession(session), Constants.OperationLog.TYPE_UPDATE);
-
-	Result<Long> result = submitTaskForm(upDownForm, "itemService", "downItem", (Serializable) list, "java.util.List",
-		operationLog, userInfo, Integer.parseInt(upDownForm.getBizId()));
-	if (!result.isSuccess()) {
-	    alertError(model, result.getResultMsg());
-	    return returnUrl;
-	}
-
-	if (upDownForm.isRealTimeCommit()) {
-	    alertSuccess(model, "queryItem.do?bizId=" + upDownForm.getBizId());
-	} else {
-	    if (result.getModule() == null) {
-		alertSuccess(model, "../system/queryTask.do");
-	    } else {
-		alertSuccess(model, "../system/queryTask.do?id=" + result.getModule());
-	    }
-	}
-	return returnUrl;
     }
 	//批量上架的跳转
     @RequestMapping(value = "biz/itemDeal", params = "requestType=batchUpIndex")
@@ -390,139 +354,6 @@ public class ItemDeal extends BaseController {
 	model.addAttribute("upDownForm", upDownForm);
 	return "biz/batchUpDown";
     }
-
-
-	//PDD批量上架操作
-	@RequestMapping(value = "biz/itemPDDBatchUp",params = "requestType=batchUp", method = RequestMethod.POST)
-	public String onRequestItemPDDBatchUp(@RequestParam("ids") String ids,@RequestParam("provinceCode") String provinceCode,
-									BindingResult bindingResult, @RequestParam("bizId") Integer bizId,
-								   HttpSession session, Model model) {
-		System.out.println("itemPDDBatchUp");
-		UserInfo userInfo = getUserInfo(session);
-		String returnUrl = "biz/queryItem";
-		UpDownForm upDownForm = new UpDownForm();
-		upDownForm.setProvinceCode(provinceCode);
-		upDownForm.setBizId(bizId.toString());
-		upDownForm.setIds(ids);
-		validator.validate(upDownForm, bindingResult);
-		if (bindingResult.hasErrors()) {
-			model.addAttribute("errorList", bindingResult.getAllErrors());
-			model.addAttribute("bizName", Constants.BIZ_MAP.get(upDownForm.getBizId()));
-			model.addAttribute("bizId", upDownForm.getBizId());
-			return returnUrl;
-		}
-
-		// 业务权限判断
-		if (!checkBizAuth(Integer.parseInt(upDownForm.getBizId()), userInfo)) {
-			return "error/autherror";
-		}
-
-		String[] strs = upDownForm.getIds().split(",");
-		String[] provinceCodes = upDownForm.getProvinceCode().split(",");
-		if (strs == null || strs.length == 0) {
-			alertError(model, "商品列表不能为空");
-			return returnUrl;
-		}
-
-		List<Integer> list = new ArrayList<Integer>();
-		for (String str : strs) {
-			if (StringUtils.isNumeric(str)) {
-				list.add(Integer.parseInt(str));
-			}
-		}
-		if (list.isEmpty()) {
-			alertError(model, "商品列表不能为空");
-			return returnUrl;
-		}
-		logger.warn(userInfo.getUserName() + "执行拼多多上架操作 省域:" + provinceCode);
-		model.addAttribute("bizName", Constants.BIZ_MAP.get(bizId));
-		model.addAttribute("bizId", bizId);
-		model.addAttribute("requestType", "batchUp");
-		model.addAttribute("typeDesc","上架");
-		Result<Boolean> result = null;
-		//循环上架
-		for (int i = 0 ; i<upDownForm.getBizId().length();i++) {
-			result = pddGoodsService.batchUp(Integer.valueOf(strs[i]),provinceCodes[i]);
-			logger.warn(userInfo.getUserName() + "执行拼多多上架操作 省域provinceCode:" + provinceCodes[i]);
-			if (!result.isSuccess()) {//上架操作失败
-				alertError(model, result.getResultMsg());
-				break;
-			}
-		}
-		//Result<Boolean> result = pddGoodsService.batchUp(bizId, provinceCode);
-		if (result.isSuccess()) {
-			alertSuccess(model, "queryItem.do?bizId=" + bizId);
-		}
-		return "biz/queryItem";
-	}
-
-	//PDD批量下架操作
-	@RequestMapping(value = "biz/itemPDDBatchDown",params = "requestType=batchDown", method = RequestMethod.POST)
-	public String onRequestItemPDDBatchDown(@RequestParam("ids") String ids,@RequestParam("provinceCode") String provinceCode,
-										  BindingResult bindingResult, @RequestParam("bizId") Integer bizId,
-										  HttpSession session, Model model) {
-		System.out.println("itemPDDBatchDown");
-
-		UserInfo userInfo = getUserInfo(session);
-		String returnUrl = "biz/queryItem";
-		UpDownForm upDownForm = new UpDownForm();
-		upDownForm.setProvinceCode(provinceCode);
-		upDownForm.setBizId(bizId.toString());
-		upDownForm.setIds(ids);
-		validator.validate(upDownForm, bindingResult);
-		if (bindingResult.hasErrors()) {
-			model.addAttribute("errorList", bindingResult.getAllErrors());
-			model.addAttribute("bizName", Constants.BIZ_MAP.get(upDownForm.getBizId()));
-			model.addAttribute("bizId", upDownForm.getBizId());
-			return returnUrl;
-		}
-
-		// 业务权限判断
-		if (!checkBizAuth(Integer.parseInt(upDownForm.getBizId()), userInfo)) {
-			return "error/autherror";
-		}
-
-		String[] strs = upDownForm.getIds().split(",");
-		String[] provinceCodes = upDownForm.getProvinceCode().split(",");
-		if (strs == null || strs.length == 0) {
-			alertError(model, "商品列表不能为空");
-			return returnUrl;
-		}
-		List<Integer> list = new ArrayList<Integer>();
-		for (String str : strs) {
-			if (StringUtils.isNumeric(str)) {
-				list.add(Integer.parseInt(str));
-			}
-		}
-		if (list.isEmpty()) {
-			alertError(model, "商品列表不能为空");
-			return returnUrl;
-		}
-
-		logger.warn(userInfo.getUserName() + "执行拼多多下架操作 省域:" + provinceCode);
-		model.addAttribute("bizName", Constants.BIZ_MAP.get(bizId));
-		model.addAttribute("bizId", bizId);
-		//model.addAttribute("requestType", "batchUp");
-		model.addAttribute("typeDesc","下架");
-		Result<Boolean> result = null;
-		//循环上架
-		for (int i = 0 ; i<upDownForm.getBizId().length();i++) {
-			result = pddGoodsService.batchDown(Integer.valueOf(strs[i]),provinceCodes[i]);
-			logger.warn(userInfo.getUserName() + "执行拼多多下架操作 省域provinceCode:" + provinceCodes[i]);
-			if (!result.isSuccess()) {//下架操作失败提示
-				alertError(model, result.getResultMsg());
-				break;
-			}
-		}
-		if (result.isSuccess()) {
-			alertSuccess(model, "queryItem.do?bizId=" + bizId);
-		}
-//		} else {
-//			alertError(model, result.getResultMsg());
-//		}
-		return "biz/queryItem";
-	}
-
 	@RequestMapping(value = "biz/itemDeal", params = "requestType=conditionUpIndex", method = RequestMethod.POST)
     public String onRequestConditionUpIndex(@ModelAttribute("itemQuery") ItemQuery itemQuery,
 	    @RequestParam("bizId") Integer bizId, @RequestParam("requestType") String requestType, HttpSession session,
@@ -530,35 +361,58 @@ public class ItemDeal extends BaseController {
 	UserInfo userInfo = getUserInfo(session);
 	model.addAttribute("bizName", Constants.BIZ_MAP.get(bizId));
 	model.addAttribute("bizId", bizId);
-
+	Result<List<Item>> result = null;
 	// 业务权限判断
 	if (!checkBizAuth(bizId, userInfo)) {
 	    return "error/autherror";
 	}
+	StringBuffer ids = new StringBuffer("");
+	StringBuffer names = new StringBuffer("");
+	if (itemQuery.getSalesAreas()==null) {
+		itemQuery.setPageSize(10000);
+		itemQuery.setCurrentPage(1);
+		result = itemService.queryItemList(itemQuery);
+		List<Item> list = result.getModule();
+		if (list == null || list.isEmpty()) {
+			alertError(model, "商品列表不能为空");
+			return "biz/queryItem";
+		}
+		for (int i = 0; i < list.size(); i++) {
+			ids.append(list.get(i).getId());
+			names.append(list.get(i).getItemName()).append(" ，");
+			if (i != (list.size() - 1)) {
+				ids.append(",");
+			}
+		}
+	}else{
+		for (int i = 0 ; i<itemQuery.getSalesAreas().size(); i++) {
+			itemQuery.setSalesArea(itemQuery.getSalesAreas().get(i));
+			itemQuery.setPageSize(10000);
+			itemQuery.setCurrentPage(1);
+			result = itemService.queryItemList(itemQuery);
+			List<Item> list = result.getModule();
+			if (list == null || list.isEmpty()) {
+				alertError(model, "商品列表不能为空");
+				return "biz/queryItem";
+			}
+			for (int j = 0; j < list.size(); j++) {
+				ids.append(list.get(j).getId());
+				names.append(list.get(j).getItemName()).append(" ，");
+				if (i!=itemQuery.getSalesAreas().size()-1) {
+						ids.append(",");
 
-	itemQuery.setPageSize(10000);
-	itemQuery.setCurrentPage(1);
-	Result<List<Item>> result = itemService.queryItemList(itemQuery);
+				}else{
+					if (j != (list.size() - 1)) {
+						ids.append(",");
+				}
+				}
+			}
+		}
+	}
 	if (!result.isSuccess()) {
 	    alertError(model, result.getResultMsg());
 	    return "biz/queryItem";
 	}
-
-	StringBuffer ids = new StringBuffer("");
-	StringBuffer names = new StringBuffer("");
-	List<Item> list = result.getModule();
-	if (list == null || list.isEmpty()) {
-	    alertError(model, "商品列表不能为空");
-	    return "biz/queryItem";
-	}
-	for (int i = 0; i < list.size(); i++) {
-	    ids.append(list.get(i).getId());
-	    names.append(list.get(i).getItemName()).append(" ，");
-	    if (i != (list.size() - 1)) {
-		ids.append(",");
-	    }
-	}
-
 	UpDownForm upDownForm = new UpDownForm();
 	upDownForm.setIds(ids.toString().trim());
 	upDownForm.setNames(names.toString().trim());
@@ -571,70 +425,8 @@ public class ItemDeal extends BaseController {
 	model.addAttribute("upDownForm", upDownForm);
 	return "biz/batchUpDown";
     }
-	//这是上架的批量操作
-    @RequestMapping(value = "biz/itemDeal", params = "requestType=batchUp", method = RequestMethod.POST)
-    public String onRequestBatchUp(@ModelAttribute("upDownForm") UpDownForm upDownForm, BindingResult bindingResult,
-	    HttpSession session, Model model) {
-	UserInfo userInfo = getUserInfo(session);
-	String returnUrl = "biz/batchUpDown";
 
-	validator.validate(upDownForm, bindingResult);
-	if (bindingResult.hasErrors()) {
-	    model.addAttribute("errorList", bindingResult.getAllErrors());
-	    model.addAttribute("bizName", Constants.BIZ_MAP.get(upDownForm.getBizId()));
-	    model.addAttribute("bizId", upDownForm.getBizId());
-	    return returnUrl;
-	}
-
-	logger.warn(userInfo.getUserName() + "执行批量上架操作 商品 id : " + upDownForm.getIds());
-	model.addAttribute("bizName", Constants.BIZ_MAP.get(upDownForm.getBizId()));
-	model.addAttribute("bizId", upDownForm.getBizId());
-
-	// 业务权限判断
-	if (!checkBizAuth(Integer.parseInt(upDownForm.getBizId()), userInfo)) {
-	    return "error/autherror";
-	}
-
-	String[] strs = upDownForm.getIds().split(",");
-	if (strs == null || strs.length == 0) {
-	    alertError(model, "商品列表不能为空");
-	    return returnUrl;
-	}
-
-	List<Integer> list = new ArrayList<Integer>();
-	for (String str : strs) {
-	    if (StringUtils.isNumeric(str)) {
-		list.add(Integer.parseInt(str));
-	    }
-	}
-	if (list.isEmpty()) {
-	    alertError(model, "商品列表不能为空");
-	    return returnUrl;
-	}
-
-	String description = upDownForm.toString();
-	OperationLog operationLog = OperLogUtils.operationLogDeal(description, userInfo, getModuleNameFromSession(session), null,
-		getIpFromSession(session), Constants.OperationLog.TYPE_UPDATE);
-
-	Result<Long> result = submitTaskForm(upDownForm, "itemService", "upItem", (Serializable) list, "java.util.List",
-		operationLog, userInfo, Integer.parseInt(upDownForm.getBizId()));
-	if (!result.isSuccess()) {
-	    alertError(model, result.getResultMsg());
-	    return returnUrl;
-	}
-
-	if (upDownForm.isRealTimeCommit()) {
-	    alertSuccess(model, "queryItem.do?bizId=" + upDownForm.getBizId());
-	} else {
-	    if (result.getModule() == null) {
-		alertSuccess(model, "../system/queryTask.do");
-	    } else {
-		alertSuccess(model, "../system/queryTask.do?id=" + result.getModule());
-	    }
-	}
-	return returnUrl;
-    }
-
+	//新增商品跳转
     @RequestMapping(value = "biz/itemAdd", method = RequestMethod.GET)
     public String onAddIndex(@RequestParam("bizId") Integer bizId, HttpSession session, Model model) {
 	UserInfo userInfo = getUserInfo(session);
@@ -650,7 +442,7 @@ public class ItemDeal extends BaseController {
 	setSelectValue(bizId, model);
 	return "biz/itemAdd";
     }
-
+	//新增商品操作
     @RequestMapping(value = "biz/itemAdd", method = RequestMethod.POST)
     public String onPostAdd(@ModelAttribute("itemForm") ItemForm itemForm, BindingResult bindingResult, HttpSession session,
 	    Model model) {
@@ -876,7 +668,7 @@ public class ItemDeal extends BaseController {
 	}
 	return "biz/itemPdd";
     }
-	//pdd下架操作跳转
+	//下架操作跳转
     @RequestMapping(value = "biz/itemPdd", params = "requestType=batchDown", method = RequestMethod.GET)
     public String pddBatchDownG(@RequestParam("bizId") Integer bizId, HttpSession session, Model model) {
 	UserInfo userInfo = getUserInfo(session);
@@ -933,9 +725,71 @@ public class ItemDeal extends BaseController {
 	}
 	return "biz/queryItem";
     }
+    /*
+    对的
+     */
+	//拼多多批量上架
+	@RequestMapping(value = "biz/itemPdd", params = "requestType=batchPddUp")
+	public synchronized String pddRequestBatchUp(@RequestParam("itemId") String itemIds, @RequestParam("bizId") Integer bizId, HttpSession session,
+									Model model) {
+		UserInfo userInfo = getUserInfo(session);
+		// 业务权限判断
+		if (!checkBizAuth(bizId, userInfo)) {
+			return "error/autherror";
+		}
+		boolean flag = false;//标识上架结果成功还是失败
+		List<Future<Result<Boolean>>> list = new ArrayList<Future<Result<Boolean>>>();//线程结果封装
+		List<Result<Boolean>> dataList = new ArrayList<Result<Boolean>>();//结果封装
+		List<Integer> itemList = new ArrayList<Integer>();//获取到所有的订单数据
+		List<Integer> itemFaildList = new ArrayList<Integer>();//失败时的数据封装
+		String[] split = itemIds.split(",");
+
+		for (int i = 0; i <split.length;i++) {
+			final Integer itemId = Integer.valueOf(split[i]);
+			logger.warn(userInfo.getUserName() + "执行拼多多上架操作 商品id:" + itemId);
+			Future<Result<Boolean>> submit = Constants.threadPoolExecutor.submit(new Callable<Result<Boolean>>() {
+				@Override
+				public Result<Boolean> call() throws Exception {
+					return pddGoodsService.itemUp(itemId);
+				}
+			});
+			list.add(submit);//线程添加
+			itemList.add(itemId);//商品id添加
+		}
+		//获取pdd返回的结果
+		for (int i = 0 ; i<list.size();i++) {
+			try {
+				dataList.add(list.get(i).get());
+			} catch (Exception e) {
+				//pdd超时
+				list.get(i).cancel(true);
+				logger.warn(userInfo.getUserName() + "执行拼多多上架操作超时 商品id"+itemList.get(i));
+			}
+		}
+		//判断是否有超时的
+		for (int i = 0 ; i<dataList.size();i++) {
+			Result<Boolean> booleanResult = dataList.get(i);
+			//上架失败
+			if (!booleanResult.isSuccess()) {
+				flag=true;
+				//itemList.get(i);
+				itemFaildList.add(itemList.get(i));
+			}
+		}
+		String join = StringUtils.join(itemFaildList, ",");
+		//是否批量上架成功
+		if (!flag) {
+			alertSuccess(model, "queryItem.do?bizId=" + bizId + "&ids=" + itemIds);
+		}else{
+//			失败跳转
+			alertMsgRedirect(model,"商品上架失败((商品非拼多多商品))","queryItemUp.do?bizId="+bizId+"&ids=" + join);
+//			return "redirect:/biz/queryItemUp.do?bizId="+bizId+"&ids="+ join;
+		}
+		return "biz/queryItem";
+	}
 
     @RequestMapping(value = "biz/itemPdd", params = "requestType=down")
-    public String pddRequestDown(@RequestParam("itemId") Integer itemId, @RequestParam("bizId") Integer bizId,
+    public  String pddRequestDown(@RequestParam("itemId") Integer itemId, @RequestParam("bizId") Integer bizId,
 	    HttpSession session, Model model) {
 	UserInfo userInfo = getUserInfo(session);
 	// 业务权限判断
@@ -946,13 +800,207 @@ public class ItemDeal extends BaseController {
 	logger.warn(userInfo.getUserName() + "执行拼多多下架操作 商品id:" + itemId);
 	Result<Boolean> result = pddGoodsService.itemDown(itemId);
 	if (result.isSuccess()) {
-	    alertSuccess(model, "queryItem.do?bizId=" + bizId + "&id=" + itemId);
+	    alertSuccess(model, "queryItem.do?bizId=" + bizId + "&idsList=" + itemId);
 	} else {
 	    alertError(model, result.getResultMsg());
 	}
 	return "biz/queryItem";
     }
 
+	/**
+	 * PDD批量下架操作
+	 * @param itemIds
+	 * @param bizId
+	 * @param session
+	 * @param model
+	 * @return
+	 */
+    //pdd批量下架操作
+	@RequestMapping(value = "biz/itemPdd", params = "requestType=batchPddDown")
+	public synchronized String pddRequestBatchDown(@RequestParam("itemId") String itemIds, @RequestParam("bizId") Integer bizId,
+									  HttpSession session, Model model) {
+		UserInfo userInfo = getUserInfo(session);
+		// 业务权限判断
+		if (!checkBizAuth(bizId, userInfo)) {
+			return "error/autherror";
+		}
+		boolean flag = false;//标识下架结果成功还是失败
+		List<Future<Result<Boolean>>> list = new ArrayList<Future<Result<Boolean>>>();//线程结果封装
+		List<Result<Boolean>> dataList = new ArrayList<Result<Boolean>>();//结果封装
+		List<Integer> itemList = new ArrayList<Integer>();//获取到所有的订单数据
+		List<Integer> itemFaildList = new ArrayList<Integer>();//失败时的数据封装
+
+		//logger.warn(userInfo.getUserName() + "执行拼多多下架操作 商品id:" + itemIds);
+		String[] split = itemIds.split(",");
+		for (int i = 0; i <split.length;i++) {
+			final Integer itemId = Integer.valueOf(split[i]);
+			logger.warn(userInfo.getUserName() + "执行拼多多下架操作 商品id:" + itemId);
+			Future<Result<Boolean>> submit = Constants.threadPoolExecutor.submit(new Callable<Result<Boolean>>() {
+				@Override
+				public Result<Boolean> call() throws Exception {
+					return pddGoodsService.itemDown(itemId);//执行pdd下架操作
+				}
+			});
+			list.add(submit);//线程添加
+			itemList.add(itemId);//商品id添加
+		}
+		//获取pdd返回的结果
+		for (int i = 0 ; i<list.size();i++) {
+			try {
+				dataList.add(list.get(i).get());
+			} catch (Exception e) {
+				//pdd超时
+				list.get(i).cancel(true);
+				logger.warn(userInfo.getUserName() + "执行拼多多下架操作超时 商品id"+itemList.get(i));
+			}
+		}
+		//获取pdd的结果判断
+		for (int i = 0 ; i<dataList.size();i++) {
+			Result<Boolean> booleanResult = dataList.get(i);
+			//下架失败
+			if (!booleanResult.isSuccess()) {
+				flag=true;
+				//itemList.get(i);
+				itemFaildList.add(itemList.get(i));
+			}
+		}
+		String join = StringUtils.join(itemFaildList, ",");
+		//是否批量下架成功
+		if (!flag) {
+			alertSuccess(model, "queryItem.do?bizId=" + bizId + "&ids=" + itemIds);
+		}else{
+//			失败跳转
+			alertMsgRedirect(model,"商品下架失败(商品非拼多多商品)","queryItemUp.do?bizId="+bizId+"&ids=" + join);
+//			return "redirect:/biz/queryItemUp.do?bizId="+bizId+"&ids="+ join;
+		}
+		return "biz/queryItem";
+	}
+	@RequestMapping(
+			value = {"biz/itemDeal"},
+			params = {"requestType=batchUp"},
+			method = {RequestMethod.POST}
+	)
+	public String onRequestBatchUp(@ModelAttribute("upDownForm") UpDownForm upDownForm, BindingResult bindingResult, HttpSession session, Model model) {
+		UserInfo userInfo = this.getUserInfo(session);
+		String returnUrl = "biz/batchUpDown";
+		this.validator.validate(upDownForm, bindingResult);
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("errorList", bindingResult.getAllErrors());
+			model.addAttribute("bizName", Constants.BIZ_MAP.get(upDownForm.getBizId()));
+			model.addAttribute("bizId", upDownForm.getBizId());
+			return returnUrl;
+		} else {
+			this.logger.warn(userInfo.getUserName() + "执行批量上架操作 商品 id : " + upDownForm.getIds());
+			model.addAttribute("bizName", Constants.BIZ_MAP.get(upDownForm.getBizId()));
+			model.addAttribute("bizId", upDownForm.getBizId());
+			if (!this.checkBizAuth(Integer.parseInt(upDownForm.getBizId()), userInfo)) {
+				return "error/autherror";
+			} else {
+				String[] strs = upDownForm.getIds().split(",");
+				if (strs != null && strs.length != 0) {
+					List<Integer> list = new ArrayList();
+					String[] var12 = strs;
+					int var11 = strs.length;
+
+					String description;
+					for(int var10 = 0; var10 < var11; ++var10) {
+						description = var12[var10];
+						if (StringUtils.isNumeric(description)) {
+							list.add(Integer.parseInt(description));
+						}
+					}
+
+					if (list.isEmpty()) {
+						this.alertError(model, "商品列表不能为空");
+						return returnUrl;
+					} else {
+						description = upDownForm.toString();
+						OperationLog operationLog = OperLogUtils.operationLogDeal(description, userInfo, this.getModuleNameFromSession(session), (Integer)null, this.getIpFromSession(session), 2);
+						Result<Long> result = this.submitTaskForm(upDownForm, "itemService", "upItem", (Serializable)list, "java.util.List", operationLog, userInfo, Integer.parseInt(upDownForm.getBizId()));
+						if (!result.isSuccess()) {
+							this.alertError(model, result.getResultMsg());
+							return returnUrl;
+						} else {
+							if (upDownForm.isRealTimeCommit()) {
+								this.alertSuccess(model, "queryItem.do?bizId=" + upDownForm.getBizId());
+							} else if (result.getModule() == null) {
+								this.alertSuccess(model, "../system/queryTask.do");
+							} else {
+								this.alertSuccess(model, "../system/queryTask.do?id=" + result.getModule());
+							}
+
+							return returnUrl;
+						}
+					}
+				} else {
+					this.alertError(model, "商品列表不能为空");
+					return returnUrl;
+				}
+			}
+		}
+	}
+	@RequestMapping(value = "biz/itemDeal", params = "requestType=batchDown", method = RequestMethod.POST)
+	public String onRequestBatchDown(@ModelAttribute("upDownForm") UpDownForm upDownForm, BindingResult bindingResult,
+									 HttpSession session, Model model) {
+		UserInfo userInfo = getUserInfo(session);
+		String returnUrl = "biz/batchUpDown";
+
+		validator.validate(upDownForm, bindingResult);
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("errorList", bindingResult.getAllErrors());
+			model.addAttribute("bizName", Constants.BIZ_MAP.get(upDownForm.getBizId()));
+			model.addAttribute("bizId", upDownForm.getBizId());
+			return returnUrl;
+		}
+
+		logger.warn(userInfo.getUserName() + "执行批量下架操作 商品 id : " + upDownForm.getIds());
+		model.addAttribute("bizName", Constants.BIZ_MAP.get(upDownForm.getBizId()));
+		model.addAttribute("bizId", upDownForm.getBizId());
+
+		// 业务权限判断
+		if (!checkBizAuth(Integer.parseInt(upDownForm.getBizId()), userInfo)) {
+			return "error/autherror";
+		}
+
+		String[] strs = upDownForm.getIds().split(",");
+		if (strs == null || strs.length == 0) {
+			alertError(model, "商品列表不能为空");
+			return returnUrl;
+		}
+
+		List<Integer> list = new ArrayList<Integer>();
+		for (String str : strs) {
+			if (StringUtils.isNumeric(str)) {
+				list.add(Integer.parseInt(str));
+			}
+		}
+		if (list.isEmpty()) {
+			alertError(model, "商品列表不能为空");
+			return returnUrl;
+		}
+
+		String description = upDownForm.toString();
+		OperationLog operationLog = OperLogUtils.operationLogDeal(description, userInfo, getModuleNameFromSession(session), null,
+				getIpFromSession(session), Constants.OperationLog.TYPE_UPDATE);
+
+		Result<Long> result = submitTaskForm(upDownForm, "itemService", "downItem", (Serializable) list, "java.util.List",
+				operationLog, userInfo, Integer.parseInt(upDownForm.getBizId()));
+		if (!result.isSuccess()) {
+			alertError(model, result.getResultMsg());
+			return returnUrl;
+		}
+
+		if (upDownForm.isRealTimeCommit()) {
+			alertSuccess(model, "queryItem.do?bizId=" + upDownForm.getBizId());
+		} else {
+			if (result.getModule() == null) {
+				alertSuccess(model, "../system/queryTask.do");
+			} else {
+				alertSuccess(model, "../system/queryTask.do?id=" + result.getModule());
+			}
+		}
+		return returnUrl;
+	}
     private Item formToItem(ItemForm itemForm) {
 	Item result = new Item();
 	if (StringUtils.isNotEmpty(itemForm.getId())) {

@@ -20,6 +20,7 @@ public class AccessCode extends BaseController {
     public void pddCode(String code) {
 	if (pdd_code) {
 	    boolean success = pddTokenService.accessToken(code);
+		System.out.println(code);
 	    if (success) {
 		pdd_code = false;
 		logger.warn("获得pdd token成功");

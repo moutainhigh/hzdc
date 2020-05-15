@@ -1,6 +1,7 @@
 package com.longan.biz.utils;
 
 import com.longan.biz.dataobject.BizOrderQuery;
+import com.longan.biz.dataobject.SupplyOrderQuery;
 import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
@@ -302,7 +303,6 @@ public class DateTool {
 		if (splitTime[1].equals("00:00:00")) {
 			return strintToDatetime(splitTime[0] + " 23:59:59");
 		}else{
-			System.out.println("--------------");
 			return date;
 		}
 
@@ -333,7 +333,48 @@ public class DateTool {
 			//存新值
 			bizOrderQuery.setStartGmtCreate(DateTool.formatStartDate(bizOrderQuery.getStartGmtCreate(),bizOrderQuery.getStartHour(),bizOrderQuery.getStartMinute(),bizOrderQuery.getStartSecond()));
 			bizOrderQuery.setEndGmtCreate(DateTool.formatStartDate(bizOrderQuery.getEndGmtCreate(),bizOrderQuery.getEndHour(),bizOrderQuery.getEndMinute(),bizOrderQuery.getEndSecond()));
+		}else{
+			bizOrderQuery.setEndHour("23");
+			bizOrderQuery.setEndMinute("59");
+			bizOrderQuery.setEndSecond("59");
+			bizOrderQuery.setStartHour("00");
+			bizOrderQuery.setStartMinute("00");
+			bizOrderQuery.setStartSecond("00");
 		}
+
 		return bizOrderQuery;
+	}
+	public static SupplyOrderQuery dateFilterSupplyOrderQuery(SupplyOrderQuery supplyOrderQuery) {
+		if (StringUtils.hasText(supplyOrderQuery.getStartHour()) || StringUtils.hasText(supplyOrderQuery.getEndHour()) || StringUtils.hasText(supplyOrderQuery.getStartMinute()) || StringUtils.hasText(supplyOrderQuery.getEndMinute()) || StringUtils.hasText(supplyOrderQuery.getStartSecond()) || StringUtils.hasText(supplyOrderQuery.getEndSecond())) {
+			if (!StringUtils.hasText(supplyOrderQuery.getStartHour())) {
+				supplyOrderQuery.setStartHour(Constants.constTime);
+			}
+			if (!StringUtils.hasText(supplyOrderQuery.getEndHour())) {
+				supplyOrderQuery.setEndHour(Constants.constTime);
+			}
+			if (!StringUtils.hasText(supplyOrderQuery.getStartMinute())) {
+				supplyOrderQuery.setStartMinute(Constants.constTime);
+			}
+			if (!StringUtils.hasText(supplyOrderQuery.getEndMinute())) {
+				supplyOrderQuery.setEndMinute(Constants.constTime);
+			}
+			if (!StringUtils.hasText(supplyOrderQuery.getStartSecond())) {
+				supplyOrderQuery.setStartSecond(Constants.constTime);
+			}
+			if (!StringUtils.hasText(supplyOrderQuery.getEndSecond())) {
+				supplyOrderQuery.setEndSecond(Constants.constTime);
+			}
+			//存新值
+			supplyOrderQuery.setStartGmtCreate(DateTool.formatStartDate(supplyOrderQuery.getStartGmtCreate(), supplyOrderQuery.getStartHour(), supplyOrderQuery.getStartMinute(), supplyOrderQuery.getStartSecond()));
+			supplyOrderQuery.setEndGmtCreate(DateTool.formatStartDate(supplyOrderQuery.getEndGmtCreate(), supplyOrderQuery.getEndHour(), supplyOrderQuery.getEndMinute(), supplyOrderQuery.getEndSecond()));
+		}else{
+			supplyOrderQuery.setEndHour("23");
+			supplyOrderQuery.setEndMinute("59");
+			supplyOrderQuery.setEndSecond("59");
+			supplyOrderQuery.setStartHour("00");
+			supplyOrderQuery.setStartMinute("00");
+			supplyOrderQuery.setStartSecond("00");
+		}
+		return supplyOrderQuery;
 	}
 }

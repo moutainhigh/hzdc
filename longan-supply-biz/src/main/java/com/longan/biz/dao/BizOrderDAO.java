@@ -3,6 +3,7 @@ package com.longan.biz.dao;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.ibatis.sqlmap.engine.mapping.sql.Sql;
 import com.longan.biz.dataobject.BizOrder;
 import com.longan.biz.dataobject.BizOrderExample;
 import com.longan.biz.dataobject.BizOrderQuery;
@@ -28,6 +29,8 @@ public interface BizOrderDAO {
 
     List<BizOrder> queryByPage(BizOrderQuery bizOrderQuery) throws SQLException;
 
+    List<BizOrder> queryByPageDayThree () throws SQLException;
+
     int countByExport(BizOrderQuery bizOrderQuery) throws SQLException;
 
     List<BizOrder> queryByExport(BizOrderQuery bizOrderQuery) throws SQLException;
@@ -47,4 +50,6 @@ public interface BizOrderDAO {
     int remarks(BizOrder bizOrder) throws SQLException;
 
     BizOrder selectRemaks(Long id) throws SQLException;
+
+    int updateRefund(BizOrder bizOrder) throws SQLException;
 }

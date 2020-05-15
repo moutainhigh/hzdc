@@ -1,8 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
 <sqlMap namespace="black_list">
-	<select id="abatorgenerated_countByItemUid" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+	<resultMap id="abatorgenerated_blackListResult" class="com.longan.biz.dataobject.BlackList">
+		<result property="id" jdbcType="INTEGER" column="id" />
+		<result property="itemUId" jdbcType="VARCHAR" column="item_uid" />
+		<result property="cityName" jdbcType="VARCHAR" column="city_name" />
+	</resultMap>
+	<sql id="whereConditions">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="itemUId">
+				item_uid like concat('', #itemUId#, '%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cityName">
+				city_name like concat('', #cityName#, '%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="abatorgenerated_countByItemUid" parameterClass="java.lang.String" resultClass="java.lang.Integer" >
 		select count(1) from
 		black_list where item_uid = #itemUid:VARCHAR#
 	</select>
+
+	<select id="abatorgenerated_queryBlackList" parameterClass="com.longan.biz.dataobject.BlackList" resultMap="abatorgenerated_blackListResult" >
+		select id,item_uid,city_name FROM black_list
+		<include refid="black_list.whereConditions" />
+		ORDER BY id DESC LIMIT #startRow#,#pageSize#
+	</select>
+	<select id="abatorgenerated_queryBlackListCount" parameterClass="com.longan.biz.dataobject.BlackList" resultClass="java.lang.Integer">
+		select count(*) from black_list
+		<include refid="black_list.whereConditions" />
+	</select>
+	<insert id="abatorgenerated_insert" parameterClass="com.longan.biz.dataobject.BlackList" >
+		insert into black_list (item_uid,city_name) value (#itemUId#,#cityName#)
+	</insert>
+	<delete id="abatorgenerated_deleteBlack" parameterClass="java.lang.String" >
+		delete from black_list where id = #id:VARCHAR#
+	</delete>
 </sqlMap>
