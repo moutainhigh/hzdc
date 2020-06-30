@@ -314,4 +314,11 @@
 		<include refid="user_info.downStreamInfoQueryColumns" />
 		FROM user_info u left join acct_info a on u.id = a.user_id where u.id = #id:BIGINT#
 	</select>
+	<select id="queryByName" resultMap="abatorgenerated_UserInfoResult">
+		select id, login_id, acct_id, user_name, compay_info, email, user_info, mobile, addr, area, pwd, referer, status,
+		alert_status, last_login_time, last_login_ip, gmt_create, gmt_modify,type FROM user_info
+		where user_name = #username:varchar#
+		<!--		<include refid="user_info.whereConditions" />-->
+	</select>
+
 </sqlMap>

@@ -68,15 +68,15 @@
 					</td>
                     <td>代理商</td>
                     <td>
-                        <input id="downUser" value="" />
-                        <ul id="ulSytleUser" style="list-style: none;margin-left:0px;border: 1px solid lightgrey">
+                        <input id="downUser" value="" autocomplete="off" />
+                        <ul id="ulSytleUser" style="list-style: none;background: whitesmoke;margin-left:0px;border: 1px solid #cccccc">
                         </ul>
 						#selectClassMedium($!downStreamUser,'userId',$!supplyOrderQuery.userId)
 					</td>
 					<td>上游供货商</td>
                     <td>
-                        <input id="upStreamUserSolr" value="" />
-                        <ul id="ulSytle" style="list-style: none;margin-left:0px;border: 1px solid lightgrey">
+                        <input id="upStreamUserSolr" value="" autocomplete="off" />
+                        <ul id="ulSytle" style="list-style: none;margin-left:0px;background: whitesmoke;border: 1px solid #cccccc">
                         </ul>
                         <br/>
 						#selectClassMedium($!upStreamUser,'supplyTraderId',$!supplyOrderQuery.supplyTraderId)
@@ -313,9 +313,24 @@
 					return ;
 				}
 			}
-			// if (jQuery('#upStreamUserSolr').val()!=null) {
+			//没有去选择ul
+			if (jQuery('#upStreamUserSolr').val().trim()!=" ") {
+				//supplyTraderId
+				jQuery('#supplyTraderId option').each(function () {
+					if (jQuery('#upStreamUserSolr').val()==jQuery(this).text()) {
+						jQuery(this).attr("selected",true);
+					}
+				})
+            }
 			//
-            // }
+			if (jQuery('#downUser').val().trim()!=" ") {
+				//supplyTraderId
+				jQuery('#userId option').each(function () {
+					if (jQuery('#downUser').val()==jQuery(this).text()) {
+						jQuery(this).attr("selected",true);
+					}
+				})
+			}
 			jQuery('#supplyOrderQueryForm').attr("action", "querySupplyOrder.do");
 			jQuery('#supplyOrderQueryForm').submit();
 		}
@@ -411,7 +426,7 @@
                     jQuery(this).attr("selected",false);
                 })
             }
-            jQuery('#ulSytle').css('display','block').css('background','#fff').css('position','absolute');
+            jQuery('#ulSytle').css('display','block').css('position','absolute');
         }
         //滑过input 》ul也显示
         jQuery('#upStreamUserSolr').hover(function () {
@@ -431,12 +446,12 @@
             jQuery('#downUser').css('width','140px');
             jQuery('#downUser').val(jQuery('#userId').find('option:selected').text());
 		}
-        jQuery('#ulSytle').css('z-index','20').css('display','none').css('display','none').css('width','145px').css('height','200px').css('overflow','auto');
+        jQuery('#ulSytle').css('z-index','50').css('display','none').css('display','none').css('font-weight','blod').css('width','142px').css('height','200px').css('overflow','auto');
         jQuery('#ulSytle').find('li').hover(function () {
-            jQuery(this).css('background','gray');
+            jQuery(this).css('background','#1e90ff');
 
         },function () {
-            jQuery(this).css('background','#fff');
+            jQuery(this).css('background','whitesmoke');
         })
         jQuery('#ulSytle').hover(function () {
             jQuery(this).show();
@@ -454,9 +469,7 @@
                 }
             })
         })
-        //jQuery('#supplyTraderId').css('display','none');
-
-
+        jQuery('#supplyTraderId').css('display','none');
         ///////////////////////////////////////////////
         //ul拼接
         jQuery('#userId option').each(function (index) {
@@ -495,14 +508,14 @@
                     jQuery(this).attr("selected",false);
                 })
             }
-            jQuery('#ulSytleUser').css('display','block').css('background','#fff').css('position','absolute');
+            jQuery('#ulSytleUser').css('display','block').css('position','absolute');
         }
-        jQuery('#ulSytleUser').css('z-index','20').css('display','none').css('display','none').css('width','145px').css('height','200px').css('overflow','auto');
+        jQuery('#ulSytleUser').css('z-index','50').css('display','none').css('display','none').css('width','142px').css('height','200px').css('font-weight','blod').css('overflow','auto');
         jQuery('#ulSytleUser').find('li').hover(function () {
-            jQuery(this).css('background','gray');
+            jQuery(this).css('background','#1e90ff');
 
-        },function () {
-            jQuery(this).css('background','#fff');
+        },function () {//#F9F9F9 white
+            jQuery(this).css('background','whitesmoke');
         })
         jQuery('#ulSytleUser').hover(function () {
             jQuery(this).show();
@@ -527,7 +540,7 @@
         },function () {
             jQuery('#ulSytleUser').hide();
         })
-        //jQuery('#userId').css('display','none');
+       jQuery('#userId').css('display','none');
 
     </script>
 </body>

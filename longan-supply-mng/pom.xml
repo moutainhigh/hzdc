@@ -103,7 +103,11 @@
 			<artifactId>fastjson</artifactId>
 			<version>1.2.51</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.google.code.simple-spring-memcached</groupId>
+            <artifactId>spymemcached</artifactId>
+        </dependency>
+    </dependencies>
 	<build>
 		<finalName>mng</finalName>
 		<plugins>

@@ -37,6 +37,13 @@
             </td>
         </tr>
         <tr>
+            <td width="100">通道类型</td>
+            <td width="450">
+                #selectClassBig($!supplyWayList,"supplyWay",$!itemSupply.supplyWay)
+					#getErrorMessage($errorList,"supplyWay")
+            </td>
+        </tr>
+        <tr>
             <td width="100">损失类型</td>
             <td class="detail" width="450">
                 #select($!lossTypeList,'lossType',$!itemSupply.lossType)
@@ -44,6 +51,8 @@
                 <div id="lossTime" style="display:none">
                     <input type="text" name="lossTime" value="$!itemSupply.lossTime" />笔后止损
                     #getErrorMessage($errorList,"lossTime")
+##                    <span>  </span>
+                    <span id="spanRed" style="color: red; display: inline-block;display: none">损失笔数过大</span>
                 </div>
             </td>
         </tr>
@@ -51,12 +60,13 @@
         <tfoot>
         <tr>
             <td colspan="4">
-                <input class="btn btn-inverse" id="find" type="submit" value="修改" />
+                <a class="btn btn-inverse" onclick="javascript:query();">修改</a>
                 <input class="btn btn-inverse" type="button" onclick="javascript: history.go(-1)" value="取消" />
             </td>
         </tr>
         </tfoot>
     </table>
+
 </form>
 <script>
     window.onload=function(){
@@ -75,6 +85,20 @@
             }
         }
 
+    }
+    function query(){
+        var val  = jQuery('#lossTime>input').val();
+        console.log(val.toString().length)
+        console.log(val);
+        console.log(parseInt(val));
+        if (val.toString().length>=10 || val ==NaN) {
+            jQuery('#spanRed').css('display','inline-block');
+            return false;
+        }else {
+            jQuery('#spanRed').css('display','none');
+        }
+        jQuery('#form').attr("action", "itemSupplyLossTypeBatch.do");
+        jQuery('#form').submit();
     }
 </script>
 </body>

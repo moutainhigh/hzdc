@@ -12,6 +12,7 @@ public class BizOrderQuery extends QueryBase {
     private Date endGmtCreate;
     private Integer status;
     private Integer notifyStatus;
+    private Integer vcodeStatus;
     private Integer itemId;
     private String itemUid;
     private Long payOrderId;
@@ -37,6 +38,8 @@ public class BizOrderQuery extends QueryBase {
     //
     private Integer itemFaceprice;
     private String memo;
+    //其他的备注
+    private String otherMemo;
     //时，分，秒的封装
     private String startHour;
     private String startMinute;
@@ -329,5 +332,21 @@ public class BizOrderQuery extends QueryBase {
 
     public void setItemFaceprice(Integer itemFaceprice) {
         this.itemFaceprice = itemFaceprice;
+    }
+
+    public Integer getVcodeStatus() {
+        return vcodeStatus;
+    }
+
+    public void setVcodeStatus(Integer vcodeStatus) {
+        this.vcodeStatus = vcodeStatus;
+    }
+
+    public String getOtherMemo() {
+        return otherMemo;
+    }
+
+    public void setOtherMemo(String otherMemo) {
+        this.otherMemo = otherMemo;
     }
 }

@@ -41,7 +41,6 @@
 	<bean id="smsNotifyDAO" class="com.longan.biz.dao.impl.SmsNotifyDAOImpl" />
 	<bean id="manualLogDAO" class="com.longan.biz.dao.impl.ManualLogDAOImpl" />
 	<bean id="manualOrderDAO" class="com.longan.biz.dao.impl.ManualOrderDAOImpl" />
-
 	<!-- query -->
 	<bean id="queryBizOrderDAO" class="com.longan.biz.dao.impl.QueryBizOrderDAOImpl" />
 	<bean id="queryAcctLogDAO" class="com.longan.biz.dao.impl.QueryAcctLogDAOImpl" />
@@ -54,6 +53,5 @@
 	<bean id="chargeOrderSDao" class="com.hzdc.biz.dao.impl.ChargeOrderSDaoImpl" />
 	<bean id="payOrderSDao" class="com.hzdc.biz.dao.impl.PayOrderSDaoImpl" />
 	<bean id="supplyOrderSDao" class="com.hzdc.biz.dao.impl.SupplyOrderSDaoImpl" />
-
 	<bean id="pddOrderDao" class="com.longan.biz.dao.impl.PddOrderDAOImpl"/>
 </beans>

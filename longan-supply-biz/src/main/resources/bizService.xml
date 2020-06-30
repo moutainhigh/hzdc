@@ -46,6 +46,7 @@
 	<bean id="sxydTokenService" class="com.longan.biz.func.impl.SxydTokenServiceImpl" init-method="init" destroy-method="clear" />
 	
 	<bean id="gotoTargetService" class="com.hzdc.biz.core.impl.GotoTargetServiceImpl" init-method="init" destroy-method="clear" />
+	<bean id="dailyReportService" class="com.hzdc.biz.core.impl.DailyReportServiceImpl" />
 
 	<!-- 缓存 -->
 	<bean id="localAuthCached" class="com.longan.biz.cached.LocalAuthCached" init-method="init" destroy-method="clear" />

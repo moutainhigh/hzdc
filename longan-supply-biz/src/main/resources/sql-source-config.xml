@@ -62,7 +62,6 @@
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<bean id="queryDruidDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-
 		<property name="url" value="${query.jdbc.url}" />
 		<property name="username" value="${query.jdbc.username}" />
 		<property name="password" value="${query.jdbc.password}" />

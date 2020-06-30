@@ -17,7 +17,12 @@ public interface TaskDAO {
 
     List<Task> queryByPage(TaskQuery taskQuery) throws SQLException;
 
+    //定时调价
+    List<Task> queryByPageJob(TaskQuery taskQuery) throws SQLException;
+
     Integer updateTaskById(Task task) throws SQLException;
+    //定时调价完修改状态
+    public Integer updateTaskByIdStatus(Integer id) throws SQLException;
 
     Task getTaskById(Long id) throws SQLException;
 }

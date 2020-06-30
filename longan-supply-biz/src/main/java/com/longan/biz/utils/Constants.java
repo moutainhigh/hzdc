@@ -139,6 +139,18 @@ public class Constants {
 	public final static String NOTIFY_NORMAL_DESC = "正常";
 	public final static String NOTIFY_UNKNOWN_DESC = "未确认";
 
+	public final static int VCODE_INIT = 0;// 未发码
+	public final static int VCODE_SENT = 1;// 已发码
+	public final static int VCODE_USED = 2;// 已消费
+	public final static int VCODE_INVALID = 3;// 待退码
+	public final static int VCODE_REFUND = 4;// 已退码
+
+	public final static String VCODE_INIT_DESC = "未发码";
+	public final static String VCODE_SENT_DESC = "已发码";
+	public final static String VCODE_USED_DESC = "已消费";
+	public final static String VCODE_INVALID_DESC = "待退码";
+	public final static String VCODE_REFUND_DESC = "已退码";
+
 	public final static int CHANNEL_SUPPLY = 1; // 接口外放
 
 	public static final int DOWNSTREAM_SUPPLY_WAY_SYNC = 0;
@@ -161,6 +173,8 @@ public class Constants {
 
 	public final static String MANUAL_TYPE_NO_DESC = "否";
 	public final static String MANUAL_TYPE_YES_DESC = "是";
+
+
     }
 
     public interface PayOrder {
@@ -733,6 +747,9 @@ public class Constants {
 	public final static String SXYD_TOKEN_KEY = "sxyd_token_cache";
 	public final static String SXYD_SMS_KEY = "sxyd_sms_cache";
 	public final static String MOBILE_CHECK_KEY = "mobile_check_cache";
+	public final static String SCYD_TOKEN_KEY = "scyd_token_cache";
+	public final static String CHARGE_SMS_KEY = "charge_sms_cache";
+	public final static String JIFEN_SMS_KEY = "jifen_sms_cache";
     }
 
     public final static Map<String, String> ITEM_SIZE_MAP = new LinkedHashMap<String, String>();
@@ -794,6 +811,7 @@ public class Constants {
 	public final static long SLSX_USER_ID = Utils.getLong("slsx.userId");
 	public final static long HZXS_USER_ID = Utils.getLong("hzxs.userId");
 	public final static long LTDK_USER_ID = Utils.getLong("ltdk.userId");
+	public final static long LTZF_USER_ID = Utils.getLong("ltzf.userId");
     }
     public static  final String  constTime = "00";
 	public static  final String  constSecondTime = "59";
@@ -833,5 +851,21 @@ public class Constants {
 		AFTERSALESSTATUS.put(31,"商家同意拒收退款，待用户拒收");
 		AFTERSALESSTATUS.put(32,"待商家补寄发货");
 	}
+	//省份集合
+	public static  Map<String, String> mapCarrierType = new LinkedHashMap<String, String>();
+    static {
+		mapCarrierType.put(Constants.Item.CARRIER_TYPE_MOBILE + "", Constants.Item.CARRIER_TYPE_MOBILE_DESC);
+		mapCarrierType.put(Constants.Item.CARRIER_TYPE_TELECOM + "", Constants.Item.CARRIER_TYPE_TELECOM_DESC);
+		mapCarrierType.put(Constants.Item.CARRIER_TYPE_UNICOM + "", Constants.Item.CARRIER_TYPE_UNICOM_DESC);
+		mapCarrierType.put(Constants.Item.CARRIER_TYPE_OTHER + "", Constants.Item.CARRIER_TYPE_OTHER_DESC);
+	}
+	//供货的运营商集合
+	public static  Map<Integer, String> mapCarrierTypeSupp = new LinkedHashMap<Integer, String>();
+	static {
+		mapCarrierTypeSupp.put(200, "联通");
+		mapCarrierTypeSupp.put(201, "移动");
+		mapCarrierTypeSupp.put(202, "电信");
+	}
+
 
 }

@@ -1,6 +1,8 @@
 package com.longan.biz.utils;
 
 import com.longan.biz.dataobject.BizOrderQuery;
+import com.longan.biz.dataobject.OrderReport;
+import com.longan.biz.dataobject.SuppOrderReport;
 import com.longan.biz.dataobject.SupplyOrderQuery;
 import org.springframework.util.StringUtils;
 
@@ -376,5 +378,71 @@ public class DateTool {
 			supplyOrderQuery.setStartSecond("00");
 		}
 		return supplyOrderQuery;
+	}
+	public static OrderReport dateFilterOrderReport(OrderReport orderReport) {
+		if (StringUtils.hasText(orderReport.getStartHour()) || StringUtils.hasText(orderReport.getEndHour()) || StringUtils.hasText(orderReport.getStartMinute()) || StringUtils.hasText(orderReport.getEndMinute()) || StringUtils.hasText(orderReport.getStartSecond()) || StringUtils.hasText(orderReport.getEndSecond())) {
+			if (!StringUtils.hasText(orderReport.getStartHour())) {
+				orderReport.setStartHour(Constants.constTime);
+			}
+			if (!StringUtils.hasText(orderReport.getEndHour())) {
+				orderReport.setEndHour(Constants.constTime);
+			}
+			if (!StringUtils.hasText(orderReport.getStartMinute())) {
+				orderReport.setStartMinute(Constants.constTime);
+			}
+			if (!StringUtils.hasText(orderReport.getEndMinute())) {
+				orderReport.setEndMinute(Constants.constTime);
+			}
+			if (!StringUtils.hasText(orderReport.getStartSecond())) {
+				orderReport.setStartSecond(Constants.constTime);
+			}
+			if (!StringUtils.hasText(orderReport.getEndSecond())) {
+				orderReport.setEndSecond(Constants.constTime);
+			}
+			//存新值
+			orderReport.setStartGmtCreate(DateTool.formatStartDate(orderReport.getStartGmtCreate(), orderReport.getStartHour(), orderReport.getStartMinute(), orderReport.getStartSecond()));
+			orderReport.setEndGmtCreate(DateTool.formatStartDate(orderReport.getEndGmtCreate(), orderReport.getEndHour(), orderReport.getEndMinute(), orderReport.getEndSecond()));
+		}else{
+			orderReport.setEndHour("23");
+			orderReport.setEndMinute("59");
+			orderReport.setEndSecond("59");
+			orderReport.setStartHour("00");
+			orderReport.setStartMinute("00");
+			orderReport.setStartSecond("00");
+		}
+		return orderReport;
+	}
+	public static SuppOrderReport dateFilterSuppOrderReport(SuppOrderReport orderReport) {
+		if (StringUtils.hasText(orderReport.getStartHour()) || StringUtils.hasText(orderReport.getEndHour()) || StringUtils.hasText(orderReport.getStartMinute()) || StringUtils.hasText(orderReport.getEndMinute()) || StringUtils.hasText(orderReport.getStartSecond()) || StringUtils.hasText(orderReport.getEndSecond())) {
+			if (!StringUtils.hasText(orderReport.getStartHour())) {
+				orderReport.setStartHour(Constants.constTime);
+			}
+			if (!StringUtils.hasText(orderReport.getEndHour())) {
+				orderReport.setEndHour(Constants.constTime);
+			}
+			if (!StringUtils.hasText(orderReport.getStartMinute())) {
+				orderReport.setStartMinute(Constants.constTime);
+			}
+			if (!StringUtils.hasText(orderReport.getEndMinute())) {
+				orderReport.setEndMinute(Constants.constTime);
+			}
+			if (!StringUtils.hasText(orderReport.getStartSecond())) {
+				orderReport.setStartSecond(Constants.constTime);
+			}
+			if (!StringUtils.hasText(orderReport.getEndSecond())) {
+				orderReport.setEndSecond(Constants.constTime);
+			}
+			//存新值
+			orderReport.setStartGmtCreate(DateTool.formatStartDate(orderReport.getStartGmtCreate(), orderReport.getStartHour(), orderReport.getStartMinute(), orderReport.getStartSecond()));
+			orderReport.setEndGmtCreate(DateTool.formatStartDate(orderReport.getEndGmtCreate(), orderReport.getEndHour(), orderReport.getEndMinute(), orderReport.getEndSecond()));
+		}else{
+			orderReport.setEndHour("23");
+			orderReport.setEndMinute("59");
+			orderReport.setEndSecond("59");
+			orderReport.setStartHour("00");
+			orderReport.setStartMinute("00");
+			orderReport.setStartSecond("00");
+		}
+		return orderReport;
 	}
 }

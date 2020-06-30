@@ -87,14 +87,15 @@
 ##                    #getErrorMessage($errorList,"lossTime")
 ##                    </div>
                 </td>
-				<td width="100">供货区域<font color="#FF0000"> *</font></td>
-                <td width="450">
-				    #select($!supplyAreaTypeList,"supplyAreaType",$!itemSupply.supplyAreaType) #getErrorMessage($errorList,"supplyAreaType")	<br />
-					<div id="areaList" style="display:none">
-						#checkBoxFlat("supplyAreaList", $!areaInfoList,$!itemSupply.supplyAreaList) <br />
-						#getErrorMessage($errorList,"supplyAreaList")
-                    </div>
-				</td>
+##				供货区域
+				<td width="100"><font color="#FF0000"></font></td>
+##                <td width="450">
+##				    #select($!supplyAreaTypeList,"supplyAreaType",$!itemSupply.supplyAreaType) #getErrorMessage($errorList,"supplyAreaType")	<br />
+##					<div id="areaList" style="display:none">
+##						#checkBoxFlat("supplyAreaList", $!areaInfoList,$!itemSupply.supplyAreaList) <br />
+##						#getErrorMessage($errorList,"supplyAreaList")
+##                    </div>
+##				</td>
             </tr>
         </tbody>
         <tfoot>

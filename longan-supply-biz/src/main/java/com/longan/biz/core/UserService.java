@@ -39,4 +39,6 @@ public interface UserService {
     public Result<UserInfo> getDownStreamById(Long userId);
 
     public Result<Boolean> updateUser(UserInfo userInfo, TraderInfo traderInfo);
+
+    public UserInfo queryByName(String username);
 }

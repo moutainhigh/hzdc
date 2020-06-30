@@ -12,7 +12,7 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class QueryBase implements Serializable {
     private static final long serialVersionUID = 1L;
-    private static final Integer defaultPageSize = new Integer(20);
+    private static final Integer defaultPageSize = new Integer(10);
     private static final Integer defaultFristPage = new Integer(1);
     private static final Integer defaultTotleItem = new Integer(0);
     private Integer totalItem;

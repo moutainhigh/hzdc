@@ -5,6 +5,7 @@ import java.util.List;
 import com.longan.biz.dataobject.BizOrder;
 import com.longan.biz.dataobject.BizOrderExample;
 import com.longan.biz.dataobject.BizOrderQuery;
+import com.longan.biz.dataobject.OrderReport;
 import com.longan.biz.domain.Result;
 
 public interface BizOrderService {
@@ -72,4 +73,12 @@ public interface BizOrderService {
     public Result<BizOrder> selectRemaks(Long bizOderId);
 
     public int updateRefund(BizOrder bizOrder);
+
+    public  int countNowOrder();
+
+    public int countSuccessOrder();
+
+    public int countThreeDayOrder();
+
+    public int selectReportCount(OrderReport orderReport);
 }

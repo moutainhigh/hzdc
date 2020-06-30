@@ -228,12 +228,12 @@
 				}
 				//销售区域不能为空
 				//select_itemSupplyQuery
-				var val_itemSupplyQuery =jQuery('#select_itemSupplyQuery').find('select').find('option:selected').val();
-				console.log(val_itemSupplyQuery);
-				if (val_itemSupplyQuery=='') {
-					alert("请选择销售区域查询后在批量修改操作");
-					return;
-				}
+				// var val_itemSupplyQuery =jQuery('#select_itemSupplyQuery').find('select').find('option:selected').val();
+				// console.log(val_itemSupplyQuery);
+				// if (val_itemSupplyQuery=='') {
+				// 	alert("请选择销售区域查询后在批量修改操作");
+				// 	return;
+				// }
 				window.location.href = "itemSupplyDeal.do?requestType=itemBatchEdit&bizId=$!itemSupplyQuery.bizId&ids="+list;
 			}
 			//批量笔后止损

@@ -68,6 +68,6 @@ public class Md5Encrypt {
     }
 
     public static void main(String[] args) {
-	System.out.println(Md5Encrypt.md5(Md5Encrypt.md5("123456"+"longan_login")));
+	System.out.println(Md5Encrypt.md5(Md5Encrypt.md5("123456" + "longon_login")));
     }
 }

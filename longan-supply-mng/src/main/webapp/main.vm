@@ -361,7 +361,11 @@
                     <ul class="kid" style="display:none">
 						<li><b class="tip"></b><a target="Conframe" href="statistic/queryAllBizOrder.do">订单统计查询</a></li>
 						<li><b class="tip"></b><a target="Conframe" href="statistic/queryAllSupplyOrder.do">供货单统计查询</a></li>
-                    </ul>
+						<li><b class="tip"></b><a target="Conframe" href="statistic/queryAllOrderReport.do">订单统计报表</a></li>
+						<li><b class="tip"></b><a target="Conframe" href="statistic/queryAllSupplyOrderReport.do">供货单统计报表</a></li>
+						<li><b class="tip"></b><a target="Conframe" href="biz/queryBizOrderAllExport.do?bizId=222">订单统计下载</a></li>
+						<li><b class="tip"></b><a target="Conframe" href="biz/querySupplyOrderAllExport.do?bizId=222">供货单统计下载</a></li>
+					</ul>
                 </div>
 				#end
 				<div>

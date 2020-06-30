@@ -62,8 +62,8 @@ public class ItemServiceImpl extends BaseService implements ItemService {
     @Resource
     private ChargingLimitService chargingLimitService;
 
-    private final static long MAX_REPEAT_TIME = 60 * 60 * 1000; // 默认 60分钟
-    private final static int MAX_REPEAT_COUNT = 6; // 默认6次
+    private final static long MAX_REPEAT_TIME = 3 * 60 * 60 * 1000; // 默认 180分钟
+    private final static int MAX_REPEAT_COUNT = 16; // 默认16次
     private static final Integer ITEM_PRICE_EXP = 5 * 60;// 5 * 60; // 5分种
 
     @Override

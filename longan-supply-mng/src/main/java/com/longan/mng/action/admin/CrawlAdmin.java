@@ -1,11 +1,16 @@
 package com.longan.mng.action.admin;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.util.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +22,7 @@ import com.longan.biz.pojo.PddCacheToken;
 import com.longan.biz.pojo.SxydCacheToken;
 import com.longan.biz.utils.Constants;
 import com.longan.biz.utils.DateTool;
+import com.longan.biz.utils.Utils;
 import com.longan.client.remote.domain.CrawlLogin;
 import com.longan.client.remote.service.CallCrawlService;
 import com.longan.client.remote.service.CallMessageService;
@@ -27,9 +33,11 @@ import com.longan.mng.form.CrawlForm;
 @Controller
 @RequestMapping(value = "crawl/httpDeal")
 public class CrawlAdmin extends BaseController {
+    private static String verifyFile = Utils.getProperty("verify.file");
+
     private final static List<String> errorStatus = new ArrayList<String>();
     static {
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 20; i++) {
 	    errorStatus.add("错误");
 	}
     }
@@ -150,17 +158,58 @@ public class CrawlAdmin extends BaseController {
 	return "/admin/crawlList";
     }
 
+    @RequestMapping(params = "requestType=rand")
+    public void crawlRand(HttpServletResponse response) {
+	response.setContentType("image/jpeg");
+	ServletOutputStream sos = null;
+	FileInputStream fis = null;
+	try {
+	    sos = response.getOutputStream();
+	    response.setHeader("Pragma", "No-cache");
+	    response.setHeader("Cache-Control", "no-cache");
+	    response.setDateHeader("Expires", 0);
+	    fis = new FileInputStream(verifyFile);
+	    IOUtils.copy(fis, sos);
+	    sos.flush();
+	} catch (Exception ex) {
+	} finally {
+	    try {
+		if (fis != null) {
+		    fis.close();
+		}
+		if (sos != null) {
+		    sos.close();
+		}
+	    } catch (IOException e) {
+	    }
+	}
+    }
+
     @Resource
     private MemcachedService memcachedService;
 
-    @RequestMapping(params = "requestType=cachedInit")
+    @RequestMapping(params = "requestType=cachedCheck")
     public @ResponseBody
-    AjaxResponse cachedIn() {
+    AjaxResponse cachedCheck() {
 	AjaxResponse response = new AjaxResponse();
 	Long count = memcachedService.getLongValue(Constants.CacheKey.MOBILE_CHECK_KEY);
 	if (count == null) {
 	    count = 0l;
 	    memcachedService.initCount(Constants.CacheKey.MOBILE_CHECK_KEY, 0, count);
+	}
+	response.setSuccess();
+	response.setModule(count);
+	return response;
+    }
+
+    @RequestMapping(params = "requestType=cachedInit")
+    public @ResponseBody
+    AjaxResponse cachedIn() {
+	AjaxResponse response = new AjaxResponse();
+	Long count = memcachedService.getLongValue(Constants.CacheKey.CHARGE_SMS_KEY);
+	if (count == null) {
+	    count = 0l;
+	    memcachedService.initCount(Constants.CacheKey.CHARGE_SMS_KEY, 0, count);
 	}
 	response.setSuccess();
 	response.setModule(count);
@@ -180,9 +229,9 @@ public class CrawlAdmin extends BaseController {
 	    return response;
 	}
 
-	memcachedService.inc(Constants.CacheKey.MOBILE_CHECK_KEY, icount);
+	memcachedService.inc(Constants.CacheKey.CHARGE_SMS_KEY, icount);
 	response.setSuccess();
-	response.setModule(memcachedService.get(Constants.CacheKey.MOBILE_CHECK_KEY));
+	response.setModule(memcachedService.get(Constants.CacheKey.CHARGE_SMS_KEY));
 	return response;
     }
 
@@ -199,9 +248,9 @@ public class CrawlAdmin extends BaseController {
 	    return response;
 	}
 
-	memcachedService.dec(Constants.CacheKey.MOBILE_CHECK_KEY, dcount);
+	memcachedService.dec(Constants.CacheKey.CHARGE_SMS_KEY, dcount);
 	response.setSuccess();
-	response.setModule(memcachedService.get(Constants.CacheKey.MOBILE_CHECK_KEY));
+	response.setModule(memcachedService.get(Constants.CacheKey.CHARGE_SMS_KEY));
 	return response;
     }
 
@@ -284,7 +333,7 @@ public class CrawlAdmin extends BaseController {
 	}
 
 	try {
-	    callMessageService.sendSmsOnly(smsMobile, smsText);
+	    callMessageService.sendSmsOnly(true, smsMobile, smsText);
 	    response.setSuccess();
 	    response.setModule("发送成功");
 	} catch (Exception ex) {

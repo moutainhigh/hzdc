@@ -51,7 +51,13 @@ public class QueryBizOrder extends BaseController {
     @RequestMapping("biz/queryBizOrder")
     public String doQuery(@ModelAttribute("bizOrderQuery") BizOrderQuery bizOrderQuery, Model model, HttpSession session) {
 	UserInfo userInfo = getUserInfo(session);
-
+	if (!StringUtils.isEmpty(bizOrderQuery.getMemo())) {
+		String other = "其他";
+		if (other.equals(bizOrderQuery.getMemo())) {
+			bizOrderQuery.setOtherMemo(bizOrderQuery.getMemo());
+			bizOrderQuery.setMemo("%");
+		}
+	}
 	UserInfoQuery userInfoQuery = new UserInfoQuery();
 	userInfoQuery.setId(userInfo.getId());
 	Result<List<UserInfo>> listResult = userRoleRelationService.queryUserRoleRelationList(userInfoQuery);
@@ -136,6 +142,9 @@ public class QueryBizOrder extends BaseController {
 				setError(model, result.getResultMsg());
 			}
 		}
+		if (!StringUtils.isEmpty(bizOrderQuery.getOtherMemo())) {
+			bizOrderQuery.setMemo("其他");
+		}
 		model.addAttribute("bizOrderList", bizOrders);//前台返回的参数
 		return "biz/queryBizOrder";
 	}
@@ -173,6 +182,9 @@ public class QueryBizOrder extends BaseController {
 		    }
 		}
 	    }
+		if (!StringUtils.isEmpty(bizOrderQuery.getOtherMemo())) {
+				bizOrderQuery.setMemo("其他");
+		}
 	    model.addAttribute("bizOrderList", list);//前台返回的参数
 	} else {
 	    setError(model, result.getResultMsg());
@@ -280,11 +292,23 @@ public class QueryBizOrder extends BaseController {
 		Map<Integer, String> item_face_price = Constants.ITEM_Face_Price;
 		return item_face_price;
 	}
+	@ModelAttribute("vcodeStatusList")
+	public Map<String, String> vcodeStatusList() {
+		Map<String, String> map = new LinkedHashMap<String, String>();
+		map.put(Constants.BizOrder.VCODE_INIT + "", Constants.BizOrder.VCODE_INIT_DESC);
+		map.put(Constants.BizOrder.VCODE_SENT + "", Constants.BizOrder.VCODE_SENT_DESC);
+		map.put(Constants.BizOrder.VCODE_USED + "", Constants.BizOrder.VCODE_USED_DESC);
+		map.put(Constants.BizOrder.VCODE_INVALID + "", Constants.BizOrder.VCODE_INVALID_DESC);
+		map.put(Constants.BizOrder.VCODE_REFUND + "", Constants.BizOrder.VCODE_REFUND_DESC);
+		return map;
+	}
 	@ModelAttribute("memo")
     public Map<String,String>memo(){
     	Map<String,String>map=new LinkedHashMap<String, String>();
-    	map.put("memo","");
-    	map.put("memo","1");
+    	map.put("%","全部备注");
+		map.put("平台","平台介入");
+		map.put("其他","全部售后单");
+		map.put("1","内部备注");
     	return  map;
 	}
 }

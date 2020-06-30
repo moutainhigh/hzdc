@@ -67,7 +67,6 @@ public class AuthFilter extends OncePerRequestFilter {
 		setNoAuthResponse(response);
 		return;
 	    }
-		System.out.println("filter---sos");
 	    response.sendRedirect(request.getContextPath() + "/error/authError.do");
 	    return;
 	}

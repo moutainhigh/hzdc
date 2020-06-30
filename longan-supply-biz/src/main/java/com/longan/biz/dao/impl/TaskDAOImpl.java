@@ -47,6 +47,12 @@ public class TaskDAOImpl implements TaskDAO {
 	taskQuery.setTotalItem(count);
 	return (List<Task>) sqlMapClient.queryForList("task.queryByPage", taskQuery);
     }
+    @Override
+    public List<Task> queryByPageJob(TaskQuery taskQuery) throws SQLException {
+//        int count = (Integer) sqlMapClient.queryForObject("task.queryByPageCount", taskQuery);
+//        taskQuery.setTotalItem(count);queryByPageJob
+        return (List<Task>) sqlMapClient.queryForList("task.queryByPageJob", taskQuery);
+    }
 
     @Override
     public Integer updateTaskById(Task task) throws SQLException {
@@ -55,6 +61,14 @@ public class TaskDAOImpl implements TaskDAO {
 	}
 	return sqlMapClient.update("task.updateTaskById", task);
     }
+    @Override
+    public Integer updateTaskByIdStatus(Integer id) throws SQLException {
+        if (id == null) {
+            return null;
+        }
+        return sqlMapClient.update("task.updateTaskByIdStatus", id);
+    }
+
 
     @Override
     public Task getTaskById(Long id) throws SQLException {

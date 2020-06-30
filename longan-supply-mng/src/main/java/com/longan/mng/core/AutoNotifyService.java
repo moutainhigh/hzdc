@@ -16,12 +16,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.longan.biz.cached.LocalCachedService;
+import com.longan.biz.cached.MemcachedService;
 import com.longan.biz.core.BizOrderService;
 import com.longan.biz.dao.BizOrderDAO;
 import com.longan.biz.dataobject.BizOrder;
 import com.longan.biz.dataobject.BizOrderExample;
 import com.longan.biz.dataobject.TraderInfo;
 import com.longan.biz.domain.Result;
+import com.longan.biz.utils.CachedUtils;
 import com.longan.biz.utils.Constants;
 import com.longan.biz.utils.DateTool;
 import com.longan.biz.utils.Utils;
@@ -39,7 +41,7 @@ public class AutoNotifyService {
     private final static long TIMEGAP = 10l;
     private final static int s_before = 30;
     private final static int e_before = 20 * 60;
-    // private final static long max_times = 3;
+    private final static long max_times = 3;
 
     private static List<Integer> no_notify_status = new ArrayList<Integer>();
     static {
@@ -53,8 +55,8 @@ public class AutoNotifyService {
     @Resource
     private LocalCachedService localCachedService;
 
-    // @Resource
-    // private MemcachedService memcachedService;
+    @Resource
+    private MemcachedService memcachedService;
 
     @Resource
     private BizOrderDAO bizOrderDAO;
@@ -134,16 +136,16 @@ public class AutoNotifyService {
 	    Long supplyTraderId = getSupplyTraderId(bizOrder.getBizId());
 	    if (supplyTraderId == null) {
 		logger.warn("supplyTraderId of mobileCheck is null");
-		// checkMobileTimes(bizOrder.getId(), bizOrder.getItemUid());
-		notifyToUnknown(bizOrder.getId());
+		checkMobileTimes(bizOrder.getId(), bizOrder.getItemUid());
+		// notifyToUnknown(bizOrder.getId());
 		return;
 	    }
 	    Result<MobileCheck> checkResult = supplyQueryService.mobileCheck(supplyTraderId, bizOrder.getId(),
 		    bizOrder.getItemUid(), bizOrder.getItemFacePrice());
 	    if (!checkResult.isSuccess()) {
 		logger.warn("result of mobileCheck is error");
-		// checkMobileTimes(bizOrder.getId(), bizOrder.getItemUid());
-		notifyToUnknown(bizOrder.getId());
+		checkMobileTimes(bizOrder.getId(), bizOrder.getItemUid());
+		// notifyToUnknown(bizOrder.getId());
 		return;
 	    }
 	    MobileCheck mobileCheck = checkResult.getModule();
@@ -157,8 +159,8 @@ public class AutoNotifyService {
 	    } else if (mobileCheck.disableCharge()) {
 		notifyToUnknown(bizOrder.getId());
 	    } else {
-		// checkMobileTimes(bizOrder.getId(), bizOrder.getItemUid());
-		notifyToUnknown(bizOrder.getId());
+		checkMobileTimes(bizOrder.getId(), bizOrder.getItemUid());
+		// notifyToUnknown(bizOrder.getId());
 	    }
 	} catch (Exception ex) {
 	    logger.error("auto notify error", ex);
@@ -183,16 +185,16 @@ public class AutoNotifyService {
 	return supplyTraderId;
     }
 
-    // private void checkMobileTimes(Long bizOrderId, String mobile) {
-    // String timesKey = CachedUtils.checkMobileTimesKey(mobile);
-    // if (memcachedService.get(timesKey) == null) {
-    // memcachedService.initCount(timesKey, CachedUtils.MOBILE_CHECK_TIMES_EXP, 0l);
-    // }
-    // Long times = memcachedService.inc(timesKey, 1);
-    // if (times > max_times) {
-    // notifyToUnknown(bizOrderId);
-    // }
-    // }
+    private void checkMobileTimes(Long bizOrderId, String mobile) {
+	String timesKey = CachedUtils.checkMobileTimesKey(mobile);
+	if (memcachedService.get(timesKey) == null) {
+	    memcachedService.initCount(timesKey, CachedUtils.MOBILE_CHECK_TIMES_EXP, 0l);
+	}
+	Long times = memcachedService.inc(timesKey, 1);
+	if (times > max_times) {
+	    notifyToUnknown(bizOrderId);
+	}
+    }
 
     private boolean notifyToSuccess(Long bizOrderId, Date gmtCreate) {
 	BizOrder updateBizOrder = new BizOrder();

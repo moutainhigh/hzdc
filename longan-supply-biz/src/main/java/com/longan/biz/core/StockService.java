@@ -13,7 +13,7 @@ public interface StockService {
 
     /**
      * 锁定库存
-     * 
+     *
      * @param item
      * @return
      */
@@ -21,7 +21,7 @@ public interface StockService {
 
     /**
      * 出库
-     * 
+     *
      * @param stock
      * @return
      */
@@ -29,7 +29,7 @@ public interface StockService {
 
     /**
      * 返回库存。
-     * 
+     *
      * @param stock
      * @return
      */
@@ -37,7 +37,7 @@ public interface StockService {
 
     /**
      * 隔离库存,可能该库存有异常,失效，或者不存在。
-     * 
+     *
      * @param stock
      * @return
      */
@@ -45,13 +45,15 @@ public interface StockService {
 
     /**
      * 放入库存，但是是未激活
-     * 
+     *
      * @param stockList
      * @return
      */
     public Result<Boolean> putInStorage(List<Stock> stockList, StockLog stockLog);
 
     public Result<Stock> getStockById(Long stockId);
+
+    public Result<Stock> getStockByCardId(Long supplyTraderId, String cardId);
 
     public Result<Boolean> updateStock(Stock stock);
 
@@ -63,7 +65,7 @@ public interface StockService {
 
     /**
      * 把已出库的库存，修改为异常状态。
-     * 
+     *
      * @param
      * @return
      */
@@ -71,7 +73,7 @@ public interface StockService {
 
     /**
      * 分页查询
-     * 
+     *
      * @param stockQuery
      * @return
      */
@@ -79,7 +81,7 @@ public interface StockService {
 
     /**
      * 设置成失效
-     * 
+     *
      * @param stock
      * @return
      */
@@ -87,7 +89,7 @@ public interface StockService {
 
     /**
      * 按批次激活
-     * 
+     *
      * @param stockLog
      * @return
      */
@@ -95,7 +97,7 @@ public interface StockService {
 
     /**
      * 按批次失效
-     * 
+     *
      * @param stockList
      * @return
      */

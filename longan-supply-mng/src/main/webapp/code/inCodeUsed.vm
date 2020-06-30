@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+	#parse("common/common.vm")
+	#parse("common/select.vm")
+	#parse("common/errorUtils.vm")
+    <link rel="stylesheet" type="text/css" href="$!staticServer/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="$!staticServer/css/admin-all.css" />
+	<link rel="stylesheet" type="text/css" href="$!staticServer/css/doubleDate.css" />
+    <script type="text/javascript" src="$!staticServer/js/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="$!staticServer/js/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="$!staticServer/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript" src="$!staticServer/js/tip.js"></script>
+	<script type="text/javascript" src="$!staticServer/js/doubleDate2.0.js"></script>
+</head>
+<body>
+    <div></div>
+    <div class="alert alert-info">当前位置<b class="tip"></b>卡券兑换<b class="tip"></b>消费记录</div>
+	<form id="form" action="codeOrderDeal.do?type=inUsed" method="post" enctype="multipart/form-data">
+		<table class="table table-striped table-bordered table-condensed">
+			<tr> 
+	            <td align="right">选择供货商：</td>
+	            <td>
+					#selectClassBig($!traderList,'userId',$!userId)
+					#getErrorMessage($errorList,"userId")
+				</td>
+			</tr>
+			<tr> 
+	            <td align="right">上传消费文件：</td>
+	            <td><input type="file" name="codeFile" size="20" value="">
+					#getErrorMessage($errorList,"codeFile")
+				</td>
+			</tr>
+			<tr>
+	            <td align="right"></td>
+	            <td><font color="#FF0000">$!errorMsg</font></td>
+			</tr>
+			<tr> 
+	            <td align="right">上传消费文件样例：  </td>
+	            <td>
+					<p>从左到右依次是卡号，时间，金额，备注 中间用英文字符 ,隔开</p>
+	                <p>xxxxxxxxxxxxx,xxxxxxxxxxxxx,xxxxxxxxxx,xxxxxxxxxx</p>
+					<p>xxxxxxxxxxxxx,xxxxxxxxxxxxx,xxxxxxxxxx,xxxxxxxxxx</p>
+					<p>xxxxxxxxxxxxx,xxxxxxxxxxxxx,xxxxxxxxxx,xxxxxxxxxx</p>
+				</td>
+			</tr>
+			<tr>
+	          	<td>&nbsp;</td>
+	          	<td><input id="incodeSubmit" class="btn btn-inverse" type="submit" value="提交消费" /></td>
+			</tr>
+        </table>
+	</form>
+</body>
+</html>

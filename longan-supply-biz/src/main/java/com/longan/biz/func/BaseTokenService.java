@@ -31,8 +31,8 @@ import com.longan.biz.utils.FuncUtils;
 
 public class BaseTokenService extends BaseService {
     private static PoolingHttpClientConnectionManager http_pool = new PoolingHttpClientConnectionManager();
-    private static RequestConfig request_config = RequestConfig.custom().setSocketTimeout(30000).setConnectTimeout(20000)
-	    .setConnectionRequestTimeout(20000).build();
+    private static RequestConfig request_config = RequestConfig.custom().setSocketTimeout(20000).setConnectTimeout(10000)
+	    .setConnectionRequestTimeout(10000).build();
     private static DefaultHttpRequestRetryHandler http_handler = new DefaultHttpRequestRetryHandler(1, false);
 
     static {

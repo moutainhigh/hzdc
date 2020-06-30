@@ -104,11 +104,11 @@ public class SupplyOrderQuery extends QueryBase {
     }
 
     public Integer getBizId() {
-	return bizId;
+        return bizId;
     }
 
     public void setBizId(Integer bizId) {
-	this.bizId = bizId;
+        this.bizId = bizId;
     }
 
     public Long getId() {

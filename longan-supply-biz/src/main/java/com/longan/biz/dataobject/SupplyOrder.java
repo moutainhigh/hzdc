@@ -526,7 +526,7 @@ public class SupplyOrder implements Serializable {
 	}
 
 	Long now = System.currentTimeMillis();
-	return (Constants.SupplyOrder.STATUS_CHARGING == supplyStatus || Constants.SupplyOrder.STATUS_UNCONFIRMED == supplyStatus)
+	return (Constants.SupplyOrder.STATUS_CHARGING == supplyStatus || Constants.SupplyOrder.STATUS_UNCONFIRMED == supplyStatus || Constants.SupplyOrder.STATUS_LOCK == supplyStatus)
 		&& (now - gmtCreate.getTime() > 60 * 1000 * 1);
     }
 

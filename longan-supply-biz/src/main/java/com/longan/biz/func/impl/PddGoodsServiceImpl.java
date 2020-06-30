@@ -15,6 +15,7 @@ import java.util.concurrent.TimeoutException;
 import javax.annotation.Resource;
 
 import com.longan.biz.dataobject.PddAfterApi;
+import com.longan.biz.dataobject.PddGoodsApi;
 import com.longan.biz.utils.FuncUtils;
 import net.sf.json.JSONObject;
 
@@ -72,6 +73,66 @@ public class PddGoodsServiceImpl extends BaseTokenService implements PddGoodsSer
 	}
 	return result;
     }
+	@Override
+	public Result<Boolean> pddUp(Integer itemId) {
+		Result<Boolean> result = new Result<Boolean>();
+		Result<Item> itemResult = checkItem(itemId);
+		if (!itemResult.isSuccess()) {
+			result.setResultMsg(itemResult.getResultMsg());
+			return result;
+		}
+		Item item = itemResult.getModule();
+		String accessToken = getAccessToken();
+		if (StringUtils.isBlank(accessToken)) {
+			result.setResultMsg("获取accessToken失败");
+			return result;
+		}
+		PddGoodsApi pddItem = new PddGoodsApi();
+		//上架状态设置
+		pddItem.setIsOnsale(1);
+		pddItem.setAccessToken(accessToken);
+		String response = callPddGoodsApi(item, pddItem);
+		Result<Boolean> responseResult = checkPddGoodsResponse(response);
+		if (responseResult.isSuccess()) {
+			PddItemStatus.map.put(item.getId(), 1);
+			result.setModule(true);
+			result.setSuccess(true);
+		} else {
+			PddItemStatus.map.put(item.getId(), 3);
+			result.setResultMsg(responseResult.getResultMsg());
+		}
+		return result;
+	}
+	//第二次下架测试
+//	@Override
+	public Result<Boolean> pddDown(Integer itemId) {
+		Result<Boolean> result = new Result<Boolean>();
+		Result<Item> itemResult = checkItem(itemId);
+		if (!itemResult.isSuccess()) {
+			result.setResultMsg(itemResult.getResultMsg());
+			return result;
+		}
+		Item item = itemResult.getModule();
+		String accessToken = getAccessToken();
+		if (StringUtils.isBlank(accessToken)) {
+			result.setResultMsg("获取accessToken失败");
+			return result;
+		}
+		PddGoodsApi pddItem = new PddGoodsApi();
+		pddItem.setIsOnsale(0);
+		pddItem.setAccessToken(accessToken);
+		String response = callPddGoodsApi(item, pddItem);
+		Result<Boolean> responseResult = checkPddGoodsResponse(response);
+		if (responseResult.isSuccess()) {
+			PddItemStatus.map.put(item.getId(), 0);
+			result.setModule(true);
+			result.setSuccess(true);
+		} else {
+			PddItemStatus.map.put(item.getId(), 2);
+			result.setResultMsg(responseResult.getResultMsg());
+		}
+		return result;
+	}
 
     @Override
     public Result<Boolean> itemDown(Integer itemId) {
@@ -103,6 +164,7 @@ public class PddGoodsServiceImpl extends BaseTokenService implements PddGoodsSer
 	}
 	return result;
     }
+
 
     @Override
     public Result<Boolean> batchUp(Integer bizId, String provinceCode) {
@@ -329,6 +391,35 @@ public class PddGoodsServiceImpl extends BaseTokenService implements PddGoodsSer
 	pddItem.createMap();
 	return sendData(pddApiUrl, pddItem.getMap());
     }
+    //pdd第二次修改的pdd上下架
+	private String callPddGoodsApi(Item item, PddGoodsApi pddItem) {
+		String[] codes = item.getItemUnit().trim().split(":");
+		pddItem.setGoodsId(Long.parseLong(codes[0]));
+		pddItem.createSign();
+		pddItem.createMap();
+		return sendData(pddApiUrl, pddItem.getMap());
+	}
+	// //pdd第二次修改的pdd上下架状态设置
+	private Result<Boolean> checkPddGoodsResponse(String response) {
+		Result<Boolean> result = new Result<Boolean>();
+		if (StringUtils.isBlank(response)) {
+			result.setResultMsg("获取上下架结果失败");
+			return result;
+		}
+		JSONObject json = JSONObject.fromObject(response);
+		if (json.containsKey("error_response")) {
+			JSONObject error = json.getJSONObject("error_response");
+			result.setResultMsg(error.get("error_code") + ":" + error.get("error_msg"));
+			return result;
+		}
+		if (json.getJSONObject("pdd.goods.sale.status.set").getBoolean("is_success")) {
+			result.setModule(true);
+			result.setSuccess(true);
+		} else {
+			result.setResultMsg("上下架失败");
+		}
+		return result;
+	}
 
     private Result<Boolean> checkPddResponse(String response) {
 	Result<Boolean> result = new Result<Boolean>();
@@ -358,7 +449,7 @@ public class PddGoodsServiceImpl extends BaseTokenService implements PddGoodsSer
 	}
 	return null;
     }
-	public String MycallPddApi(Integer page,Integer pageSize) {
+	public String RefundcallPddApi(Integer page,Integer pageSize) {
 		PddAfterApi pddAfterApi =new PddAfterApi();
 		//获取系统当前的毫秒数
 		Long nowTime = System.currentTimeMillis()/1000;
@@ -373,9 +464,9 @@ public class PddGoodsServiceImpl extends BaseTokenService implements PddGoodsSer
 		//pddAfterApi.setAccessToken("ef1ffd328d984998bc1a8e782f217ac5956d4517");//tocken
 		//获取tocken
 		String accessToken = getAccessToken();
-//		if (StringUtils.isBlank(accessToken)) {
-//			return null;
-//		}
+		if (StringUtils.isBlank(accessToken)) {
+			return null;
+		}
 		pddAfterApi.setAccessToken(accessToken);
 		//创建签名
 		pddAfterApi.createSign();

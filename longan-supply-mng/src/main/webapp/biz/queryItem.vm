@@ -115,8 +115,12 @@
 			<a class="btn btn-danger" onclick="javascript:conditionDown();">按条件下架</a>
 			<a class="btn btn-primary add" onclick="javascript:batchAdd();">批量关联供货</a>
 			<a class="btn btn-primary add" onclick="javascript:conditionAdd();">条件关联供货</a>
-			<a class="btn btn-danger" onclick="javascript:itemPDDBatchUp();">PDD批量上架</a>
-			<a class="btn btn-danger" onclick="javascript:itemPDDBatchDown();">PDD批量下架</a>
+			<a class="btn btn-danger" onclick="javascript:itemPDDBatchUp();">拼多多批量上架</a>
+			<a class="btn btn-danger" onclick="javascript:itemPDDBatchDown();">拼多多批量下架</a>
+			<a class="btn btn-danger" onclick="javascript:autoSortSupply();">供货优先级自动排序</a>
+##			第二次拼多多上下架测试
+##			<a class="btn btn-danger" onclick="javascript:itemPDDBatchGoodsUp();">拼多多批量第二次上架测试</a>
+##			<a class="btn btn-danger" onclick="javascript:itemPDDBatchGoodsDown();">拼多多批量第二次下架测试</a>
 		</div>
         <thead>
             <tr class="tr_detail">
@@ -300,9 +304,19 @@
 				if(list==null || list.length==0){
 					return;
 				}
-				//alert("准备跳转");
-				// console.log("下架的"+list2);
 				window.location.href = "itemPdd.do?requestType=batchPddDown&bizId=$!itemQuery.bizId&itemId=" + list2;
+			}else{
+				return;
+			}
+		}
+
+		function autoSortSupply(){
+			if (confirm("是否对选中的商品的供货优先级进行自动排序")) {
+				var list = getCheckBox();
+				if(list==null || list.length==0){
+					return;
+				}
+				window.location.href = "itemSupplyAutoSort.do?bizId=$!itemQuery.bizId&ids=" + list;
 			}else{
 				return;
 			}
@@ -400,7 +414,6 @@
 					list2.push(d[i].innerText);
 				}
 			}
-			console.log("list2的值"+list2)
 			return list2.toString();
 		}
 		//全国的全选事件
@@ -440,7 +453,38 @@
 				}
 			}
 		}
-
+		//第二次拼多多上架测试
+		function itemPDDBatchGoodsUp() {
+			if (confirm("是否批量上架")) {
+				//alert("pdd进来了");
+				var list = getCheckBox();
+				var list2 = getCheckBoxPDD();
+				if(list==null || list.length==0){
+					return;
+				}
+				console.log("上架的list2数据"+list2)
+				//alert("准备跳转");
+				window.location.href = "itemPdd.do?requestType=batchPddGoodsUp&bizId=$!itemQuery.bizId&itemId=" + list2;
+			}else{
+				return;
+			}
+		}
+		//第二次拼多多下架测试
+		function itemPDDBatchGoodsDown() {
+			if (confirm("是否批量下架")) {
+				//alert("pdd进来了");
+				var list = getCheckBox();
+				var list2 = getCheckBoxPDD();
+				if(list==null || list.length==0){
+					return;
+				}
+				//alert("准备跳转");
+				// console.log("下架的"+list2);
+				window.location.href = "itemPdd.do?requestType=batchPddGoodsDown&bizId=$!itemQuery.bizId&itemId=" + list2;
+			}else{
+				return;
+			}
+		}
 	</script>		 
 </body>
 </html>

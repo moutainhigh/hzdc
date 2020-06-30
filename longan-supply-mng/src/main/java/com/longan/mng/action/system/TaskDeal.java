@@ -89,7 +89,6 @@ public class TaskDeal extends BaseController {
 	return map;
     }
 
-    @Override
     @InitBinder
     public void formInitBinder(WebDataBinder binder) {
 	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

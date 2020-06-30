@@ -1,5 +1,6 @@
 package com.longan.biz.utils;
 
+import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -79,5 +80,12 @@ public class FuncUtils {
 
     public static String getUserAlertSign(String key, Long userId, String timestamp) {
 	return Md5Encrypt.md5(key + userId + timestamp + key);
+    }
+
+    public static void checkFilePath(String fileName) {
+	File path = new File(fileName).getParentFile();
+	if (!path.exists()) {
+	    path.mkdirs();
+	}
     }
 }

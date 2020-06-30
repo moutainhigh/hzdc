@@ -20,7 +20,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.stereotype.Controller;
@@ -560,7 +559,7 @@ public class ManualCharge extends BaseController {
 		    manualOrderUpdate.setUpstreamMemo(root.elementText("desc"));
 		}
 		manualOrderUpdate.setBizOrderId(getUpstreamSerialno(root.elementText("bizOrderId")));
-	    } catch (DocumentException ex) {
+	    } catch (Exception ex) {
 		manualOrderUpdate.setStatus(Constants.ManualOrder.STATUS_CHARGING);
 		manualOrderUpdate.setUpstreamMemo("未确认");
 	    }

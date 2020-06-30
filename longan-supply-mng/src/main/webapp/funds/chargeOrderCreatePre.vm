@@ -3,14 +3,14 @@
 <head>
     <title></title>
 	#parse("common/common.vm")
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/admin-all.css" />
-	<link rel="stylesheet" type="text/css" href="$!staticServer/css/doubleDate.css" />
-    <script type="text/javascript" src="$!staticServer/js/jquery-1.7.2.js"></script>
-    <script type="text/javascript" src="$!staticServer/js/jquery-ui-1.8.22.custom.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
-    <script type="text/javascript" src="$!staticServer/js/tip.js"></script>
-	<script type="text/javascript" src="$!staticServer/js/doubleDate2.0.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/admin-all.css" />
+	<link rel="stylesheet" type="text/css" href="/css/doubleDate.css" />
+    <script type="text/javascript" src="/js/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript" src="/js/tip.js"></script>
+	<script type="text/javascript" src="/js/doubleDate2.0.js"></script>
 </head>
 <body >
 	$!errorMsg

@@ -4,13 +4,13 @@
     <title>鼎驰科技</title>
 	#parse("common/common.vm")
 	#parse("common/errorUtils.vm")
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/admin-all.css" />
-    <script type="text/javascript" src="$!staticServer/js/jquery-1.7.2.js"></script>
-    <script type="text/javascript" src="$!staticServer/js/jquery-ui-1.8.22.custom.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
-    <script type="text/javascript" src="$!staticServer/js/tip.js"></script>
-    <script type="text/javascript" src="$!staticServer/eucp/security.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/admin-all.css" />
+    <script type="text/javascript" src="/js/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript" src="/js/tip.js"></script>
+    <script type="text/javascript" src="/eucp/security.js"></script>
 </head>
 <body>
 	$!errorMsg
@@ -28,8 +28,12 @@
 		<input type="hidden" id="rand" name="rand">
 		<input type="hidden" id="msg" name="msg">
 		<tr>
-			<td align="right">图片验证码：</td>
+			<td align="right">图片验证码(短信)：</td>
 			<td><input type="text" id="inrand" name="inrand"><img src="$!staticServer/verify.jpg?id=$!crawlLogin.pos" align="center"></td>
+		</tr>
+		<tr>
+			<td align="right">图片验证码(登录)：</td>
+			<td><input type="text" id="inrand2" name="inrand2"><img id="loginImgCode" align="center"></td>
 		</tr>
 		<tr>
 			<td align="right">短信验证码：</td>
@@ -85,6 +89,7 @@
 			var response = JSON.parse(htmlobj.responseText);
 			if(response.status == "success" && response.module){
 				alert("发送成功");
+				getLoginCode();
 			}else{
 				alert(response.errorMsg);
 			}
@@ -111,7 +116,7 @@
                 alert("密码是空");
                 return false;
             }
-            var inrand = $("#inrand").val();
+            var inrand = $("#inrand2").val();
             if(inrand.length == 0){
                 alert("图片验证码是空");
                 return false;
@@ -134,6 +139,10 @@
 			$("#msg").val(msg);
 			return true;
 		}
+		
+		function getLoginCode(){
+			document.getElementById("loginImgCode").src = "httpDeal.do?requestType=rand";
+     	}
 	</script>
 </body>
 </html>

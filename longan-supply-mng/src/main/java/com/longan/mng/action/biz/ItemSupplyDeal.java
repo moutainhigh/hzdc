@@ -523,7 +523,7 @@ public class ItemSupplyDeal extends BaseController {
     }
 	//修改操作
     @RequestMapping(value = "biz/itemSupplyEdit", method = RequestMethod.POST)
-    public String onGetBatchEdit(@ModelAttribute("itemSupplyForm") ItemSupplyForm itemSupplyForm, BindingResult bindingResult,
+    public String onPostEdit(@ModelAttribute("itemSupplyForm") ItemSupplyForm itemSupplyForm, BindingResult bindingResult,
 	    HttpSession session, Model model) {
 	UserInfo userInfo = super.getUserInfo(session);
 	model.addAttribute("bizName", Constants.BIZ_MAP.get(Integer.parseInt(itemSupplyForm.getBizId())));
@@ -690,16 +690,7 @@ public class ItemSupplyDeal extends BaseController {
 			}
 			itemList.add(item);
 		}
-//		System.out.println(itemList.get(111));
-		//getAuthUrlByUserId
-		for (int i = 0; i<itemList.size()-1;i++) {
-			for (int j = i+1; j<itemList.size(); j++) {
-				if (!itemList.get(i).getSalesArea().equals(itemList.get(j).getSalesArea())) {
-					super.alertError(model, "所修改区域要相同");
-					return "biz/itemSupplyEdit";
-				}
-			}
-		}
+
 		StringBuilder builder = new StringBuilder();
 		StringBuilder builder1 = new StringBuilder();
 		for (int i = 0; i<itemList.size();i++) {
@@ -833,6 +824,15 @@ public class ItemSupplyDeal extends BaseController {
 				model.addAttribute("errorList", bindingResult.getAllErrors());
 				return "biz/itemSupplyBatchEdit";
 			}
+//			if ((Constants.ItemSupply.LOSSTYPE_CAN + "").equals(itemSupplyForm.getLossType())) {
+//				if (StringUtils.isEmpty(itemSupplyForm.getLossTime())) {
+//					List<ObjectError> allErrors = new ArrayList<ObjectError>();
+//					allErrors.add(new FieldError("itemSupplyBatchEdit", "lossTime", "损失笔数不能为空"));
+//					model.addAttribute("errorList", allErrors);
+//					return "biz/itemSupplyBatchEdit";
+//				}
+//			}
+
 			// 业务权限判断
 			if (!checkBizAuth(Integer.parseInt(itemSupplyForm.getBizId()), userInfo)) {
 				return "error/autherror";
@@ -1154,9 +1154,96 @@ public class ItemSupplyDeal extends BaseController {
 		alertSuccess(model, "../system/queryTask.do?id=" + result.getModule());
 	    }
 	}
-
 	return returnUrl;
     }
+
+	/**
+	 * 供货商自动优先级排序
+	 * @param itemSupplyQuery
+	 * @param session
+	 * @param model
+	 * @return
+	 */
+    @RequestMapping(value = "biz/itemSupplyAutoSort")
+	public String itemSupplyAutoSort(@ModelAttribute("itemSupplyQuery") ItemSupplyQuery itemSupplyQuery, HttpSession session, Model model) {
+		// 业务 权限判断
+		UserInfo userInfo = super.getUserInfo(session);
+		List<ItemSupply> itemSupplyList = null;
+//		List<ItemSupply> resultSupplyList = new ArrayList<ItemSupply>();
+
+		if (!checkBizAuth(itemSupplyQuery.getBizId(), userInfo)) {
+			return "error/autherror";
+		}
+		model.addAttribute("bizName", Constants.BIZ_MAP.get(itemSupplyQuery.getBizId()));
+		model.addAttribute("userInfo", userInfo);
+		boolean flagBool = true;
+		int bizId = 0;
+		if (org.springframework.util.StringUtils.hasText(itemSupplyQuery.getIds())) {
+			String[] split = itemSupplyQuery.getIds().split(",");
+			for (int i = 0; i < split.length; i++) {
+
+				itemSupplyQuery.setItemId(Integer.valueOf(split[i]));
+				Result<List<ItemSupply>> result = itemService.queryItemSupplyPage(itemSupplyQuery);
+				if (!result.isSuccess()) {
+					super.setError(model, result.getResultMsg());
+					return "biz/queryItemSupply";
+				}
+				itemSupplyList = result.getModule();
+				if (itemSupplyList != null) {
+					for (ItemSupply itemSupply : itemSupplyList) {
+						UserInfo supplyTrader = localCachedService.getUserInfo(itemSupply.getSupplyTraderId());
+						if (supplyTrader != null) {
+							itemSupply.setSupplyTraderName(supplyTrader.getUserName());
+//							resultSupplyList.add(itemSupply);
+						}
+					}
+				}
+				Map<Integer,Integer> map = new HashMap<Integer, Integer>();
+				//添加到map集合中
+				for (int k =0 ; k<itemSupplyList.size();k++) {
+					if (itemSupplyList.get(k).getItemSupplyType()==2) {
+						if (itemSupplyList.get(k).getItemCostPrice()==null) {
+								continue;
+						}
+						map.put(k, itemSupplyList.get(k).getItemCostPrice());
+					}
+				}
+				bizId = itemSupplyList.get(0).getBizId();
+				//把map集合排序
+				List<Map.Entry<Integer, Integer>> list = new ArrayList<Map.Entry<Integer, Integer>>(map.entrySet());
+				Collections.sort(list, new Comparator<Map.Entry<Integer, Integer>>()
+				{
+					@Override
+					public int compare(Map.Entry<Integer, Integer> o1, Map.Entry<Integer, Integer> o2)
+					{
+						//按照value值，从大到小排序
+						return o1.getValue().compareTo(o2.getValue());
+					}
+				});
+				int flag = 1;
+				for (Map.Entry<Integer,Integer> s : list)
+				{
+					ItemSupply itemSupply = itemSupplyList.get(s.getKey());
+					itemSupply.setPriority(flag);
+					//优先级+1
+					flag++;
+					Result<Boolean> booleanResult = itemService.updateItemSupply(itemSupply);
+					if (!booleanResult.isSuccess()) {
+						flagBool =false;
+					}
+				}
+			}
+		}
+		if (flagBool) {
+			alertSuccess(model, "queryItem.do?bizId=" +bizId);
+		}
+		//alertSuccess(model, "queryItem.do?bizId=" + itemSupplyList.get(s.getKey()).getBizId());
+		return "biz/queryItemSupply";
+	}
+
+
+
+
 
     private ItemSupply formToItemSupply(ItemSupplyForm itemSupplyForm) {
 	ItemSupply result = new ItemSupply();
@@ -1237,7 +1324,7 @@ public class ItemSupplyDeal extends BaseController {
 //		}
 
 		if (StringUtils.isBlank(itemSupplyForm.getSupplyProductCode())) {
-			result.setSupplyProductCode("");
+			result.setSupplyProductCode(null);
 		} else {
 			result.setSupplyProductCode(itemSupplyForm.getSupplyProductCode().trim());
 		}

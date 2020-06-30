@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.longan.biz.cached.LocalCachedService;
 
 public class BaseService {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Resource
     protected LocalCachedService localCachedService;

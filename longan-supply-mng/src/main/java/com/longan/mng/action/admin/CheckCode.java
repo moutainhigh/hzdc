@@ -20,9 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.longan.mng.action.common.BaseController;
 import com.longan.mng.utils.CheckCodeContext;
 
-/**
- * 图片验证码的切换
- */
 @Controller
 @RequestMapping("admin/checkCode")
 public class CheckCode extends BaseController {

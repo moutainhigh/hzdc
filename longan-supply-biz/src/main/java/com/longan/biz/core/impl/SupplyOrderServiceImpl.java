@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.longan.biz.dataobject.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +17,6 @@ import com.longan.biz.core.StockService;
 import com.longan.biz.core.SupplyOrderService;
 import com.longan.biz.core.UserAlertService;
 import com.longan.biz.dao.SupplyOrderDAO;
-import com.longan.biz.dataobject.Stock;
-import com.longan.biz.dataobject.SupplyOrder;
-import com.longan.biz.dataobject.SupplyOrderQuery;
-import com.longan.biz.dataobject.TraderInfo;
 import com.longan.biz.domain.Result;
 import com.longan.biz.sumobject.SupplyOrderAmount;
 import com.longan.biz.utils.Constants;
@@ -696,7 +693,6 @@ public class SupplyOrderServiceImpl extends BaseService implements SupplyOrderSe
 	    result.setResultMsg("入参错误");
 	    return result;
 	}
-
 	try {
 	    SupplyOrderAmount amount = supplyOrderDAO.querySumAmount(supplyOrderQuery);
 	    if (supplyOrderQuery.getUserId() != null) {
@@ -713,6 +709,28 @@ public class SupplyOrderServiceImpl extends BaseService implements SupplyOrderSe
 	}
 	return result;
     }
+    //供货单报表
+	@Override
+	public SuppOrderReport querySupplyOrderReportSum(SuppOrderReport suppOrderReport) {
+		SuppOrderReport supplyOrderAmount = null;
+		if (suppOrderReport == null) {
+			logger.error("报表统计入参错误");
+			return supplyOrderAmount;
+		}
+		try {
+			 supplyOrderAmount = supplyOrderDAO.querySumAmountReport(suppOrderReport);
+			if (!StringUtils.isEmpty(suppOrderReport.getUserId())) {
+				TraderInfo traderInfo = localCachedService.getTraderInfo(Long.valueOf(suppOrderReport.getUserId()));
+				if (traderInfo != null) {
+					supplyOrderAmount.setFeeAmount(traderInfo.getServiceFee(), traderInfo.getCashFee());
+				}
+			}
+		} catch (SQLException e) {
+			logger.info("供货单报表统计失败 msg: " + e.getMessage());
+			logger.error("querySupplyOrderReportSum error ", e);
+		}
+		return supplyOrderAmount;
+	}
 
     @Override
     public String getCombineOrderExtends(Long bizOrderId) {

@@ -244,7 +244,6 @@ public class ItemPriceDeal extends BaseController {
 	    model.addAttribute("errorList", bindingResult.getAllErrors());
 	    return returnUrl;
 	}
-
 	if (StringUtils.isEmpty(itemPriceListForm.getItemCostPriceDiscount())
 		&& StringUtils.isEmpty(itemPriceListForm.getItemSalesPriceDiscount())
 		&& StringUtils.isEmpty(itemPriceListForm.getItemSalesPrice2Discount())
@@ -254,7 +253,6 @@ public class ItemPriceDeal extends BaseController {
 	    super.alertError(model, "必须填写需要修改的价格折扣");
 	    return returnUrl;
 	}
-
 	// 设置价格
 	for (ItemPrice itemPrice : itemPriceList) {
 	    setPrice(itemPriceListForm, itemPrice);

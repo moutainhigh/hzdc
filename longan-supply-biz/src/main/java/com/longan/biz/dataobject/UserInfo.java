@@ -133,6 +133,9 @@ public class UserInfo {
     }
 
     public Integer getAlertStatus() {
+	if (alertStatus == null) {
+	    return Constants.UserInfo.ASTATUS_NO;
+	}
 	return alertStatus;
     }
 

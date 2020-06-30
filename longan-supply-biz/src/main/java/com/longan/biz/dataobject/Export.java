@@ -26,6 +26,7 @@ public class Export implements Serializable {
     private Integer costTime;
     private Date gmtCreate;
     private Date gmtModify;
+    private String memo;
 
     private Integer pageCount;
     private Boolean isDownStream;
@@ -239,5 +240,13 @@ public class Export implements Serializable {
 
     public void setIsPartner(Boolean isPartner) {
 	this.isPartner = isPartner;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
     }
 }

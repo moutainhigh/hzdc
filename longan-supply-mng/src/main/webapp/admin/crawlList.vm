@@ -4,12 +4,12 @@
     <title>鼎驰科技</title>
 	#parse("common/common.vm")
 	#parse("common/errorUtils.vm")
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/admin-all.css" />
-    <script type="text/javascript" src="$!staticServer/js/jquery-1.7.2.js"></script>
-    <script type="text/javascript" src="$!staticServer/js/jquery-ui-1.8.22.custom.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
-    <script type="text/javascript" src="$!staticServer/js/tip.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/admin-all.css" />
+    <script type="text/javascript" src="/js/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript" src="/js/tip.js"></script>
 </head>
 <body>
 	$!errorMsg
@@ -27,7 +27,8 @@
 		<tbody>
 			<tr><td colspan="4">云南联通</td></tr>
 			<tr>
-                <td>450</td><td>云南联通话费一</td><td>$!ynltStatus[0]</td><td>
+                <td>278</td><td>云南联通话费充值</td><td>$!ynltStatus[0]</td>
+                <td>
 				#if($!ynltStatus[0]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=1&area=3" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -37,7 +38,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>450</td><td>云南联通话费二</td><td>$!ynltStatus[1]</td><td>
+                <td>278</td><td>云南联通话费查询</td><td>$!ynltStatus[1]</td>
+                <td>
 				#if($!ynltStatus[1]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=2&area=3" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -47,87 +49,7 @@
 				</td>
 			</tr>
 			<tr>
-                <td>450</td><td>云南联通话费三</td><td>$!ynltStatus[2]</td><td>
-				#if($!ynltStatus[2]=="已停止")
-					<a href="httpDeal.do?requestType=index&pos=3&area=3" class="btn btn-mini btn-primary add">开始</a>
-				#end
-				#if($!ynltStatus[2]=="爬网中")
-					<input type="button" id="getBalance" onclick="javascript:getBalance(3,3);" value="余额"/>
-				#end
-				</td>
-			</tr>
-			<tr>
-                <td>450</td><td>云南联通话费四</td><td>$!ynltStatus[3]</td><td>
-				#if($!ynltStatus[3]=="已停止")
-					<a href="httpDeal.do?requestType=index&pos=4&area=3" class="btn btn-mini btn-primary add">开始</a>
-				#end
-				#if($!ynltStatus[3]=="爬网中")
-					<input type="button" id="getBalance" onclick="javascript:getBalance(4,3);" value="余额"/>
-				#end
-				</td>
-			</tr>
-			<tr>
-                <td>450</td><td>云南联通话费五</td><td>$!ynltStatus[4]</td><td>
-				#if($!ynltStatus[4]=="已停止")
-					<a href="httpDeal.do?requestType=index&pos=5&area=3" class="btn btn-mini btn-primary add">开始</a>
-				#end
-				#if($!ynltStatus[4]=="爬网中")
-					<input type="button" id="getBalance" onclick="javascript:getBalance(5,3);" value="余额"/>
-				#end
-				</td>
-			</tr>
-			<tr>
-                <td>450</td><td>云南联通话费六</td><td>$!ynltStatus[5]</td><td>
-				#if($!ynltStatus[5]=="已停止")
-					<a href="httpDeal.do?requestType=index&pos=6&area=3" class="btn btn-mini btn-primary add">开始</a>
-				#end
-				#if($!ynltStatus[5]=="爬网中")
-					<input type="button" id="getBalance" onclick="javascript:getBalance(6,3);" value="余额"/>
-				#end
-				</td>
-			</tr>
-			<tr>
-                <td>450</td><td>云南联通话费七</td><td>$!ynltStatus[6]</td><td>
-				#if($!ynltStatus[6]=="已停止")
-					<a href="httpDeal.do?requestType=index&pos=7&area=3" class="btn btn-mini btn-primary add">开始</a>
-				#end
-				#if($!ynltStatus[6]=="爬网中")
-					<input type="button" id="getBalance" onclick="javascript:getBalance(7,3);" value="余额"/>
-				#end
-				</td>
-			</tr>
-			<tr>
-                <td>450</td><td>云南联通话费八</td><td>$!ynltStatus[7]</td><td>
-				#if($!ynltStatus[7]=="已停止")
-					<a href="httpDeal.do?requestType=index&pos=8&area=3" class="btn btn-mini btn-primary add">开始</a>
-				#end
-				#if($!ynltStatus[7]=="爬网中")
-					<input type="button" id="getBalance" onclick="javascript:getBalance(8,3);" value="余额"/>
-				#end
-				</td>
-			</tr>
-			<tr>
-                <td>450</td><td>云南联通话费九</td><td>$!ynltStatus[8]</td><td>
-				#if($!ynltStatus[8]=="已停止")
-					<a href="httpDeal.do?requestType=index&pos=9&area=3" class="btn btn-mini btn-primary add">开始</a>
-				#end
-				#if($!ynltStatus[8]=="爬网中")
-					<input type="button" id="getBalance" onclick="javascript:getBalance(9,3);" value="余额"/>
-				#end
-				</td>
-			</tr>
-			<tr>
-                <td>450</td><td>云南联通话费十</td><td>$!ynltStatus[9]</td><td>
-				#if($!ynltStatus[9]=="已停止")
-					<a href="httpDeal.do?requestType=index&pos=10&area=3" class="btn btn-mini btn-primary add">开始</a>
-				#end
-				#if($!ynltStatus[9]=="爬网中")
-					<input type="button" id="getBalance" onclick="javascript:getBalance(10,3);" value="余额"/>
-				#end
-				</td>
-			</tr>
-			<tr>
-				#if($!ynltStatus[9]=="爬网中")
+				#if($!ynltStatus[1]=="爬网中")
 					<td colspan="2">&nbsp;</td>
 					<td><a href="httpDeal.do?requestType=logout&area=3" class="btn btn-mini btn-danger">全停止</a></td>
 					<td>&nbsp;</td>
@@ -137,7 +59,8 @@
 			</tr>
 			<tr><td colspan="4">中山移动</td></tr>
 			<tr>
-                <td>386</td><td>中山移动话费一</td><td>$!zsydStatus[0]</td><td>
+                <td>386</td><td>中山移动话费一</td><td>$!zsydStatus[0]</td>
+                <td>
 				#if($!zsydStatus[0]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=1&area=1" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -147,7 +70,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>386</td><td>中山移动话费二</td><td>$!zsydStatus[1]</td><td>
+                <td>386</td><td>中山移动话费二</td><td>$!zsydStatus[1]</td>
+                <td>
 				#if($!zsydStatus[1]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=2&area=1" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -157,7 +81,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>386</td><td>中山移动话费三</td><td>$!zsydStatus[2]</td><td>
+                <td>386</td><td>中山移动话费三</td><td>$!zsydStatus[2]</td>
+                <td>
 				#if($!zsydStatus[2]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=3&area=1" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -167,7 +92,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>386</td><td>中山移动话费四</td><td>$!zsydStatus[3]</td><td>
+                <td>386</td><td>中山移动话费四</td><td>$!zsydStatus[3]</td>
+                <td>
 				#if($!zsydStatus[3]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=4&area=1" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -177,7 +103,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>386</td><td>中山移动话费五</td><td>$!zsydStatus[4]</td><td>
+                <td>386</td><td>中山移动话费五</td><td>$!zsydStatus[4]</td>
+                <td>
 				#if($!zsydStatus[4]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=5&area=1" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -187,7 +114,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>386</td><td>中山移动话费六</td><td>$!zsydStatus[5]</td><td>
+                <td>386</td><td>中山移动话费六</td><td>$!zsydStatus[5]</td>
+                <td>
 				#if($!zsydStatus[5]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=6&area=1" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -197,7 +125,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>386</td><td>中山移动话费七</td><td>$!zsydStatus[6]</td><td>
+                <td>386</td><td>中山移动话费七</td><td>$!zsydStatus[6]</td>
+                <td>
 				#if($!zsydStatus[6]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=7&area=1" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -207,7 +136,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>386</td><td>中山移动话费八</td><td>$!zsydStatus[7]</td><td>
+                <td>386</td><td>中山移动话费八</td><td>$!zsydStatus[7]</td>
+                <td>
 				#if($!zsydStatus[7]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=8&area=1" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -217,7 +147,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>386</td><td>中山移动话费九</td><td>$!zsydStatus[8]</td><td>
+                <td>386</td><td>中山移动话费九</td><td>$!zsydStatus[8]</td>
+                <td>
 				#if($!zsydStatus[8]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=9&area=1" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -227,7 +158,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>386</td><td>中山移动话费十</td><td>$!zsydStatus[9]</td><td>
+                <td>386</td><td>中山移动话费十</td><td>$!zsydStatus[9]</td>
+                <td>
 				#if($!zsydStatus[9]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=10&area=1" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -237,7 +169,117 @@
 				</td>
 			</tr>
 			<tr>
-				#if($!zsydStatus[9]=="爬网中")
+                <td>386</td><td>中山移动话费十一</td><td>$!zsydStatus[10]</td>
+                <td>
+				#if($!zsydStatus[10]=="已停止")
+					<a href="httpDeal.do?requestType=index&pos=11&area=1" class="btn btn-mini btn-primary add">开始</a>
+				#end
+				#if($!zsydStatus[10]=="爬网中")
+					<input type="button" id="getBalance" onclick="javascript:getBalance(11,1);" value="余额"/>
+				#end
+				</td>
+			</tr>
+			<tr>
+                <td>386</td><td>中山移动话费十二</td><td>$!zsydStatus[11]</td>
+                <td>
+				#if($!zsydStatus[11]=="已停止")
+					<a href="httpDeal.do?requestType=index&pos=12&area=1" class="btn btn-mini btn-primary add">开始</a>
+				#end
+				#if($!zsydStatus[11]=="爬网中")
+					<input type="button" id="getBalance" onclick="javascript:getBalance(12,1);" value="余额"/>
+				#end
+				</td>
+			</tr>
+			<tr>
+                <td>386</td><td>中山移动话费十三</td><td>$!zsydStatus[12]</td>
+                <td>
+				#if($!zsydStatus[12]=="已停止")
+					<a href="httpDeal.do?requestType=index&pos=13&area=1" class="btn btn-mini btn-primary add">开始</a>
+				#end
+				#if($!zsydStatus[12]=="爬网中")
+					<input type="button" id="getBalance" onclick="javascript:getBalance(13,1);" value="余额"/>
+				#end
+				</td>
+			</tr>
+			<tr>
+                <td>386</td><td>中山移动话费十四</td><td>$!zsydStatus[13]</td>
+                <td>
+				#if($!zsydStatus[13]=="已停止")
+					<a href="httpDeal.do?requestType=index&pos=14&area=1" class="btn btn-mini btn-primary add">开始</a>
+				#end
+				#if($!zsydStatus[13]=="爬网中")
+					<input type="button" id="getBalance" onclick="javascript:getBalance(14,1);" value="余额"/>
+				#end
+				</td>
+			</tr>
+			<tr>
+                <td>386</td><td>中山移动话费十五</td><td>$!zsydStatus[14]</td>
+                <td>
+				#if($!zsydStatus[14]=="已停止")
+					<a href="httpDeal.do?requestType=index&pos=15&area=1" class="btn btn-mini btn-primary add">开始</a>
+				#end
+				#if($!zsydStatus[14]=="爬网中")
+					<input type="button" id="getBalance" onclick="javascript:getBalance(15,1);" value="余额"/>
+				#end
+				</td>
+			</tr>
+			<tr>
+                <td>386</td><td>中山移动话费十六</td><td>$!zsydStatus[15]</td>
+                <td>
+				#if($!zsydStatus[15]=="已停止")
+					<a href="httpDeal.do?requestType=index&pos=16&area=1" class="btn btn-mini btn-primary add">开始</a>
+				#end
+				#if($!zsydStatus[15]=="爬网中")
+					<input type="button" id="getBalance" onclick="javascript:getBalance(16,1);" value="余额"/>
+				#end
+				</td>
+			</tr>
+			<tr>
+                <td>386</td><td>中山移动话费十七</td><td>$!zsydStatus[16]</td>
+                <td>
+				#if($!zsydStatus[16]=="已停止")
+					<a href="httpDeal.do?requestType=index&pos=17&area=1" class="btn btn-mini btn-primary add">开始</a>
+				#end
+				#if($!zsydStatus[16]=="爬网中")
+					<input type="button" id="getBalance" onclick="javascript:getBalance(17,1);" value="余额"/>
+				#end
+				</td>
+			</tr>
+			<tr>
+                <td>386</td><td>中山移动话费十八</td><td>$!zsydStatus[17]</td>
+                <td>
+				#if($!zsydStatus[17]=="已停止")
+					<a href="httpDeal.do?requestType=index&pos=18&area=1" class="btn btn-mini btn-primary add">开始</a>
+				#end
+				#if($!zsydStatus[17]=="爬网中")
+					<input type="button" id="getBalance" onclick="javascript:getBalance(18,1);" value="余额"/>
+				#end
+				</td>
+			</tr>
+			<tr>
+                <td>386</td><td>中山移动话费十九</td><td>$!zsydStatus[18]</td>
+                <td>
+				#if($!zsydStatus[18]=="已停止")
+					<a href="httpDeal.do?requestType=index&pos=19&area=1" class="btn btn-mini btn-primary add">开始</a>
+				#end
+				#if($!zsydStatus[18]=="爬网中")
+					<input type="button" id="getBalance" onclick="javascript:getBalance(19,1);" value="余额"/>
+				#end
+				</td>
+			</tr>
+			<tr>
+                <td>386</td><td>中山移动话费二十</td><td>$!zsydStatus[19]</td>
+                <td>
+				#if($!zsydStatus[19]=="已停止")
+					<a href="httpDeal.do?requestType=index&pos=20&area=1" class="btn btn-mini btn-primary add">开始</a>
+				#end
+				#if($!zsydStatus[19]=="爬网中")
+					<input type="button" id="getBalance" onclick="javascript:getBalance(20,1);" value="余额"/>
+				#end
+				</td>
+			</tr>
+			<tr>
+				#if($!zsydStatus[19]=="爬网中")
 					<td colspan="2">&nbsp;</td>
 					<td><a href="httpDeal.do?requestType=logout&area=1" class="btn btn-mini btn-danger">全停止</a></td>
 					<td>&nbsp;</td>
@@ -247,7 +289,8 @@
 			</tr>
 			<tr><td colspan="4">宁夏移动</td></tr>
 			<tr>
-                <td>402</td><td>宁夏移动话费一</td><td>$!wzydStatus[0]</td><td>
+                <td>402</td><td>宁夏移动话费一</td><td>$!wzydStatus[0]</td>
+                <td>
 				#if($!wzydStatus[0]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=1&area=2" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -257,7 +300,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>402</td><td>宁夏移动话费二</td><td>$!wzydStatus[1]</td><td>
+                <td>402</td><td>宁夏移动话费二</td><td>$!wzydStatus[1]</td>
+                <td>
 				#if($!wzydStatus[1]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=2&area=2" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -267,7 +311,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>402</td><td>宁夏移动话费三</td><td>$!wzydStatus[2]</td><td>
+                <td>402</td><td>宁夏移动话费三</td><td>$!wzydStatus[2]</td>
+                <td>
 				#if($!wzydStatus[2]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=3&area=2" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -277,7 +322,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>402</td><td>宁夏移动话费四</td><td>$!wzydStatus[3]</td><td>
+                <td>402</td><td>宁夏移动话费四</td><td>$!wzydStatus[3]</td>
+                <td>
 				#if($!wzydStatus[3]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=4&area=2" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -287,7 +333,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>402</td><td>宁夏移动话费五</td><td>$!wzydStatus[4]</td><td>
+                <td>402</td><td>宁夏移动话费五</td><td>$!wzydStatus[4]</td>
+                <td>
 				#if($!wzydStatus[4]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=5&area=2" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -297,7 +344,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>402</td><td>宁夏移动话费六</td><td>$!wzydStatus[5]</td><td>
+                <td>402</td><td>宁夏移动话费六</td><td>$!wzydStatus[5]</td>
+                <td>
 				#if($!wzydStatus[5]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=6&area=2" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -307,7 +355,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>402</td><td>宁夏移动话费七</td><td>$!wzydStatus[6]</td><td>
+                <td>402</td><td>宁夏移动话费七</td><td>$!wzydStatus[6]</td>
+                <td>
 				#if($!wzydStatus[6]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=7&area=2" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -317,7 +366,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>402</td><td>宁夏移动话费八</td><td>$!wzydStatus[7]</td><td>
+                <td>402</td><td>宁夏移动话费八</td><td>$!wzydStatus[7]</td>
+                <td>
 				#if($!wzydStatus[7]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=8&area=2" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -327,7 +377,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>402</td><td>宁夏移动话费九</td><td>$!wzydStatus[8]</td><td>
+                <td>402</td><td>宁夏移动话费九</td><td>$!wzydStatus[8]</td>
+                <td>
 				#if($!wzydStatus[8]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=9&area=2" class="btn btn-mini btn-primary add">开始</a>
 				#end
@@ -337,7 +388,8 @@
 				</td>
 			</tr>
 			<tr>
-                <td>402</td><td>宁夏移动话费十</td><td>$!wzydStatus[9]</td><td>
+                <td>402</td><td>宁夏移动话费十</td><td>$!wzydStatus[9]</td>
+                <td>
 				#if($!wzydStatus[9]=="已停止")
 					<a href="httpDeal.do?requestType=index&pos=10&area=2" class="btn btn-mini btn-primary add">开始</a>
 				#end

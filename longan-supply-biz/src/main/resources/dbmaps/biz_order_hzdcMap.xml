@@ -7,6 +7,8 @@
 		<result column="gmt_modify" property="gmtModify" />
 		<result column="gmt_notify" property="gmtNotify" />
 		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="notify_status" jdbcType="INTEGER" property="notifyStatus" />
+		<result column="vcode_status" jdbcType="INTEGER" property="vcodeStatus" />
 		<result column="pay_order_id" jdbcType="BIGINT" property="payOrderId" />
 		<result column="user_id" jdbcType="BIGINT" property="userId" />
 		<result column="amount" jdbcType="BIGINT" property="amount" />
@@ -57,13 +59,13 @@
 	</resultMap>
 
 	<sql id="bizOrderFullColumns">
-		id, gmt_create, gmt_modify, gmt_notify, status, notify_status, pay_order_id, user_id, amount, amount_dummy,
-		amt, biz_id, item_id, item_name, item_price, item_face_price, item_category_id, item_uid, item_card, item_pos_id,
-		item_pc_id, item_card_pwd, item_supply_id,item_size,stock_id,lock_oper_id,deal_oper_id, channel, upstream_id,
-		upstream_name, upstream_serialno, upstream_date, upstream_memo, downstream_id, downstream_name, downstream_date,
-		downstream_serialno, downstream_notes, memo, cost_time, supply_type, repeat_type, manual_type, downstream_supply_way,
-		item_cost_price, carrier_type, province_code, actual_cost, combine_type, combine_count, supply_count,
-		supply_filter_index, extend
+		id, gmt_create, gmt_modify, gmt_notify, status, notify_status, vcode_status, pay_order_id, user_id, amount,
+		amount_dummy, amt, biz_id, item_id, item_name, item_price, item_face_price, item_category_id, item_uid, item_card,
+		item_pos_id, item_pc_id, item_card_pwd, item_supply_id, item_size, stock_id, lock_oper_id, deal_oper_id, channel,
+		upstream_id, upstream_name, upstream_serialno, upstream_date, upstream_memo, downstream_id, downstream_name,
+		downstream_date, downstream_serialno, downstream_notes, memo, cost_time, supply_type, repeat_type, manual_type,
+		downstream_supply_way, item_cost_price, carrier_type, province_code, actual_cost, combine_type, combine_count,
+		supply_count, supply_filter_index, extend
 	</sql>
 
 	<select id="selectByPrimaryKey" parameterClass="com.longan.biz.dataobject.BizOrder" resultMap="BizOrderResult">
@@ -75,16 +77,17 @@
 		insert into biz_order (
 		<include refid="biz_order_hzdc.bizOrderFullColumns" />
 		) values (#id:BIGINT#, #gmtCreate:DATETIME#, #gmtModify:DATETIME#, #gmtNotify:DATETIME#, #status:INTEGER#,
-		#notifyStatus:INTEGER#, #payOrderId:BIGINT#, #userId:BIGINT#, #amount:BIGINT#, #amountDummy:BIGINT#, #amt:INTEGER#,
-		#bizId:INTEGER#, #itemId:INTEGER#, #itemName:VARCHAR#, #itemPrice:INTEGER#, #itemFacePrice:INTEGER#,
-		#itemCategoryId:INTEGER#, #itemUid:VARCHAR#, #itemCard:VARCHAR#, #itemPosId:VARCHAR#, #itemPcId:VARCHAR#,
-		#itemCardPwd:VARCHAR#, #itemSupplyId:BIGINT#, #itemSize:INTEGER#, #stockId:BIGINT#, #lockOperId:BIGINT#,
-		#dealOperId:BIGINT#, #channel:INTEGER#, #upstreamId:VARCHAR#, #upstreamName:VARCHAR#, #upstreamSerialno:VARCHAR#,
-		#upstreamDate:DATETIME#, #upstreamMemo:VARCHAR#, #downstreamId:VARCHAR#, #downstreamName:VARCHAR#,
-		#downstreamDate:DATETIME#, #downstreamSerialno:VARCHAR#, #downstreamNotes:VARCHAR#, #memo:VARCHAR#,#costTime:INTEGER#,
-		#supplyType:INTEGER#, #repeatType:INTEGER#, #manualType:INTEGER#, #downstreamSupplyWay:INTEGER#,
-		#itemCostPrice:INTEGER#, #carrierType:INTEGER#, #provinceCode:CHAR#, #actualCost:INTEGER#, #combineType:INTEGER#,
-		#combineCount:INTEGER#, #supplyCount:INTEGER#, #supplyFilterIndex:INTEGER#, #extend:VARCHAR#)
+		#notifyStatus:INTEGER#, #vcodeStatus:INTEGER#, #payOrderId:BIGINT#, #userId:BIGINT#, #amount:BIGINT#,
+		#amountDummy:BIGINT#, #amt:INTEGER#, #bizId:INTEGER#, #itemId:INTEGER#, #itemName:VARCHAR#, #itemPrice:INTEGER#,
+		#itemFacePrice:INTEGER#, #itemCategoryId:INTEGER#, #itemUid:VARCHAR#, #itemCard:VARCHAR#, #itemPosId:VARCHAR#,
+		#itemPcId:VARCHAR#, #itemCardPwd:VARCHAR#, #itemSupplyId:BIGINT#, #itemSize:INTEGER#, #stockId:BIGINT#,
+		#lockOperId:BIGINT#, #dealOperId:BIGINT#, #channel:INTEGER#, #upstreamId:VARCHAR#, #upstreamName:VARCHAR#,
+		#upstreamSerialno:VARCHAR#, #upstreamDate:DATETIME#, #upstreamMemo:VARCHAR#, #downstreamId:VARCHAR#,
+		#downstreamName:VARCHAR#, #downstreamDate:DATETIME#, #downstreamSerialno:VARCHAR#, #downstreamNotes:VARCHAR#,
+		#memo:VARCHAR#,#costTime:INTEGER#, #supplyType:INTEGER#, #repeatType:INTEGER#, #manualType:INTEGER#,
+		#downstreamSupplyWay:INTEGER#, #itemCostPrice:INTEGER#, #carrierType:INTEGER#, #provinceCode:CHAR#,
+		#actualCost:INTEGER#, #combineType:INTEGER#, #combineCount:INTEGER#, #supplyCount:INTEGER#,
+		#supplyFilterIndex:INTEGER#, #extend:VARCHAR#)
 		<selectKey resultClass="Long" keyProperty="id">
 			SELECT LAST_INSERT_ID()
 		</selectKey>

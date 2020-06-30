@@ -212,8 +212,31 @@ public class TaskServiceImpl extends BaseService implements TaskService {
 	}
 	return result;
     }
+	@Override
+	public Result<List<Task>> queryTaskByPageJob(TaskQuery taskQuery) {
+		Result<List<Task>> result = new Result<List<Task>>();
+		try {
+			List<Task> queryResult = taskDAO.queryByPageJob(taskQuery);
+			result.setSuccess(true);
+			result.setModule(queryResult);
+		} catch (SQLException e) {
+			result.setResultMsg("任务列表失败,数据库查询异常");
+			logger.error("queryTaskByPage error ", e);
+		}
+		return result;
+	}
 
-    @Override
+	@Override
+	public Integer updateTaskByIdStatus(String id) {
+    	try{
+			return taskDAO.updateTaskByIdStatus(Integer.valueOf(id));
+		}catch (SQLException e) {
+			logger.error("updateTaskByIdStatus error ", e);
+		}
+		return null;
+	}
+
+	@Override
     public Result<Task> getTaskById(Long id) {
 	Result<Task> result = new Result<Task>();
 	try {

@@ -23,6 +23,11 @@ public interface TaskService {
 
     Result<List<Task>> queryTaskByPage(TaskQuery taskQuery);
 
+    //定时任务
+    Result<List<Task>> queryTaskByPageJob(TaskQuery taskQuery);
+    //定时调价完修改状态
+    public Integer updateTaskByIdStatus(String id);
+
     Result<Task> getTaskById(Long id);
 
 }

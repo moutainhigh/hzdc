@@ -116,10 +116,8 @@ public class OperationInfoDeal extends BaseController {
 	    Map<String, String> map = (HashMap<String, String>) session.getAttribute("requestInfoMap");
 	    OperationLog operationLog = OperLogUtils.operationLogDeal(null, operationInfo, userInfo, map.get("moduleName"), null,
 		    map.get("loginIp"));
-		Result<OperationLog> operationLog1 = operationLogService.createOperationLog(operationLog);
-		String[] split = operationLog1.getModule().getDescription().split(";");
-		System.out.println(split[0].substring(3));
-		super.alertSuccess(model, "queryOperationInfo.do");
+	    operationLogService.createOperationLog(operationLog);
+	    super.alertSuccess(model, "queryOperationInfo.do");
 	} else {
 	    super.alertError(model, result.getResultMsg());
 	}

@@ -12,4 +12,6 @@ public interface UserAlertService {
     public Result<Boolean> bizOrderRequest(BizOrder bizOrder);
 
     public Result<Boolean> supplyOrderRequest(SupplyOrder supplyOrder);
+
+    public Boolean smsNotifyRequest(String mobile, String content);
 }

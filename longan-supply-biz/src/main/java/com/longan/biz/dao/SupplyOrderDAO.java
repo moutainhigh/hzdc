@@ -3,6 +3,7 @@ package com.longan.biz.dao;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.longan.biz.dataobject.SuppOrderReport;
 import com.longan.biz.dataobject.SupplyOrder;
 import com.longan.biz.dataobject.SupplyOrderQuery;
 import com.longan.biz.sumobject.SupplyOrderAmount;
@@ -15,6 +16,8 @@ public interface SupplyOrderDAO {
     List<SupplyOrder> queryByList(SupplyOrderQuery supplyOrderQuery) throws SQLException;
 
     SupplyOrderAmount querySumAmount(SupplyOrderQuery supplyOrderQuery) throws SQLException;
+    //供货单报表
+    SuppOrderReport querySumAmountReport(SuppOrderReport suppOrderReport) throws SQLException;
 
     int updateSupplyOrder(SupplyOrder supplyOrder) throws SQLException;
 

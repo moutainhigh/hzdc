@@ -30,4 +30,6 @@ public interface UserInfoDAO {
     List<UserInfo> queryDownStreamByPage(UserInfoQuery userInfoQuery) throws SQLException;
 
     UserInfo selectDownStreamByPrimaryKey(Long id) throws SQLException;
+
+    UserInfo queryByName(String username) throws SQLException ;
 }

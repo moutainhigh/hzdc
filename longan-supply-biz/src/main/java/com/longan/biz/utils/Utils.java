@@ -74,6 +74,17 @@ public class Utils {
 	return null;
     }
 
+    public static String[] getStringList(String key) {
+	try {
+	    String value = getProperty(key);
+	    if (value != null) {
+		return value.split(Constants.BUY_REQUEST_SPLIT);
+	    }
+	} catch (Exception ex) {
+	}
+	return null;
+    }
+
     public static String getFileName(String name) {
 	return Utils.class.getResource(name).getFile();
     }

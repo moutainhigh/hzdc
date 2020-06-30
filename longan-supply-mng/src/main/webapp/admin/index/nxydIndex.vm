@@ -4,17 +4,17 @@
     <title>鼎驰科技</title>
 	#parse("common/common.vm")
 	#parse("common/errorUtils.vm")
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/admin-all.css" />
-    <script type="text/javascript" src="$!staticServer/js/jquery-1.7.2.js"></script>
-    <script type="text/javascript" src="$!staticServer/js/jquery-ui-1.8.22.custom.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
-    <script type="text/javascript" src="$!staticServer/js/tip.js"></script>
-	<script type="text/javascript" src="$!staticServer/eucp/nxyd/jsbn.js"></script>
-	<script type="text/javascript" src="$!staticServer/eucp/nxyd/prng4.js"></script>
-	<script type="text/javascript" src="$!staticServer/eucp/nxyd/rng.js"></script>
-	<script type="text/javascript" src="$!staticServer/eucp/nxyd/base64.js"></script>
-	<script type="text/javascript" src="$!staticServer/eucp/rsa.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/admin-all.css" />
+    <script type="text/javascript" src="/js/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript" src="/js/tip.js"></script>
+	<script type="text/javascript" src="/eucp/nxyd/jsbn.js"></script>
+	<script type="text/javascript" src="/eucp/nxyd/prng4.js"></script>
+	<script type="text/javascript" src="/eucp/nxyd/rng.js"></script>
+	<script type="text/javascript" src="/eucp/nxyd/base64.js"></script>
+	<script type="text/javascript" src="/eucp/rsa.js"></script>
 </head>
 <body>
 	$!errorMsg

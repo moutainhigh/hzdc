@@ -875,6 +875,154 @@ public class ItemDeal extends BaseController {
 		}
 		return "biz/queryItem";
 	}
+
+	/**
+	 * 第二次测试拼多多批量上架
+	 * @param itemIds
+	 * @param bizId
+	 * @param session
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "biz/itemPdd", params = "requestType=batchPddGoodsUp")
+	public synchronized String pddRequestBatchGoodsUp(@RequestParam("itemId") String itemIds, @RequestParam("bizId") Integer bizId, HttpSession session,
+												 Model model) {
+		UserInfo userInfo = getUserInfo(session);
+		// 业务权限判断
+		if (!checkBizAuth(bizId, userInfo)) {
+			return "error/autherror";
+		}
+		boolean flag = false;//标识上架结果成功还是失败
+		List<Future<Result<Boolean>>> list = new ArrayList<Future<Result<Boolean>>>();//线程结果封装
+		List<Result<Boolean>> dataList = new ArrayList<Result<Boolean>>();//结果封装
+		List<Integer> itemList = new ArrayList<Integer>();//获取到所有的订单数据
+		List<Integer> itemFaildList = new ArrayList<Integer>();//失败时的数据封装
+		String[] split = itemIds.split(",");
+
+		for (int i = 0; i <split.length;i++) {
+			final Integer itemId = Integer.valueOf(split[i]);
+			logger.warn(userInfo.getUserName() + "执行拼多多上架操作 商品id:" + itemId);
+			Future<Result<Boolean>> submit = Constants.threadPoolExecutor.submit(new Callable<Result<Boolean>>() {
+				@Override
+				public Result<Boolean> call() throws Exception {
+					return pddGoodsService.pddUp(itemId);
+				}
+			});
+			list.add(submit);//线程添加
+			itemList.add(itemId);//商品id添加
+		}
+		//获取pdd返回的结果
+		for (int i = 0 ; i<list.size();i++) {
+			try {
+				dataList.add(list.get(i).get());
+			} catch (Exception e) {
+				//pdd超时
+				list.get(i).cancel(true);
+				logger.warn(userInfo.getUserName() + "执行拼多多上架操作超时 商品id"+itemList.get(i));
+			}
+		}
+		//判断是否有超时的
+		for (int i = 0 ; i<dataList.size();i++) {
+			Result<Boolean> booleanResult = dataList.get(i);
+			//上架失败
+			if (!booleanResult.isSuccess()) {
+				flag=true;
+				//itemList.get(i);
+				itemFaildList.add(itemList.get(i));
+			}
+		}
+		String join = StringUtils.join(itemFaildList, ",");
+		//是否批量上架成功
+		if (!flag) {
+			alertSuccess(model, "queryItem.do?bizId=" + bizId + "&ids=" + itemIds);
+		}else{
+//			失败跳转
+			alertMsgRedirect(model,"商品上架失败((商品非拼多多商品))","queryItemUp.do?bizId="+bizId+"&ids=" + join);
+//			return "redirect:/biz/queryItemUp.do?bizId="+bizId+"&ids="+ join;
+		}
+		return "biz/queryItem";
+	}
+
+	/**
+	 * 第二次拼多多下架测试
+	 * @param itemIds
+	 * @param bizId
+	 * @param session
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "biz/itemPdd", params = "requestType=batchPddGoodsDown")
+	public synchronized String pddRequestBatchGoodsDown(@RequestParam("itemId") String itemIds, @RequestParam("bizId") Integer bizId,
+												   HttpSession session, Model model) {
+		UserInfo userInfo = getUserInfo(session);
+		// 业务权限判断
+		if (!checkBizAuth(bizId, userInfo)) {
+			return "error/autherror";
+		}
+		boolean flag = false;//标识下架结果成功还是失败
+		List<Future<Result<Boolean>>> list = new ArrayList<Future<Result<Boolean>>>();//线程结果封装
+		List<Result<Boolean>> dataList = new ArrayList<Result<Boolean>>();//结果封装
+		List<Integer> itemList = new ArrayList<Integer>();//获取到所有的订单数据
+		List<Integer> itemFaildList = new ArrayList<Integer>();//失败时的数据封装
+
+		//logger.warn(userInfo.getUserName() + "执行拼多多下架操作 商品id:" + itemIds);
+		String[] split = itemIds.split(",");
+		for (int i = 0; i <split.length;i++) {
+			final Integer itemId = Integer.valueOf(split[i]);
+			logger.warn(userInfo.getUserName() + "执行拼多多下架操作 商品id:" + itemId);
+			Future<Result<Boolean>> submit = Constants.threadPoolExecutor.submit(new Callable<Result<Boolean>>() {
+				@Override
+				public Result<Boolean> call() throws Exception {
+					return pddGoodsService.pddDown(itemId);//执行pdd下架操作
+				}
+			});
+			list.add(submit);//线程添加
+			itemList.add(itemId);//商品id添加
+		}
+		//获取pdd返回的结果
+		for (int i = 0 ; i<list.size();i++) {
+			try {
+				dataList.add(list.get(i).get());
+			} catch (Exception e) {
+				//pdd超时
+				list.get(i).cancel(true);
+				logger.warn(userInfo.getUserName() + "执行拼多多下架操作超时 商品id"+itemList.get(i));
+			}
+		}
+		//获取pdd的结果判断
+		for (int i = 0 ; i<dataList.size();i++) {
+			Result<Boolean> booleanResult = dataList.get(i);
+			//下架失败
+			if (!booleanResult.isSuccess()) {
+				flag=true;
+				//itemList.get(i);
+				itemFaildList.add(itemList.get(i));
+			}
+		}
+		String join = StringUtils.join(itemFaildList, ",");
+		//是否批量下架成功
+		if (!flag) {
+			alertSuccess(model, "queryItem.do?bizId=" + bizId + "&ids=" + itemIds);
+		}else{
+//			失败跳转
+			alertMsgRedirect(model,"商品下架失败(商品非拼多多商品)","queryItemUp.do?bizId="+bizId+"&ids=" + join);
+//			return "redirect:/biz/queryItemUp.do?bizId="+bizId+"&ids="+ join;
+		}
+		return "biz/queryItem";
+	}
+	//
+
+
+
+
+
+
+
+
+
+
+
+
 	@RequestMapping(
 			value = {"biz/itemDeal"},
 			params = {"requestType=batchUp"},

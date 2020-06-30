@@ -8,6 +8,7 @@
 		<result column="gmt_notify" property="gmtNotify" />
 		<result column="status" jdbcType="INTEGER" property="status" />
 		<result column="notify_status" jdbcType="INTEGER" property="notifyStatus" />
+		<result column="vcode_status" jdbcType="INTEGER" property="vcodeStatus" />
 		<result column="pay_order_id" jdbcType="BIGINT" property="payOrderId" />
 		<result column="user_id" jdbcType="BIGINT" property="userId" />
 		<result column="amount" jdbcType="BIGINT" property="amount" />
@@ -58,13 +59,13 @@
 	</resultMap>
 
 	<sql id="bizOrderFullColumns">
-		id, gmt_create, gmt_modify, gmt_notify, status, notify_status, pay_order_id, user_id, amount, amount_dummy,
-		amt, biz_id, item_id, item_name, item_price, item_face_price, item_category_id, item_uid, item_card, item_pos_id,
-		item_pc_id, item_card_pwd, item_supply_id,item_size,stock_id,lock_oper_id,deal_oper_id, channel, upstream_id,
-		upstream_name, upstream_serialno, upstream_date, upstream_memo, downstream_id, downstream_name, downstream_date,
-		downstream_serialno, downstream_notes, memo, cost_time, supply_type, repeat_type, manual_type, downstream_supply_way,
-		item_cost_price, carrier_type, province_code, actual_cost, combine_type, combine_count, supply_count,
-		supply_filter_index, extend
+		id, gmt_create, gmt_modify, gmt_notify, status, notify_status, vcode_status, pay_order_id, user_id, amount,
+		amount_dummy, amt, biz_id, item_id, item_name, item_price, item_face_price, item_category_id, item_uid, item_card,
+		item_pos_id, item_pc_id, item_card_pwd, item_supply_id,item_size,stock_id,lock_oper_id,deal_oper_id, channel,
+		upstream_id, upstream_name, upstream_serialno, upstream_date, upstream_memo, downstream_id, downstream_name,
+		downstream_date, downstream_serialno, downstream_notes, memo, cost_time, supply_type, repeat_type, manual_type,
+		downstream_supply_way, item_cost_price, carrier_type, province_code, actual_cost, combine_type, combine_count,
+		supply_count, supply_filter_index, extend
 	</sql>
 
 	<sql id="abatorgenerated_Example_Where_Clause">
@@ -120,12 +121,12 @@
 	<insert id="abatorgenerated_insert" parameterClass="com.longan.biz.dataobject.BizOrder">
 		insert into biz_order (
 		<include refid="biz_order.bizOrderFullColumns" />
-		) values (#id:BIGINT#, now(), now(), now(), #status:INTEGER#, #notifyStatus:INTEGER#, #payOrderId:BIGINT#,
-		#userId:BIGINT#, #amount:BIGINT#, #amountDummy:BIGINT#, #amt:INTEGER#, #bizId:INTEGER#, #itemId:INTEGER#,
-		#itemName:VARCHAR#, #itemPrice:INTEGER#, #itemFacePrice:INTEGER#, #itemCategoryId:INTEGER#, #itemUid:VARCHAR#,
-		#itemCard:VARCHAR#, #itemPosId:VARCHAR#, #itemPcId:VARCHAR#, #itemCardPwd:VARCHAR#, #itemSupplyId:BIGINT#,
-		#itemSize:INTEGER#, #stockId:BIGINT#, #lockOperId:BIGINT#, #dealOperId:BIGINT#, #channel:INTEGER#,
-		#upstreamId:VARCHAR#, #upstreamName:VARCHAR#, #upstreamSerialno:VARCHAR#, #upstreamDate:DATETIME#,
+		) values (#id:BIGINT#, now(), now(), now(), #status:INTEGER#, #notifyStatus:INTEGER#, #vcodeStatus:INTEGER#,
+		#payOrderId:BIGINT#, #userId:BIGINT#, #amount:BIGINT#, #amountDummy:BIGINT#, #amt:INTEGER#, #bizId:INTEGER#,
+		#itemId:INTEGER#, #itemName:VARCHAR#, #itemPrice:INTEGER#, #itemFacePrice:INTEGER#, #itemCategoryId:INTEGER#,
+		#itemUid:VARCHAR#, #itemCard:VARCHAR#, #itemPosId:VARCHAR#, #itemPcId:VARCHAR#, #itemCardPwd:VARCHAR#,
+		#itemSupplyId:BIGINT#, #itemSize:INTEGER#, #stockId:BIGINT#, #lockOperId:BIGINT#, #dealOperId:BIGINT#,
+		#channel:INTEGER#, #upstreamId:VARCHAR#, #upstreamName:VARCHAR#, #upstreamSerialno:VARCHAR#, #upstreamDate:DATETIME#,
 		#upstreamMemo:VARCHAR#, #downstreamId:VARCHAR#, #downstreamName:VARCHAR#, #downstreamDate:DATETIME#,
 		#downstreamSerialno:VARCHAR#, #downstreamNotes:VARCHAR#, #memo:VARCHAR#,#costTime:INTEGER#, #supplyType:INTEGER#,
 		#repeatType:INTEGER#, #manualType:INTEGER#, #downstreamSupplyWay:INTEGER#, #itemCostPrice:INTEGER#,
@@ -147,6 +148,9 @@
 			</isNotNull>
 			<isNotNull prepend="," property="notifyStatus">
 				notify_status = #notifyStatus:INTEGER#
+			</isNotNull>
+			<isNotNull prepend="," property="vcodeStatus">
+				vcode_status = #vcodeStatus:INTEGER#
 			</isNotNull>
 			<isNotNull prepend="," property="payOrderId">
 				pay_order_id = #payOrderId:BIGINT#
@@ -308,6 +312,9 @@
 			</isNotNull>
 			<isNotNull prepend="," property="record.notifyStatus">
 				notify_status = #record.notifyStatus:INTEGER#
+			</isNotNull>
+			<isNotNull prepend="," property="record.vcodeStatus">
+				vcode_status = #record.vcodeStatus:INTEGER#
 			</isNotNull>
 			<isNotNull prepend="," property="record.payOrderId">
 				pay_order_id = #record.payOrderId:BIGINT#
@@ -473,6 +480,9 @@
 			<isNotEmpty prepend="and" property="notifyStatus">
 				notify_status = #notifyStatus#
 			</isNotEmpty>
+			<isNotEmpty prepend="and" property="vcodeStatus">
+				vcode_status = #vcodeStatus#
+			</isNotEmpty>
 			<isNotEmpty prepend="and" property="itemId">
 				item_id = #itemId#
 			</isNotEmpty>
@@ -535,6 +545,12 @@
 			</isNotEmpty>
 			<isNotEmpty prepend="and" property="carrierType">
 				carrier_type = #carrierType#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="memo">
+				memo like CONCAT('%',#memo#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="otherMemo">
+				id not in (select id from biz_order where memo like '%平台%' or memo like '%1%')
 			</isNotEmpty>
 		</dynamic>
 	</sql>
@@ -619,7 +635,47 @@
 			item_face_price = #itemFaceprice#
 			</isNotEmpty>
 			<isNotEmpty prepend="and" property="memo">
-				memo is not null
+				memo like CONCAT('%',#memo#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="otherMemo">
+				id not in (select id from biz_order where memo like '%平台%' or memo like '%1%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<sql id="whereConditionsReport">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="startGmtCreate">
+				gmt_create &gt;= #startGmtCreate#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="endGmtCreate">
+				gmt_create &lt;= #endGmtCreate#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="salesAreasId">
+				province_code = #salesAreasId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="carrierType">
+				carrier_type = #carrierType#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="supplyTraderId">
+				upstream_id >= #supplyTraderId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="userId">
+				user_id = #userId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="statistic">
+				gmt_notify >= #statisticDate#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="status">
+				status = #status#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="itemFaceprice">
+				item_face_price = #itemFaceprice#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="moreCostTime">
+				cost_time >= #moreCostTime#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="lessCostTime">
+				cost_time &lt;=  #lessCostTime#
 			</isNotEmpty>
 		</dynamic>
 	</sql>
@@ -671,6 +727,19 @@
 		SELECT count(*) FROM biz_order
 		<include refid="biz_order.whereConditions" />
 	</select>
+	<select id="countNowOrder" resultClass="java.lang.Integer">
+		SELECT count(id) from biz_order where to_days(gmt_create) = to_days(now())
+	</select>
+	<select id="countSuccessOrder" resultClass="java.lang.Integer">
+		SELECT count(id) from biz_order where to_days(gmt_create) = to_days(now()) and `status` = 2
+	</select>
+	<select id="countThreeDayOrder" resultClass="java.lang.Integer">
+		SELECT count(1) from biz_order where to_days(gmt_create) = to_days(now()) and biz_order.cost_time between 0 and 180 and `status`= 2
+	</select>
+    <select id="selectReportCount" resultClass="java.lang.Integer">
+        select count(1) from biz_order
+        <include refid="biz_order.whereConditionsReport" />
+    </select>
 
 	<update id="lockBizOrder" parameterClass="com.longan.biz.dataobject.BizOrder">
 		update biz_order set gmt_modify = now(),lock_oper_id =

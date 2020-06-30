@@ -10,6 +10,7 @@ import com.longan.biz.dao.BizOrderDAO;
 import com.longan.biz.dataobject.BizOrder;
 import com.longan.biz.dataobject.BizOrderExample;
 import com.longan.biz.dataobject.BizOrderQuery;
+import com.longan.biz.dataobject.OrderReport;
 
 public class BizOrderDAOImpl implements BizOrderDAO {
     @Resource
@@ -151,5 +152,25 @@ public class BizOrderDAOImpl implements BizOrderDAO {
     public int updateRefund(BizOrder bizOrder) throws SQLException {
         int rows = sqlMapClient.update("biz_order.updateRefund", bizOrder);
         return rows;
+    }
+    @Override
+    public int countNowOrder() throws SQLException {
+        Integer count = (Integer) sqlMapClient.queryForObject("biz_order.countNowOrder");
+        return count.intValue();
+    }
+    @Override
+    public int countSuccessOrder() throws SQLException {
+        Integer count = (Integer) sqlMapClient.queryForObject("biz_order.countSuccessOrder");
+        return count.intValue();
+    }
+    @Override
+    public int countThreeDayOrder() throws SQLException {
+        Integer count = (Integer) sqlMapClient.queryForObject("biz_order.countThreeDayOrder");
+        return count.intValue();
+    }
+    @Override
+    public int selectReportCount(OrderReport orderReport) throws SQLException {
+        Integer count = (Integer) sqlMapClient.queryForObject("biz_order.selectReportCount",orderReport);
+        return count.intValue();
     }
 }

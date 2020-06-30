@@ -2,6 +2,7 @@ package com.longan.biz.core;
 
 import java.util.List;
 
+import com.longan.biz.dataobject.SuppOrderReport;
 import com.longan.biz.dataobject.SupplyOrder;
 import com.longan.biz.dataobject.SupplyOrderQuery;
 import com.longan.biz.domain.Result;
@@ -13,6 +14,9 @@ public interface SupplyOrderService {
     public Result<List<SupplyOrder>> querySupplyOrderList(SupplyOrderQuery supplyOrderQuery);
 
     public Result<SupplyOrderAmount> querySupplyOrderSum(SupplyOrderQuery supplyOrderQuery);
+
+    //报表统计
+    public SuppOrderReport querySupplyOrderReportSum(SuppOrderReport suppOrderReport);
 
     public Result<SupplyOrder> createSupplyOrder(SupplyOrder supplyOrder);
 
@@ -66,4 +70,5 @@ public interface SupplyOrderService {
     public Boolean checkRepeatUid(SupplyOrder supplyOrder);
 
     public String getCombineOrderExtends(Long bizOrderId);
+
 }

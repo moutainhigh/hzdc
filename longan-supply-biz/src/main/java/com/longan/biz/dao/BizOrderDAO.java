@@ -7,6 +7,7 @@ import com.ibatis.sqlmap.engine.mapping.sql.Sql;
 import com.longan.biz.dataobject.BizOrder;
 import com.longan.biz.dataobject.BizOrderExample;
 import com.longan.biz.dataobject.BizOrderQuery;
+import com.longan.biz.dataobject.OrderReport;
 
 
 public interface BizOrderDAO {
@@ -52,4 +53,13 @@ public interface BizOrderDAO {
     BizOrder selectRemaks(Long id) throws SQLException;
 
     int updateRefund(BizOrder bizOrder) throws SQLException;
+
+    int countNowOrder() throws  SQLException;
+
+    int countSuccessOrder() throws  SQLException;
+
+    int countThreeDayOrder() throws  SQLException;
+
+    int selectReportCount(OrderReport orderReport) throws SQLException;
+
 }

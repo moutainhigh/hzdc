@@ -205,7 +205,7 @@
 				item_uid = #itemUid#
 			</isNotEmpty>
 			<isNotEmpty prepend="and" property="bizId">
-				biz_id = #bizId#
+				biz_id in (#bizId#)
 			</isNotEmpty>
 			<isNotEmpty prepend="and" property="bulkId">
 				bulk_id = #bulkId#
@@ -271,6 +271,34 @@
 			</isNotEmpty>
 		</dynamic>
 	</sql>
+	<sql id="whereConditionsSumReport">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="userId">
+				user_id = #userId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="status">
+				supply_status = #status#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="startGmtCreate">
+				gmt_create &gt;= #startGmtCreate#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="endGmtCreate">
+				gmt_create &lt;= #endGmtCreate#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="bizId">
+				biz_id = #bizId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="itemFaceprice">
+				item_face_price = #itemFaceprice#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="supplyTraderId">
+				supply_trader_id = #supplyTraderId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="salesAreasId">
+				province_code = #salesAreasId#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
 	<select id="selectByPrimaryKey" parameterClass="com.longan.biz.dataobject.SupplyOrder" resultMap="supplyOrderResult">
 		select
 		<include refid="supply_order.supplyOrderFullColumns" />
@@ -300,6 +328,11 @@
 		select sum(supply_face_price) face,sum(amount) sale,sum(amount_dummy) dummy,sum(supply_cost_price) cost from
 		supply_order
 		<include refid="supply_order.whereConditions" />
+	</select>
+	<select id="querySumAmountReport" resultClass="com.longan.biz.dataobject.SuppOrderReport">
+		select sum(supply_face_price) face,sum(amount) sale,sum(amount_dummy) dummy,sum(supply_cost_price) cost from
+		supply_order
+		<include refid="supply_order.whereConditionsSumReport" />
 	</select>
 
 	<!-- <update id="updateTaskById"> -->
@@ -448,7 +481,7 @@
 
 	<select id="selectByCrawl" resultMap="supplyOrderResult">
 		select * from supply_order where supply_trader_id = #supplyTraderId:BIGINT#
-		and supply_status = 1 order by gmt_create limit 10
+		and supply_status = 1 order by gmt_create limit 20
 	</select>
 	<update id="updateByCrawl">
 		update supply_order set gmt_modify = now(),supply_status = 4,sale_status = 1 where id = #id:BIGINT#

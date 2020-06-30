@@ -3,12 +3,12 @@
 <head>
     <title></title>
 	#parse("common/common.vm")
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/admin-all.css" />
-    <script type="text/javascript" src="$!staticServer/js/jquery-1.7.2.js"></script>
-    <script type="text/javascript" src="$!staticServer/js/jquery-ui-1.8.22.custom.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
-    <script type="text/javascript" src="$!staticServer/js/tip.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/admin-all.css" />
+    <script type="text/javascript" src="/js/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript" src="/js/tip.js"></script>
 </head>
 <body>
 	 <div class="alert alert-info">当前位置<b class="tip"></b>供货查询<b class="tip"></b>查询结果</div>

@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 import com.longan.biz.dao.SupplyOrderDAO;
+import com.longan.biz.dataobject.SuppOrderReport;
 import com.longan.biz.dataobject.SupplyOrder;
 import com.longan.biz.dataobject.SupplyOrderQuery;
 import com.longan.biz.sumobject.SupplyOrderAmount;
@@ -91,6 +92,11 @@ public class SupplyOrderDAOImpl implements SupplyOrderDAO {
     @Override
     public SupplyOrderAmount querySumAmount(SupplyOrderQuery supplyOrderQuery) throws SQLException {
 	return (SupplyOrderAmount) sqlMapClient.queryForObject("supply_order.querySumAmount", supplyOrderQuery);
+    }
+    //供货单报表
+    @Override
+    public SuppOrderReport querySumAmountReport(SuppOrderReport suppOrderReport) throws SQLException {
+        return (SuppOrderReport) sqlMapClient.queryForObject("supply_order.querySumAmountReport", suppOrderReport);
     }
 
     @SuppressWarnings("unchecked")

@@ -78,9 +78,15 @@ public class BizOrderExport extends BaseController {
 	logger.warn("操作员:" + userInfo.getUserName() + "执行订单导出操作。");
 	ModelAndView modelAndView = null;
 	if (countResult.getModule() > ONLINE_EXCEL_COUNT) {
-	    String fileName = getExcelFileName(userInfo.getId(), bizOrderQuery);
+
 	    int pageCount = ExportTool.getTotalPage(countResult.getModule(), MAX_EXCEL_COUNT);
 	    Export export = new Export();
+		//设置三家运营商同时导出的标记
+		if (bizOrderQuery.getBizId()==null) {
+			bizOrderQuery.setBizId(222);
+			export.setBizId(222);
+		}
+		String fileName = getExcelFileName(userInfo.getId(), bizOrderQuery);
 	    export.setUserId(userInfo.getId());
 	    export.setExportType(Constants.Export.TYPE_BIZ_ORDER);
 	    export.setBizId(bizOrderQuery.getBizId());
@@ -88,13 +94,17 @@ public class BizOrderExport extends BaseController {
 	    export.setIsDownStream(userInfo.isDownStreamUser());
 	    export.setIsPartner(userInfo.isPartner());
 	    export.setFileName(fileName);
+
+//	    export.setMemo(bizOrderQuery.getMemo());
 	    Result<Export> result = exportService.createExport(export, bizOrderQuery);
 	    if (!result.isSuccess()) {
 		logger.error("BizOrderExport error msg : " + result.getResultMsg());
 		model.put("errorMsg", result.getResultMsg());
 		return new ModelAndView("error/error", model);
 	    }
-
+		if (export.getBizId()==222) {
+			bizOrderQuery.setBizId(null);
+		}
 	    bizOrderQuery.setPageSize(MAX_EXCEL_COUNT);
 	    excelAsyncService.bizOrderExport(result.getModule(), bizOrderQuery);
 	    model.put("fileName", ExportTool.getFileName(fileName));

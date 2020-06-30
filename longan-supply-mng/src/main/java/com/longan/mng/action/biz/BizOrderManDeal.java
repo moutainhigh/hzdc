@@ -6,8 +6,8 @@ import java.util.Date;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
-import net.spy.memcached.MemcachedClient;
 
+import net.spy.memcached.MemcachedClient;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,8 +36,8 @@ public class BizOrderManDeal extends BaseController {
     @Resource
     private CallBackService callBackService;
 
-    @Resource
-    private MemcachedClient memcachedClient;
+	@Resource
+	private MemcachedClient memcachedClient;
 
     private static final int expTime = 60 * 60 * 24;
 

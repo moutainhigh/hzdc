@@ -18,6 +18,7 @@ public class AccessCode extends BaseController {
 
     @RequestMapping("third/pddCode")
     public void pddCode(String code) {
+	logger.warn("access code：" + code);
 	if (pdd_code) {
 	    boolean success = pddTokenService.accessToken(code);
 		System.out.println(code);

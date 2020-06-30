@@ -487,6 +487,66 @@ public class BizOrderExample {
 	    return this;
 	}
 
+	public Criteria andVcodeStatusIsNull() {
+	    addCriterion("vcode_status is null");
+	    return this;
+	}
+
+	public Criteria andVcodeStatusIsNotNull() {
+	    addCriterion("vcode_status is not null");
+	    return this;
+	}
+
+	public Criteria andVcodeStatusEqualTo(Integer value) {
+	    addCriterion("vcode_status =", value, "vcodeStatus");
+	    return this;
+	}
+
+	public Criteria andVcodeStatusNotEqualTo(Integer value) {
+	    addCriterion("vcode_status <>", value, "vcodeStatus");
+	    return this;
+	}
+
+	public Criteria andVcodeStatusGreaterThan(Integer value) {
+	    addCriterion("vcode_status >", value, "vcodeStatus");
+	    return this;
+	}
+
+	public Criteria andVcodeStatusGreaterThanOrEqualTo(Integer value) {
+	    addCriterion("vcode_status >=", value, "vcodeStatus");
+	    return this;
+	}
+
+	public Criteria andVcodeStatusLessThan(Integer value) {
+	    addCriterion("vcode_status <", value, "vcodeStatus");
+	    return this;
+	}
+
+	public Criteria andVcodeStatusLessThanOrEqualTo(Integer value) {
+	    addCriterion("vcode_status <=", value, "vcodeStatus");
+	    return this;
+	}
+
+	public Criteria andVcodeStatusIn(List values) {
+	    addCriterion("vcode_status in", values, "vcodeStatus");
+	    return this;
+	}
+
+	public Criteria andVcodeStatusNotIn(List values) {
+	    addCriterion("vcode_status not in", values, "vcodeStatus");
+	    return this;
+	}
+
+	public Criteria andVcodeStatusBetween(Integer value1, Integer value2) {
+	    addCriterion("vcode_status between", value1, value2, "vcodeStatus");
+	    return this;
+	}
+
+	public Criteria andVcodeStatusNotBetween(Integer value1, Integer value2) {
+	    addCriterion("vcode_status not between", value1, value2, "vcodeStatus");
+	    return this;
+	}
+
 	public Criteria andPayOrderIdIsNull() {
 	    addCriterion("pay_order_id is null");
 	    return this;

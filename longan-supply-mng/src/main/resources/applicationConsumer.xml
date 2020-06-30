@@ -48,4 +48,10 @@
 		<property name="serviceInterface" value="com.longan.client.remote.service.PddRemoteService" />
 		<property name="readTimeout" value="45000" />
 	</bean>
+
+	<bean id="callJifenService" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl" value="${callJifenServiceUrl}" />
+		<property name="serviceInterface" value="com.longan.client.remote.service.CallJifenService" />
+		<property name="readTimeout" value="45000" />
+	</bean>
 </beans> 

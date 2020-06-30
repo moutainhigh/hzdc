@@ -32,9 +32,9 @@ public class QueryExport extends BaseController {
     public String bizOrderExport(@ModelAttribute("exportQuery") ExportQuery exportQuery, Model model, HttpSession session) {
 	UserInfo userInfo = getUserInfo(session);
 	// 业务权限判断
-	if (!checkBizAuth(exportQuery.getBizId(), userInfo)) {
-	    return "error/autherror";
-	}
+//	if (!checkBizAuth(exportQuery.getBizId(), userInfo)) {
+//	    return "error/autherror";
+//	}
 
 	Date date = null;
 	try {
@@ -60,6 +60,38 @@ public class QueryExport extends BaseController {
 	}
 	return "biz/queryBizOrderExport";
     }
+	@RequestMapping("biz/queryBizOrderAllExport")
+	public String bizOrderAllExport(@ModelAttribute("exportQuery") ExportQuery exportQuery, Model model, HttpSession session) {
+		UserInfo userInfo = getUserInfo(session);
+		// 业务权限判断
+//		if (!checkBizAuth(exportQuery.getBizId(), userInfo)) {
+//			return "error/autherror";
+//		}
+
+		Date date = null;
+		try {
+			date = DateTool.strintToDate(DateTool.parseDate(new Date()));
+		} catch (ParseException e) {
+		}
+		if (exportQuery.getEndGmtCreate() == null) {
+			exportQuery.setEndGmtCreate(date);
+		}
+		if (exportQuery.getStartGmtCreate() == null) {
+			exportQuery.setStartGmtCreate(date);
+		}
+
+		exportQuery.setUserId(userInfo.getId());
+		exportQuery.setExportType(Constants.Export.TYPE_BIZ_ORDER);
+		model.addAttribute("userInfo", userInfo);
+		setSelectValue(userInfo, model, exportQuery);
+		Result<List<Export>> result = queryService.queryExport(exportQuery);
+		if (result.isSuccess()) {
+			model.addAttribute("exportList", result.getModule());
+		} else {
+			setError(model, result.getResultMsg());
+		}
+		return "statistic/queryAllBizOrderExport";
+	}
 
     @RequestMapping("biz/querySupplyOrderExport")
     public String supplyOrderExport(@ModelAttribute("exportQuery") ExportQuery exportQuery, Model model, HttpSession session) {
@@ -93,6 +125,39 @@ public class QueryExport extends BaseController {
 	}
 	return "biz/querySupplyOrderExport";
     }
+	//供货单统计跳转
+	@RequestMapping("biz/querySupplyOrderAllExport")
+	public String supplyOrderAllExport(@ModelAttribute("exportQuery") ExportQuery exportQuery, Model model, HttpSession session) {
+		UserInfo userInfo = getUserInfo(session);
+		// 业务权限判断
+//		if (!checkBizAuth(exportQuery.getBizId(), userInfo)) {
+//			return "error/autherror";
+//		}
+
+		Date date = null;
+		try {
+			date = DateTool.strintToDate(DateTool.parseDate(new Date()));
+		} catch (ParseException e) {
+		}
+		if (exportQuery.getEndGmtCreate() == null) {
+			exportQuery.setEndGmtCreate(date);
+		}
+		if (exportQuery.getStartGmtCreate() == null) {
+			exportQuery.setStartGmtCreate(date);
+		}
+
+		exportQuery.setUserId(userInfo.getId());
+		exportQuery.setExportType(Constants.Export.TYPE_SUPPLY_ORDER);
+		model.addAttribute("userInfo", userInfo);
+		setSelectValue(userInfo, model, exportQuery);
+		Result<List<Export>> result = queryService.queryExport(exportQuery);
+		if (result.isSuccess()) {
+			model.addAttribute("exportList", result.getModule());
+		} else {
+			setError(model, result.getResultMsg());
+		}
+		return "statistic/querySupplyOrderAllExport";
+	}
 
     @RequestMapping("funds/queryRefundOrderExport")
     public String refundOrderExport(@ModelAttribute("exportQuery") ExportQuery exportQuery, Model model, HttpSession session) {

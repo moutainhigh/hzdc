@@ -4,12 +4,12 @@
     <title>鼎驰科技</title>
 	#parse("common/common.vm")
 	#parse("common/errorUtils.vm")
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/admin-all.css" />
-    <script type="text/javascript" src="$!staticServer/js/jquery-1.7.2.js"></script>
-    <script type="text/javascript" src="$!staticServer/js/jquery-ui-1.8.22.custom.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="$!staticServer/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
-    <script type="text/javascript" src="$!staticServer/js/tip.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/admin-all.css" />
+    <script type="text/javascript" src="/js/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript" src="/js/tip.js"></script>
 </head>
 <body>
 	$!errorMsg
@@ -20,16 +20,8 @@
     	<input type="hidden" id="area" name="area" value="3">
     	<input type="hidden" id="pos" name="pos" value="$!crawlLogin.pos">
 		<tr>
-			<td align="right">用户名：</td>
-			<td><input type="text" id="user" name="user" value="$!crawlLogin.user"></td>
-		</tr>
-		<tr>
-			<td align="right">密码：</td>
-			<td><input type="password" id="pwd" name="pwd" value="$!crawlLogin.pwd"></td>
-		</tr>
-		<tr>
-			<td align="right">短信验证码：</td>
-			<td><input type="text" id="msg" name="msg"><input type="button" id="sendMsg" onclick="javascript:submitMsg();" value="点击获取"/></td>
+			<td align="right">内容：</td>
+			<td><textarea id="user" name="user" rows="10" cols="50">$!crawlLogin.user</textarea></td>
 		</tr>
     	<tr>
 			<td>&nbsp;</td>
@@ -38,36 +30,12 @@
 				<input class="btn btn-inverse" type="button" onclick="javascript:history.go(-1)" value="返回"/>
 			</td>
 		</tr>
+		<input type="hidden" id="pwd" name="pwd">
+		<input type="hidden" id="rand" name="rand">
+		<input type="hidden" id="msg" name="msg">
 	</table>
 	</form>
 	<script type="text/javascript">
-		function submitMsg(){
-			var pos = $("#pos").val();
-			if(pos.length == 0){
-                alert("读取pos是空");
-                return false;
-            }
-            var user = $("#user").val();
-            if(user.length == 0){
-                alert("用户名是空");
-                return false;
-            }
-			var pwd = $("#pwd").val();
-            if(pwd.length == 0){
-                alert("密码是空");
-                return false;
-            }
-            
-			document.getElementById("sendMsg").disabled=true;
-			htmlobj=$.ajax({url:"httpDeal.do?requestType=message",data:$("#crawlLoginForm").serialize(),async:false});
-			var response = JSON.parse(htmlobj.responseText);
-			if(response.status == "success" && response.module){
-				alert("发送成功");
-			}else{
-				alert(response.errorMsg);
-			}
-		}
-		
 		function submitLogin(){
 			var pos = $("#pos").val();
 			if(pos.length == 0){
@@ -76,19 +44,9 @@
             }
             var user = $("#user").val();
             if(user.length == 0){
-                alert("用户名是空");
+                alert("内容是空");
                 return false;
             }
-			var pwd = $("#pwd").val();
-            if(pwd.length == 0){
-                alert("密码是空");
-                return false;
-            }
-            var msg = $("#msg").val();
-            if(msg.length == 0){
-                alert("短信验证码是空");
-                return false;
-            }            
 			return true;
 		}
 	</script>

@@ -120,6 +120,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 	    }
 
 	    userInfo.setStatus(Constants.UserInfo.STATUS_NORMAL);
+	    userInfo.setAlertStatus(Constants.UserInfo.ASTATUS_NO);
 	    if (StringUtils.isNotEmpty(userInfo.getPwd())) {
 		userInfo.setPwd(getPwd(userInfo.getPwd()));
 	    } else {
@@ -398,7 +399,22 @@ public class UserServiceImpl extends BaseService implements UserService {
 	return result;
     }
 
-    private String getPwd(String pwd) {
+	@Override
+	public UserInfo queryByName(String username) {
+    	if (StringUtils.isEmpty(username)) {
+			return null;
+		}
+    	//不做判断了，创建的任务的在数据库里面应该都会有数据的
+		UserInfo userInfo = null;
+		try {
+			userInfo = userInfoDAO.queryByName(username);
+		} catch (SQLException e) {
+			logger.error("queryByName error", e);
+		}
+		return userInfo;
+	}
+
+	private String getPwd(String pwd) {
 	String result = Md5Encrypt.md5(pwd + PWD_KEY);
 	result = Md5Encrypt.md5(result);
 	return result;

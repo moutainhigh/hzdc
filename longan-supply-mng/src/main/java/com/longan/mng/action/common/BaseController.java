@@ -244,7 +244,7 @@ public class BaseController {
 	    }
 	    task.setCommitTime(baseTaskForm.getCommitTime());
 	}
-
+	//往数据库里面创建定时任务数据，判断创建的数据是否是正确的
 	taskResult = taskService.submitTask(task);
 	if (!taskResult.isSuccess()) {
 	    result.setResultMsg(taskResult.getResultMsg());

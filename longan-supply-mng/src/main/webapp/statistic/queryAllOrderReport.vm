@@ -1,0 +1,604 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    #parse("common/select.vm")
+    #parse("common/pagination.vm")
+    #parse("common/common.vm")
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/admin-all.css" />
+    <link rel="stylesheet" type="text/css" href="/css/doubleDate.css" />
+    <script type="text/javascript" src="/js/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript" src="/js/tip.js"></script>
+    <script type="text/javascript" src="/js/doubleDate2.0.js"></script>
+    <script type="text/javascript" src="/js/jquery.cookie.js"></script>
+    <style type="text/css">
+        #bottombar {
+            transform: rotate(180deg);
+            -webkit-transform: rotate(180deg);
+            transition: transform 1s;
+        }
+        #trDetail{
+            width: 100%;
+            height: 26px;
+            margin-left: 0px;
+            display: none;
+        }
+        #trDetail>li{
+            display: inline-block;
+            text-align: center;
+            line-height: 26px;
+            /*margin: 0px;*/
+            float: left;
+            list-style: none;
+            border: 1px solid lightgrey;
+        }
+    </style>
+</head>
+
+<body>
+    $!errorMsg
+<div></div>
+<div class="alert alert-info">当前位置<b class="tip"></b>交易管理<b class="tip"></b>订单统计报表</div>
+<form id="orderReport" action="queryAllOrderReport.do" method="post" >
+    <a href="#topbar"></a>
+    <table class="table table-striped table-bordered table-condensed">
+        <thead>
+        <tr>
+            <td colspan="10" class="auto-style2">&nbsp;请填写查询条件 </td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>订单日期 </td>
+            <td id="timeRatio" style="display: inline-block;width: 500px;height: 40px;position: relative">
+                <div class="input-append" >
+                    <input class="input-small doubledate" readonly="readonly" size="10" type="text" name="startGmtCreate" value="$!dateTool.format("yyyy-MM-dd", $!orderReport.startGmtCreate)" />
+                    <span class="add-on"><i class="icon-calendar"></i></span>
+                    <span style="display: inline-block;position: absolute;top: 4px;width: 98px;height: 26px;line-height: 26px; border: 1px solid lightgrey;border-left: none; "><input style="width: 25px;height: 14px;text-align: center; border: none" type="text" onkeyup="value=value.replace(/[^\d]/g,'')" name="startHour" maxlength="2" value="$!orderReport.startHour" class="hourIF startOff" />:<input maxlength="2" style="width: 25px;height: 18px;border: none;text-align: center;" onkeyup="value=value.replace(/[^\d]/g,'')" name="startMinute" value="$!orderReport.startMinute" class="minuteIF startOff"/>
+							:<input style="width: 30px;height: 18px;border:none;text-align: center;" maxlength="2" onkeyup="value=value.replace(/[^\d]/g,'')"   name="startSecond" value="$!orderReport.startSecond" maxlength="2" class="minuteIF startOff"/>
+								<span><span></span>~~
+							<input  id="endtime" class="input-small doubledate" readonly="readonly" type="text" name="endGmtCreate" value="$!dateTool.format("yyyy-MM-dd", $!orderReport.endGmtCreate)" /><span class="add-on"><i class="icon-calendar"></i></span></span><span style="display: inline-block;width: 100px;height: 26px;line-height: 26px; border: 1px solid lightgrey;border-left: none;position: absolute;top: 0px;"><input name="endHour" value="$!orderReport.endHour" style="width: 30px;height: 15px;text-align: center;border: none;" onkeyup="value=value.replace(/[^\d]/g,'')" maxlength="2" class="hourIF"  />:<input maxlength="2" name="endMinute" style="width: 30px;height: 18px;text-align: center;border: none; " onkeyup="value=value.replace(/[^\d]/g,'')" value="$!orderReport.endMinute"  class="minuteIF "/>:<input maxlength="2"  name="endSecond" style="width: 30px; height: 18px;border: none;text-align: center;" onkeyup="value=value.replace(/[^\d]/g,'')" value="$!orderReport.endSecond" class="minuteIF"/></span>
+                </div>
+            </td>
+            <td>商品面值</td>
+            <td>#selectClassMedium($!itemFacePriceList,'itemFaceprice',$!orderReport.itemFaceprice)</td>
+            <td>运营商</td>
+            <td class="detail">#select($!carrierTypeList,'carrierType',$!orderReport.carrierType)</td>
+            <td>销售区域(该查询条件不支持分页)
+                <input id="all_city"  type="button" value="全选" />
+                <input id="invertSelection"  type="button" value="反选"/>
+            </td>
+        </tr>
+        <tr>
+            <td>上游供货商</td>
+            <td>
+                <input id="upStreamUserSolr" value="" autocomplete="off" />
+                <ul id="ulSytle" style="list-style: none;margin-left:0px;background: whitesmoke;border: 1px solid #cccccc">
+                </ul>
+                <br/>
+                #selectClassMedium($!upStreamUser,'supplyTraderId',$!orderReport.supplyTraderId)
+            </td>
+            <td>代理商</td>
+            <td>
+                <input id="downUser" value="" autocomplete="off" />
+                <ul id="ulSytleUser" style="list-style: none;background: whitesmoke;margin-left:0px;border: 1px solid #cccccc">
+                </ul>
+                #selectClassMedium($!downStreamUser,'userId',$!orderReport.userId)
+            </td>
+            <td>是否统计隔天订单</td>
+            <td>
+                #select($!statisticList,'statistic',$!orderReport.statistic)
+            </td>
+            <td id="td_input_city">
+                <div id="provinceList">
+                    #foreach($!province in $!provinceList)
+                        #if ($!{velocityCount} == 11)
+                            <input type="checkbox" name="salesAreas" value="$!province.provinceCode"" /><span>$!province.provinceName</span><br/>
+                        #end
+                        #if ($!{velocityCount} == 22)
+                            <input type="checkbox" name="salesAreas" value="$!province.provinceCode"" /><span>$!province.provinceName</span><br/>
+                        #end
+                        #if ($!{velocityCount}!=11 && $!{velocityCount} != 22)
+                            <input type="checkbox" name="salesAreas" value="$!province.provinceCode"" /><span>$!province.provinceName</span>
+                        #end
+                    #end
+            </td>
+            <td colspan="8"></td>
+        </tr>
+        <tr>
+            <td colspan="2" align="right">
+                <a class="btn btn-inverse"  onclick="javascript:query();">查询</a>
+                <input class="btn btn-inverse"  type="reset" value="清空" />
+                <a class="btn btn-inverse"  onclick="javascript:fileExport()">导出</a>
+            </td>
+            <td id="respMsg" colspan="1"></td>
+            <td colspan="7">
+                <a id="faceAmount"></a>&nbsp&nbsp<a id="saleAmount"></a>&nbsp&nbsp<a id="costAmount"></a>&nbsp&nbsp<a id="feeAmount">&nbsp&nbsp<a id="profitAmount"></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <table class="table table-striped table-bordered table-condensed" id="list">
+        <thead>
+        <tr class="tr_detail" style="width: 100%;">
+            <td>下游代理商</td>
+            <td>运营商</td>
+            <td>省份</td>
+            <td>面值</td>
+            <td>上游供货商</td>
+            <td>总订单数</td>
+            <td>成功订单数</td>
+            <td>成功率</td>
+            <td>3分钟成功回调数</td>
+            <td>3分钟到账率</td>
+        </tr>
+        ##        display: flex;justify-content: space-between;
+        </thead>
+        <tbody>
+            #foreach($!orderReport in $!orderReportList)
+            <tr class="widthTd">
+                <td>$!orderReport.userName</td>
+                <td>$!orderReport.carrierTypeName</td>
+                <td>$!orderReport.salesAreasName</td>
+                <td>$!orderReport.itemFacePriceName</td>
+                <td>$!orderReport.supplyName</td>
+                <td>$!orderReport.nowOrder</td>
+                <td>$!orderReport.nowSuccessOrder</td>
+                <td>$!orderReport.successRate</td>
+                <td>$!orderReport.threeSuccessOrder</td>
+                <td>$!orderReport.threeSuccessRate</td>
+            </tr>
+            #end
+            #if($orderReportList)
+                #if($moveReport)
+                <tr>
+                    <td style="color: red;">总计</td>
+                    <td style="color: red;">移动</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>$!moveReport.nowOrder</td>
+                    <td>$!moveReport.nowSuccessOrder</td>
+                    <td>$!moveReport.successRate</td>
+                    <td>$!moveReport.threeSuccessOrder</td>
+                    <td>$!moveReport.threeSuccessRate</td>
+                </tr>
+                #end
+                #if($linkReport)
+                <tr>
+                    <td style="color: red;">总计</td>
+                    <td style="color: red;">联通</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>$!linkReport.nowOrder</td>
+                    <td>$!linkReport.nowSuccessOrder</td>
+                    <td>$!linkReport.successRate</td>
+                    <td>$!linkReport.threeSuccessOrder</td>
+                    <td>$!linkReport.threeSuccessRate</td>
+                </tr>
+                #end
+                #if($telecomReport)
+                <tr>
+                    <td style="color: red;">总计</td>
+                    <td style="color: red;">电信</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>$!telecomReport.nowOrder</td>
+                    <td>$!telecomReport.nowSuccessOrder</td>
+                    <td>$!telecomReport.successRate</td>
+                    <td>$!telecomReport.threeSuccessOrder</td>
+                    <td>$!telecomReport.threeSuccessRate</td>
+                </tr>
+                #end
+            #end
+        </tbody>
+    </table>
+##style="position: fixed;top:0px;left:0px;width: 100%;height: 26px;display: flex;justify-content:space-around;color: #323D53;background: lightgrey"
+    <ul id="trDetail">
+        <li>下游代理商</li>
+        <li>运营商</li>
+        <li>省份</li>
+        <li>面值</li>
+        <li>上游供货商</li>
+        <li>总订单数</li>
+        <li>成功订单数</li>
+        <li>成功率</li>
+        <li>3分钟成功回调数</li>
+        <li>3分钟到账率</li>
+    </ul>
+##     style="width: 40px;height: 40px"
+    <img id="topbar" src="../img/top.jpg"  alt="回到顶部"/>
+    <img id="bottombar" src="../img/bottom.jpg"  alt="直达底部"/>
+</form>
+
+<script type="text/javascript">
+    $(function(){
+        $('.doubledate').kuiDate({
+            className:'doubledate',
+            isDisabled: "1"
+        });
+    });
+
+    function submitCheck(){
+        if(!checkDate()){
+            return false;
+        }
+        return true;
+    }
+
+    var checkDate = function(){
+        var start_date = jQuery("input[name='startGmtCreate']").val();
+        var end_date = jQuery("input[name='endGmtCreate']").val();
+        var objDate=new Date();
+        var year = objDate.getFullYear();
+        var month = objDate.getMonth() + 1;
+        var day = objDate.getDate();
+        month = month>=10?month:'0'+month;
+        day = day>=10?day:'0'+day;
+        var date = year + "-" + month + "-" + day;
+
+        if(!compareDate(start_date, date)){
+            alert("起始日期不能大于当前日期！");
+            return false;
+        }
+        if(!compareDate(end_date, date)){
+            alert("终止日期不能大于当前日期！");
+            return false;
+        }
+        if(!compareDate(start_date, end_date)){
+            alert("起始日期不能大于终止日期!");
+            return false;
+        }
+        var  beginTime = new Date(Date.parse(start_date.replace(/-/g, "/")));
+        var  endTime = new Date(Date.parse(end_date.replace(/-/g, "/")));
+        var onemonthe=2*30*24*60*60*1000;
+
+        if((endTime-beginTime)>onemonthe){
+            alert("只能查二个月之内的记录!");
+            return false;
+        }
+        return true;
+    }
+
+    function compareDate(date1, date2){
+        year1 = date1.substring(0,date1.indexOf("-"));
+        year2 = date2.substring(0,date2.indexOf("-"));
+        month1 = date1.substring(date1.indexOf("-") + 1,date1.lastIndexOf("-"));
+        month2 = date2.substring(date2.indexOf("-") + 1,date2.lastIndexOf("-"));
+        day1 = date1.substring(date1.lastIndexOf("-") + 1);
+        day2 = date2.substring(date2.lastIndexOf("-") + 1);
+
+        if(year1 > year2){
+            return false;
+        } else if(year1 < year2){
+            return true;
+        } else if(month1 > month2){
+            return false;
+        } else if(month1 < month2){
+            return true;
+        } else if(day1 > day2){
+            return false;
+        } else if(day1 < day2){
+            return true;
+        }
+        return true;
+    }
+
+    function query(){
+        var hourIF = document.getElementsByClassName('hourIF');
+        for (var i =0 ; i<hourIF.length;i++){
+            //console.log(parseInt(hourIF[i].value);
+            if (parseInt(hourIF[i].value)>24) {
+                alert("小时设置必须小于24");
+                return ;
+            }
+        }
+        //分秒的判断
+        var   minuteIF = document.getElementsByClassName('minuteIF');
+        for (var i =0 ; i<minuteIF.length;i++){
+            if (parseInt(minuteIF[i].value)>60) {
+                alert("分钟或秒钟设置必须小于60");
+                return ;
+            }
+        }
+        //没有去选择ul
+        if (jQuery('#upStreamUserSolr').val().trim()!=" ") {
+            //supplyTraderId
+            jQuery('#supplyTraderId option').each(function () {
+                if (jQuery('#upStreamUserSolr').val()==jQuery(this).text()) {
+                    jQuery(this).attr("selected",true);
+                }
+            })
+        }
+        //
+        if (jQuery('#downUser').val().trim()!=" ") {
+            //supplyTraderId
+            jQuery('#userId option').each(function () {
+                if (jQuery('#downUser').val()==jQuery(this).text()) {
+                    jQuery(this).attr("selected",true);
+                }
+            })
+        }
+        jQuery('#orderReport').attr("action", "queryAllOrderReport.do");
+        jQuery('#orderReport').submit();
+    }
+    //页面导出功能
+    function fileExport(){
+        jQuery('#orderReport').attr("action", "orderReportExport.do");
+        jQuery('#orderReport').submit();
+    }
+    //ul拼接
+    //ul拼接
+    jQuery('#supplyTraderId option').each(function (index) {
+        var text = jQuery(this).text();
+        var valText = "<li>"+ text +"</li>";
+        jQuery('#ulSytle').append(valText);
+    })
+    document.getElementById('upStreamUserSolr').oninput = function () {
+        var arr = [];
+        var record =[];
+        var recordLength = 0;
+        var inputValue = this.value;
+        jQuery('#ulSytle li').each(function (index) {
+            arr[index] = jQuery(this).text() ;
+            jQuery(this).css('display','none');
+        })
+        for (var i = 0 ; i<arr.length; i++) {
+            //判断是否有这个关键字
+            if (arr[i].indexOf(inputValue) != -1) {
+                record[i]=i;
+                recordLength += 1;
+            }
+        }
+        jQuery('#ulSytle li').each(function (index) {
+            if (record.length != 0) {
+                //不为空，则关键字里面有下拉框的数据
+                if (record[index]==index) {
+                    jQuery(this).css('display','block');
+                }
+            }
+        })
+        if (jQuery(this).val().trim()=="") {
+            //空的
+            jQuery('#supplyTraderId option').each(function () {
+                //取消选中
+                jQuery(this).attr("selected",false);
+            })
+        }
+        jQuery('#ulSytle').css('display','block').css('position','absolute');
+    }
+    //滑过input 》ul也显示
+    jQuery('#upStreamUserSolr').hover(function () {
+        // if (jQuery('#ulSytle').css('display')=='block') {
+        jQuery('#ulSytle').css('position','absolute')
+        jQuery('#ulSytle').css('display','block')
+    },function () {
+        jQuery('#ulSytle').hide();
+    })
+    window.onload = function(){
+        var minRatioCost = screen.availWidth;
+        var maxRatio = minRatioCost*500/1366;
+        jQuery('#timeRatio').css('width',maxRatio+'px');
+        jQuery('#upStreamUserSolr').css('width','140px');
+        jQuery('#upStreamUserSolr').val(jQuery('#supplyTraderId').find('option:selected').text());
+
+        jQuery('#downUser').css('width','140px');
+        jQuery('#downUser').val(jQuery('#userId').find('option:selected').text());
+    }
+    jQuery('#ulSytle').css('z-index','50').css('display','none').css('display','none').css('font-weight','blod').css('width','142px').css('height','200px').css('overflow','auto');
+    jQuery('#ulSytle').find('li').hover(function () {
+        jQuery(this).css('background','#1e90ff');
+
+    },function () {
+        jQuery(this).css('background','whitesmoke');
+    })
+    jQuery('#ulSytle').hover(function () {
+        jQuery(this).show();
+    },function () {
+        jQuery(this).hide();
+    })
+    jQuery('#ulSytle').find('li').click(function () {
+        var text = jQuery(this).text();
+        console.log(jQuery(this).text())
+        jQuery('#upStreamUserSolr').val(text);
+        jQuery('#ulSytle').css('display','none');
+        jQuery('#supplyTraderId').find('option').each(function () {
+            if(jQuery(this).text() == text){
+                jQuery(this).attr("selected",true);
+            }
+        })
+    })
+    jQuery('#supplyTraderId').css('display','none');
+    ///////////////////////////////////////////////
+    //ul拼接
+    jQuery('#userId option').each(function (index) {
+        var text = jQuery(this).text();
+        var valText = "<li>"+ text +"</li>";
+        jQuery('#ulSytleUser').append(valText);
+    })
+    document.getElementById('downUser').oninput = function () {
+        var arr = [];
+        var record =[];
+        var recordLength = 0;
+        var inputValue = this.value;
+        jQuery('#ulSytleUser li').each(function (index) {
+            arr[index] = jQuery(this).text() ;
+            jQuery(this).css('display','none');
+        })
+        for (var i = 0 ; i<arr.length; i++) {
+            //判断是否有这个关键字
+            if (arr[i].indexOf(inputValue) != -1) {
+                record[i]=i;
+                recordLength += 1;
+            }
+        }
+        jQuery('#ulSytleUser li').each(function (index) {
+            if (record.length != 0) {
+                //不为空，则关键字里面有下拉框的数据
+                if (record[index]==index) {
+                    jQuery(this).css('display','block');
+                }
+            }
+        })
+        if (jQuery(this).val().trim()=="") {
+            //空的
+            jQuery('#userId option').each(function () {
+                //取消选中
+                jQuery(this).attr("selected",false);
+            })
+        }
+        jQuery('#ulSytleUser').css('display','block').css('position','absolute');
+    }
+    jQuery('#ulSytleUser').css('z-index','50').css('display','none').css('display','none').css('width','142px').css('height','200px').css('font-weight','blod').css('overflow','auto');
+    jQuery('#ulSytleUser').find('li').hover(function () {
+        jQuery(this).css('background','#1e90ff');
+
+    },function () {//#F9F9F9 white
+        jQuery(this).css('background','whitesmoke');
+    })
+    jQuery('#ulSytleUser').hover(function () {
+        jQuery(this).show();
+    },function () {
+        jQuery(this).hide();
+    })
+    jQuery('#ulSytleUser').find('li').click(function () {
+        var text = jQuery(this).text();
+        console.log(jQuery(this).text())
+        jQuery('#downUser').val(text);
+        jQuery('#ulSytleUser').css('display','none');
+        jQuery('#userId').find('option').each(function () {
+            if(jQuery(this).text() == text){
+                jQuery(this).attr("selected",true);
+            }
+        })
+    })
+    //滑过ul显示
+    jQuery('#downUser').hover(function () {
+        jQuery('#ulSytleUser').css('position','absolute')
+        jQuery('#ulSytleUser').css('display','block')
+    },function () {
+        jQuery('#ulSytleUser').hide();
+    })
+    jQuery('#userId').css('display','none');
+
+    //省份
+    var td_input_city = document.querySelectorAll('#td_input_city input');
+    //全国的全选事件
+    document.getElementById("all_city").onclick =  function () {
+
+        // if (this.checked==true){
+        for (var i =0;i<td_input_city.length;i++){
+            if (td_input_city[i].type=='checkbox') {
+                td_input_city[i].checked=true;
+            }
+        }
+    }
+    //每个input的按钮注册事件
+    for (var k = 0 ; k<td_input_city.length;k++) {
+        td_input_city[k].onclick = function() {
+            //定义一个标志来记录
+            var flag = true;
+            //checkInput，看看是否有没选中的
+            for(var j = 0; j < td_input_city.length; j++) {
+
+                if(td_input_city[j].checked == false) {
+                    flag = false;
+                }
+            }
+            document.getElementById("all_city").checked=flag;
+        }
+    }
+    //全国的反选
+    document.getElementById('invertSelection').onclick = function () {
+        console.log("反选进来了");
+        for(var i=0;i<td_input_city.length;i++){
+            if(td_input_city[i].checked){
+                td_input_city[i].checked=false;
+            }else{
+                td_input_city[i].checked=true;
+            }
+        }
+    }
+
+    // console.log(jQuery('.tr_detail').html())
+    //滚轮事件
+    //监听滚轮滚动事件
+    window.onscroll = function(){
+        var scrollT = document.documentElement.scrollTop||document.body.scrollTop;
+        var scrollH = document.documentElement.scrollHeight||document.body.scrollHeight;
+        var clientH = document.documentElement.clientHeight||document.body.clientHeight
+        // console.log("滚轮的位置"+scrollT)
+        //style="position: fixed;top:0px;left:0px;width: 100%;height: 26px;display: flex;justify-content:space-around;color: #323D53;background: lightgrey"
+        if (scrollT>300) {
+            jQuery('#trDetail').css({
+                'display':'block',
+                "position": "fixed",
+                "top":"0px",
+                "left":"0px",
+                // "display": "flex",
+                // "justify-content":"space-between",
+                "color": "#323D53",
+                "background": "#efefef",
+                // "margin":'0px',
+                "display": "inline-block"
+            })
+            jQuery('.widthTd').find('td').each(function (index) {
+                var width = jQuery(this).width();
+                var widthIndex = index;
+                jQuery('#trDetail').find('li').each(function (idx) {
+                    if (widthIndex==idx) {
+                        jQuery(this).width(width+9+'px');
+                    }
+                })
+            })
+            jQuery('#topbar').css('display','block')
+            jQuery('#bottombar').css('display','none')
+            //
+        }
+        if (scrollT<300) {
+            jQuery('#trDetail').css({
+                'display':'none'
+            })
+            jQuery('#topbar').css('display','none')
+            jQuery('#bottombar').css('display','block')
+        }
+        // if(scrollT == scrollH - clientH){
+        //     jQuery('#topbar').css('display','block')
+        // }else if(scrollT == 0){
+        //     jQuery('#topbar').css('display','none')
+        // }
+    }
+    // jQuery('#trDetail').css({
+    //
+    // })
+
+    jQuery('#topbar').css({
+        'position':'fixed',
+        'bottom':'0px',
+        'right':'20px ',
+        'display':'none'
+    })
+    jQuery('#topbar').click(function () {
+        var scrollT = document.documentElement.scrollTop||document.body.scrollTop;
+        document.documentElement.scrollTop = 0;
+    })
+    jQuery('#bottombar').css({
+        'position':'fixed',
+        'bottom':'0px',
+        'right':'20px ',
+        // 'display':'none'
+    })
+    jQuery('#bottombar').click(function () {
+        var scrollT = document.documentElement.scrollTop||document.body.scrollTop;
+        var scrollH = document.documentElement.scrollHeight||document.body.scrollHeight;
+        document.documentElement.scrollTop = scrollH;
+    })
+</script>
+</body>
+</html>

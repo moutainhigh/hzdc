@@ -45,7 +45,15 @@ public class UserInfoDAOImpl implements UserInfoDAO {
 	return record;
     }
 
-    public int deleteByExample(UserInfoExample example) throws SQLException {
+	@Override
+	public UserInfo queryByName(String username)throws SQLException  {
+//		UserInfo key = new UserInfo();
+//		key.setUserName(username);
+		UserInfo record = (UserInfo) sqlMapClient.queryForObject("user_info.queryByName", username);
+		return record;
+	}
+
+	public int deleteByExample(UserInfoExample example) throws SQLException {
 	int rows = sqlMapClient.delete("user_info.abatorgenerated_deleteByExample", example);
 	return rows;
     }

@@ -75,6 +75,34 @@
 			</isNotEmpty>
 		</dynamic>
 	</sql>
+	<sql id="whereConditionsJob">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="userId">
+				user_id = #userId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="userName">
+				user_name like CONCAT('%', #userName#, '%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="bizId">
+				biz_id = #bizId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="moduleName">
+				module_name like CONCAT('%', #moduleName#, '%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="status">
+				status = #status#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="startGmtCreate">
+				commit_time &gt;= DATE_ADD(#startGmtCreate#,INTERVAL -1 minute)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="endGmtCreate">
+				commit_time &lt;= #endGmtCreate#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
 
 	<select id="queryByPage" resultMap="taskResult">
 		select
@@ -84,6 +112,14 @@
 		ORDER BY gmt_create DESC LIMIT #startRow#,#pageSize#
 	</select>
 
+	<select id="queryByPageJob" resultMap="taskResult">
+		select
+		<include refid="task.taskFullColumns" />
+		from task
+		<include refid="task.whereConditionsJob" />
+	</select>
+
+
 	<select id="queryByPageCount" resultClass="java.lang.Integer">
 		SELECT count(*) from task
 		<include refid="task.whereConditions" />
@@ -91,6 +127,9 @@
 
 	<update id="updateTaskById">
 		update task set gmt_modify = now(),commit_time = #commitTime# where id = #id# and status = 1
+	</update>
+	<update id="updateTaskByIdStatus">
+		update task set gmt_modify = now(),status = 2 where id = #id#
 	</update>
 
 	<select id="getTaskById" resultMap="taskResult">

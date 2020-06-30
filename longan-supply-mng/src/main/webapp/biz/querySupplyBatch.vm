@@ -37,7 +37,13 @@
 				</tr>
 				<tr>
                     <td>上游供货商</td>
-                    <td>#selectClassMedium($!upStreamList,'upstreamId',$!supplyBatchQuery.upstreamId)</td>
+                    <td>
+						<input id="upStreamUserSolr" value="" autocomplete="off" />
+						<ul id="ulSytle" style="list-style: none;margin-left:0px;background: whitesmoke;border: 1px solid #cccccc">
+						</ul>
+						<br/>
+						#selectClassMedium($!upStreamList,'upstreamId',$!supplyBatchQuery.upstreamId)
+					</td>
                     <td>申请人</td>
                     <td>#selectClassMedium($!operList,'operId',$!supplyBatchQuery.operId)</td>
                     <td>审核人</td>
@@ -162,6 +168,93 @@
             }
 			return true;
         }
+        jQuery('#find').click(function () {
+			//没有去选择ul
+			if (jQuery('#upStreamUserSolr').val().trim()!=" ") {
+				//supplyTraderId
+				jQuery('#upstreamId option').each(function () {
+					if (jQuery('#upStreamUserSolr').val()==jQuery(this).text()) {
+						jQuery(this).attr("selected",true);
+					}
+				})
+			}
+		})
+		//ul拼接
+		jQuery('#upstreamId option').each(function (index) {
+			var text = jQuery(this).text();
+			var valText = "<li>"+ text +"</li>";
+			jQuery('#ulSytle').append(valText);
+		})
+		document.getElementById('upStreamUserSolr').oninput = function () {
+			var arr = [];
+			var record =[];
+			var recordLength = 0;
+			var inputValue = this.value;
+			jQuery('#ulSytle li').each(function (index) {
+				arr[index] = jQuery(this).text() ;
+				jQuery(this).css('display','none');
+			})
+			for (var i = 0 ; i<arr.length; i++) {
+				//判断是否有这个关键字
+				if (arr[i].indexOf(inputValue) != -1) {
+					record[i]=i;
+					recordLength += 1;
+				}
+			}
+			jQuery('#ulSytle li').each(function (index) {
+				if (record.length != 0) {
+					//不为空，则关键字里面有下拉框的数据
+					if (record[index]==index) {
+						jQuery(this).css('display','block');
+					}
+				}
+			})
+			if (jQuery(this).val().trim()=="") {
+				//空的
+				jQuery('#upstreamId option').each(function () {
+					//取消选中
+					jQuery(this).attr("selected",false);
+				})
+			}
+			jQuery('#ulSytle').css('display','block').css('position','absolute');
+		}
+		//滑过input 》ul也显示
+		jQuery('#upStreamUserSolr').hover(function () {
+			// if (jQuery('#ulSytle').css('display')=='block') {
+			jQuery('#ulSytle').css('position','absolute')
+			jQuery('#ulSytle').css('display','block')
+		},function () {
+			jQuery('#ulSytle').hide();
+		})
+		window.onload = function(){
+			jQuery('#upStreamUserSolr').css('width','140px');
+			jQuery('#upStreamUserSolr').val(jQuery('#upstreamId').find('option:selected').text());
+
+		}
+		jQuery('#ulSytle').css('z-index','50').css('display','none').css('display','none').css('font-weight','blod').css('width','142px').css('height','200px').css('overflow','auto');
+		jQuery('#ulSytle').find('li').hover(function () {
+			jQuery(this).css('background','#1e90ff');
+
+		},function () {
+			jQuery(this).css('background','whitesmoke');
+		})
+		jQuery('#ulSytle').hover(function () {
+			jQuery(this).show();
+		},function () {
+			jQuery(this).hide();
+		})
+		jQuery('#ulSytle').find('li').click(function () {
+			var text = jQuery(this).text();
+			console.log(jQuery(this).text())
+			jQuery('#upStreamUserSolr').val(text);
+			jQuery('#ulSytle').css('display','none');
+			jQuery('#upstreamId').find('option').each(function () {
+				if(jQuery(this).text() == text){
+					jQuery(this).attr("selected",true);
+				}
+			})
+		})
+		jQuery('#upstreamId').css('display','none');
 	</script>
 </body>
 </html>

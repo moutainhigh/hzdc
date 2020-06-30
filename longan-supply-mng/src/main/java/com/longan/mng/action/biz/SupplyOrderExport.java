@@ -55,11 +55,11 @@ public class SupplyOrderExport extends BaseController {
     public ModelAndView onRequest(@ModelAttribute("supplyOrderQuery") SupplyOrderQuery supplyOrderQuery, HttpSession session) {
 	// 业务权限判断
 	UserInfo userInfo = super.getUserInfo(session);
-	if (supplyOrderQuery.getBizId() != null) {
-	    if (!checkBizAuth(supplyOrderQuery.getBizId(), userInfo)) {
-		return new ModelAndView("error/autherror");
-	    }
-	}
+//	if (supplyOrderQuery.getBizId() != null) {
+//	    if (!checkBizAuth(supplyOrderQuery.getBizId(), userInfo)) {
+//		return new ModelAndView("error/autherror");
+//	    }
+//	}
 
 	if (userInfo.isDownStreamUser()) {
 	    supplyOrderQuery.setUserId(userInfo.getId());
@@ -76,9 +76,15 @@ public class SupplyOrderExport extends BaseController {
 	logger.warn("操作员:" + userInfo.getUserName() + "执行供货单导出操作。");
 	ModelAndView modelAndView = null;
 	if (countResult.getModule() > ONLINE_EXCEL_COUNT) {
-	    String fileName = getExcelFileName(userInfo.getId(), supplyOrderQuery);
 	    int pageCount = ExportTool.getTotalPage(countResult.getModule(), MAX_EXCEL_COUNT);
 	    Export export = new Export();
+
+		//设置三家运营商同时导出的标记
+		if (supplyOrderQuery.getBizId()==null) {
+			export.setBizId(222);
+			supplyOrderQuery.setBizId(222);
+		}
+		String fileName = getExcelFileName(userInfo.getId(), supplyOrderQuery);
 	    export.setUserId(userInfo.getId());
 	    export.setExportType(Constants.Export.TYPE_SUPPLY_ORDER);
 	    export.setBizId(supplyOrderQuery.getBizId());
@@ -91,8 +97,11 @@ public class SupplyOrderExport extends BaseController {
 		model.put("errorMsg", result.getResultMsg());
 		return new ModelAndView("error/error", model);
 	    }
-
 	    supplyOrderQuery.setPageSize(MAX_EXCEL_COUNT);
+		if (export.getBizId()==222) {
+//			export.setBizId(222);
+			supplyOrderQuery.setBizId(null);
+		}
 	    excelAsyncService.supplyOrderExport(result.getModule(), supplyOrderQuery);
 	    model.put("fileName", ExportTool.getFileName(fileName));
 	    modelAndView = new ModelAndView("success/excelsucc", model);
